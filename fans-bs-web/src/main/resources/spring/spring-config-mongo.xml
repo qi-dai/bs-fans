@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/data/mongo  http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd
+          http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<mongo:mongo id="mongo" host="${fans.bs.mongo.host}" port="${fans.bs.mongo.port}">
+		<!-- 一些连接属性的设置 -->
+		<mongo:options
+
+				connections-per-host="${fans.bs.mongo.connectionsPerHost}"
+				threads-allowed-to-block-for-connection-multiplier="${fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier}"
+				connect-timeout="${fans.bs.mongo.connectTimeout}"
+				max-wait-time="${fans.bs.mongo.maxWaitTime}"
+				auto-connect-retry="${fans.bs.mongo.autoConnectRetry}"
+				socket-keep-alive="${fans.bs.mongo.socketKeepAlive}"
+				socket-timeout="${fans.bs.mongo.socketTimeout}"
+				slave-ok="${fans.bs.mongo.slaveOk}"
+				write-number="1"
+				write-timeout="0"
+				write-fsync="true" />
+	</mongo:mongo>
+
+	<bean id="userCredentials" class="org.springframework.data.authentication.UserCredentials">
+		<constructor-arg name="username" value="${fans.bs.mongo.username}"/>
+		<constructor-arg name="password" value="${fans.bs.mongo.password}"/>
+	</bean>
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongo" ref="mongo" />
+		<constructor-arg name="databaseName" value="${fans.bs.mongo.db}" />
+		<constructor-arg name="userCredentials" ref="userCredentials" />
+	</bean>
+
+</beans>

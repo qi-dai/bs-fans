@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d [%thread] %-5level %logger:%L - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->
+    <appender name="file2"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Encoding>UTF-8</Encoding>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${fans.bs.log.path}bs.fans-%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+            <MaxHistory>10</MaxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>400MB</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d [%thread] [%-5level] [%logger:%L] - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="org.springframework" value="INFO" />
+    <logger name="org.apache" value="WARN" />
+    <logger name="org.apache.ibatis" level="WARN"/>
+    <logger name="java.sql" level="WARN"/>
+
+    <!-- 日志级别 -->
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="console" />
+    </root>
+</configuration>

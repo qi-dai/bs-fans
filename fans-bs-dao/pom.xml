@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>com.eden.fans.bs</groupId>
+        <artifactId>fans-bs</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+	</parent>
+    <groupId>com.eden.fans.bs</groupId>
+	<artifactId>fans-bs-dao</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<dependencies>
+			<dependency>
+				<groupId>com.eden.fans.bs</groupId>
+				<artifactId>fans-bs-domain</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
+			</dependency>
+			<!-- MYBATIS begin -->
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>4.2.0.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis-spring</artifactId>
+			</dependency>
+			<!-- MYBATIS END -->
+			<!-- SPRING BEGIN-->
+			<dependency>
+	        	<groupId>org.springframework</groupId>
+	        	<artifactId>spring-core</artifactId>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-beans</artifactId>
+		    </dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+			</dependency>
+		    <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-context</artifactId>
+		    </dependency>
+		        <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-context-support</artifactId>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-webmvc</artifactId>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-web</artifactId>
+		    </dependency>
+		    <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-tx</artifactId>
+		    </dependency>
+			  <dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-jdbc</artifactId>
+			  </dependency>
+			  <dependency>
+	        	<groupId>org.springframework</groupId>
+	        	<artifactId>spring-orm</artifactId>
+		    </dependency>
+			<!-- SPRING END -->
+			<!-- MONGO BEGIN -->
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-mongodb</artifactId>
+				<version>1.8.0.RELEASE</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongo-java-driver</artifactId>
+				<version>2.14.0</version>
+			</dependency>
+			<!-- MONGO END -->
+			<!-- MYSQL BEGIN -->
+			<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+			 </dependency>
+			<!-- MYSQL END -->
+		</dependencies>
+</project>

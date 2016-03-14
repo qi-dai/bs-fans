@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.eden.fans.bs</groupId>
+		<artifactId>fans-bs</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<groupId>om.eden.fans.bs</groupId>
+	<artifactId>fans-bs-web</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.eden.fans.bs</groupId>
+			<artifactId>fans-bs-service</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.eden.fans.bs</groupId>
+			<artifactId>fans-bs-worker</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<finalName>fans-bs-web</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+
+			<plugin>
+				<!-- war插件 -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<warName>fans-bs-web</warName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
+	<profiles>
+		<profile>
+			<id>test</id>
+			<properties>
+				<fans.bs.log.path>D:/Logs/fans.bs.com/</fans.bs.log.path>
+				<!-- MySQOL-->
+				<fans.bs.mysql.jdbc.url>jdbc:mysql://192.168.146.77:3306/plist_admin?useUnicode=true&amp;amp;characterEncoding=UTF-8</fans.bs.mysql.jdbc.url>
+				<fans.bs.datasource.username>root</fans.bs.datasource.username>
+				<fans.bs.datasource.password></fans.bs.datasource.password>
+				<fans.bs.datasource.minEvictableIdleTimeMillis>120000</fans.bs.datasource.minEvictableIdleTimeMillis>
+				<fans.bs.datasource.timeBetweenEvictionRunsMillis>60000</fans.bs.datasource.timeBetweenEvictionRunsMillis>
+				<fans.bs.datasource.maxIdle>10</fans.bs.datasource.maxIdle>
+				<fans.bs.datasource.minIdle>5</fans.bs.datasource.minIdle>
+				<!-- Mongo -->
+				<fans.bs.mongo.host>192.168.166.30</fans.bs.mongo.host>
+				<fans.bs.mongo.port>20011</fans.bs.mongo.port>
+				<fans.bs.mongo.username>salesanalysis_rw</fans.bs.mongo.username>
+				<fans.bs.mongo.password>salesanalysis_pwd</fans.bs.mongo.password>
+				<fans.bs.mongo.db>salesanalysis</fans.bs.mongo.db>
+				<fans.bs.mongo.connectionsPerHost>8</fans.bs.mongo.connectionsPerHost>
+				<fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>5</fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>
+				<fans.bs.mongo.maxWaitTime>1500</fans.bs.mongo.maxWaitTime>
+				<fans.bs.mongo.connectTimeout>1000</fans.bs.mongo.connectTimeout>
+				<fans.bs.mongo.autoConnectRetry>true</fans.bs.mongo.autoConnectRetry>
+				<fans.bs.mongo.socketKeepAlive>true</fans.bs.mongo.socketKeepAlive>
+				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
+				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
+				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>production</id>
+			<properties>
+				<list.bs.environment>production</list.bs.environment>
+				<fans.bs.log.path>/export/Logs/fans.bs.com/</fans.bs.log.path>
+				<fans.bs.mysql.jdbc.url>jdbc:mysql://192.168.146.77:3306/plist_admin?useUnicode=true&amp;amp;characterEncoding=UTF-8</fans.bs.mysql.jdbc.url>
+				<fans.bs.datasource.username>root</fans.bs.datasource.username>
+				<fans.bs.datasource.password></fans.bs.datasource.password>
+				<fans.bs.datasource.minEvictableIdleTimeMillis>120000</fans.bs.datasource.minEvictableIdleTimeMillis>
+				<fans.bs.datasource.timeBetweenEvictionRunsMillis>60000</fans.bs.datasource.timeBetweenEvictionRunsMillis>
+				<fans.bs.datasource.maxIdle>10</fans.bs.datasource.maxIdle>
+				<fans.bs.datasource.minIdle>5</fans.bs.datasource.minIdle>
+				<!-- Mongo -->
+				<fans.bs.mongo.host>127.0.0.1</fans.bs.mongo.host>
+				<fans.bs.mongo.port>8090</fans.bs.mongo.port>
+				<fans.bs.mongo.username>salesanalysis_rw</fans.bs.mongo.username>
+				<fans.bs.mongo.password>salesanalysis_pwd</fans.bs.mongo.password>
+				<fans.bs.mongo.db>salesanalysis</fans.bs.mongo.db>
+				<fans.bs.mongo.connectionsPerHost>8</fans.bs.mongo.connectionsPerHost>
+				<fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>5</fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>
+				<fans.bs.mongo.maxWaitTime>1500</fans.bs.mongo.maxWaitTime>
+				<fans.bs.mongo.connectTimeout>1000</fans.bs.mongo.connectTimeout>
+				<fans.bs.mongo.autoConnectRetry>true</fans.bs.mongo.autoConnectRetry>
+				<fans.bs.mongo.socketKeepAlive>true</fans.bs.mongo.socketKeepAlive>
+				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
+				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
+				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
+			</properties>
+		</profile>
+	</profiles>
+
+</project>

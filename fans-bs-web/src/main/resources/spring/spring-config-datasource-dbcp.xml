@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-autowire="byName">
+
+	<!-- MySQL DataSource -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="${fans.bs.mysql.jdbc.url}"/>
+		<property name="username" value="${fans.bs.datasource.username}" />
+		<property name="password" value="${fans.bs.datasource.password}" />
+		<property name="maxActive" value="16" />
+		<property name="initialSize" value="16" />
+		<property name="validationQuery" value="select 1" />
+		<property name="testWhileIdle" value="true" />
+		<property name="minEvictableIdleTimeMillis" value="${fans.bs.datasource.minEvictableIdleTimeMillis}" /><!-- 被检查的空闲连接的空闲时间 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${fans.bs.datasource.timeBetweenEvictionRunsMillis}" /><!-- 检查空闲连接的线程频率 -->
+		<property name="maxIdle" value="${fans.bs.datasource.maxIdle}" />
+		<property name="minIdle" value="${fans.bs.datasource.minIdle}" />
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:sql-mapper-config.xml" />
+	</bean>
+
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE configuration
+       PUBLIC "-//mybatis.org//DTD Config 3.2.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="logImpl" value="NO_LOGGING"/>
+    </settings>
+     <!-- Register Alias
+    <typeAliases>
+         <typeAlias alias="admin" type="com.nicchagil.mybatisonly.bean.User" />
+     </typeAliases>
+    -->
+    <!-- SQL Mapper -->
+    <mappers>
+        <mapper resource="sqlmap/mysql/PlistAdmin.xml" />
+    </mappers>
+ </configuration>

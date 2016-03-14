@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+
+    <localRepository>C:/Users/Administrator/.m2</localRepository>
+		
+		<mirrors>
+			<mirror>
+					<id>central</id>
+					<mirrorOf>central</mirrorOf>
+					<name>central</name>
+					<url>http://maven.oschina.net/content/groups/public/</url>
+			</mirror>
+			<mirror>
+					<id>repo1</id>
+					<mirrorOf>repo1</mirrorOf>
+					<name>repo1</name>
+					<url>http://repo1.maven.org/maven2/</url>
+			</mirror>
+			
+			<mirror>
+					<id>nexus-osc-thirdparty</id>
+					<mirrorOf>thirdparty</mirrorOf>
+					<name>Nexus osc thirdparty</name>
+					<url>http://maven.oschina.net/content/repositories/thirdparty/</url>
+			</mirror>
+		</mirrors>
+
+    <profiles>
+      		<profile>
+            	<id>jdk1.7</id>
+            	<repositories>
+            		<repository>
+            			<id>nexus</id>
+            			<name>local private nexus</name>
+            			<url>http://maven.oschina.net/content/groups/public/</url>
+            			<releases>
+            				<enabled>true</enabled>
+            			</releases>
+            			<snapshots>
+            				<enabled>true</enabled>
+            			</snapshots>
+            		</repository>
+            	</repositories>
+            	<pluginRepositories>
+            		<pluginRepository>
+            			<id>nexus</id>
+            			<name>local private nexus</name>
+            			<url>http://maven.oschina.net/content/groups/public/</url>
+            			<releases>
+            				<enabled>true</enabled>
+            			</releases>
+            			<snapshots>
+            				<enabled>true</enabled>
+            			</snapshots>
+            		</pluginRepository>
+            	</pluginRepositories>
+            </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>artifactory</activeProfile>
+    </activeProfiles>
+</settings>
