@@ -42,15 +42,13 @@
 
     <aop:config proxy-target-class="true">
         <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
-        <aop:pointcut id="txPointcut" expression="execution(public com.eden.fans.bs.delegate.impl..*.*(..))" />
-        <!---
         <aop:aspect ref="behaviour">
-              <aop:before pointcut-ref="behaviour" method="takeSeats"/>
-              <aop:after  pointcut-ref="behaviour" method="turnOffCellPhones"/>
-              <aop:after-returning pointcut-ref="behaviour" method="applaud"/>
-              <aop:after-throwing pointcut-ref="behaviour" method="demandRefund"/>
+            <aop:before pointcut-ref="behaviour" method="takeSeats"/>
+            <aop:after  pointcut-ref="behaviour" method="turnOffCellPhones"/>
+            <aop:after-returning pointcut-ref="behaviour" method="applaud"/>
+            <aop:after-throwing pointcut-ref="behaviour" method="demandRefund"/>
         </aop:aspect>
-        ->
-  </aop:config>
+        <aop:pointcut id="txPointcut" expression="execution(public com.eden.fans.bs.delegate.impl..*.*(..))" />
+    </aop:config>
 	
 </beans>
