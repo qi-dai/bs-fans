@@ -15,9 +15,6 @@
     <bean id="jdbctTxManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource" />
     </bean>
-
-	<aop:aspectj-autoproxy/>   
-	
 	<!-- SERVICE -->
 	<tx:advice id="txAdvice" transaction-manager="jdbctTxManager">
 		<tx:attributes>
@@ -40,15 +37,17 @@
 		</tx:attributes>
 	</tx:advice>
 
+    <!--<aop:aspectj-autoproxy/> 启用注解事物拦截时开启此配置-->
+
     <aop:config proxy-target-class="true">
+        <aop:pointcut id="txPointcut" expression="execution(public * com.eden.fans.bs.delegate.impl..*.*(..))" />
         <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
-        <aop:aspect ref="behaviour">
-            <aop:before pointcut-ref="behaviour" method="takeSeats"/>
-            <aop:after  pointcut-ref="behaviour" method="turnOffCellPhones"/>
-            <aop:after-returning pointcut-ref="behaviour" method="applaud"/>
-            <aop:after-throwing pointcut-ref="behaviour" method="demandRefund"/>
-        </aop:aspect>
-        <aop:pointcut id="txPointcut" expression="execution(public com.eden.fans.bs.delegate.impl..*.*(..))" />
+        <!--<aop:aspect id="txAspect">
+            <aop:before pointcut-ref="txPointcut" method="takeSeats"/>
+            <aop:after  pointcut-ref="txPointcut" method="turnOffCellPhones"/>
+            <aop:after-returning pointcut-ref="txPointcut" method="applaud"/>
+            <aop:after-throwing pointcut-ref="txPointcut" method="demandRefund"/>
+        </aop:aspect> -->
     </aop:config>
 	
 </beans>

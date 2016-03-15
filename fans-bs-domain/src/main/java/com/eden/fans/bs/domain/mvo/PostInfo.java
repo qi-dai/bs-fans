@@ -6,7 +6,8 @@ import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.svo.*;
 
 import java.io.Serializable;
-import java.security.Timestamp;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,12 +66,12 @@ public class PostInfo implements Serializable {
     /**
      *帖子的创建时间
      */
-    private Timestamp createDate;
+    private Date createDate;
 
     /**
      *帖子的发布时间
      */
-    private Timestamp publishDate;
+    private Date publishDate;
 
     /**
      *帖子的状态
@@ -91,6 +92,13 @@ public class PostInfo implements Serializable {
      */
     private List<ConcernUser> concernUsers;
     private List<PraiseUser> praiseUsers;
+
+    /**
+     * 回帖信息列表
+     * @return
+     */
+
+    private List<ReplyPostInfo> replyPostInfos;
 
     public String getId() {
         return id;
@@ -164,19 +172,19 @@ public class PostInfo implements Serializable {
         this.others = others;
     }
 
-    public Timestamp getCreateDate() {
+    public Date getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Timestamp createDate) {
+    public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
-    public Timestamp getPublishDate() {
+    public Date getPublishDate() {
         return publishDate;
     }
 
-    public void setPublishDate(Timestamp publishDate) {
+    public void setPublishDate(Date publishDate) {
         this.publishDate = publishDate;
     }
 
@@ -218,5 +226,13 @@ public class PostInfo implements Serializable {
 
     public void setPraiseUsers(List<PraiseUser> praiseUsers) {
         this.praiseUsers = praiseUsers;
+    }
+
+    public List<ReplyPostInfo> getReplyPostInfos() {
+        return replyPostInfos;
+    }
+
+    public void setReplyPostInfos(List<ReplyPostInfo> replyPostInfos) {
+        this.replyPostInfos = replyPostInfos;
     }
 }
