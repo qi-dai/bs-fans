@@ -99,6 +99,36 @@
 		</profile>
 
 		<profile>
+			<id>test_LEE</id>
+			<properties>
+				<fans.bs.log.path>D:/Logs/fans.bs.com/</fans.bs.log.path>
+				<!-- MySQOL-->
+				<fans.bs.mysql.jdbc.url>jdbc:mysql://localhost:3306/bs_fans?useUnicode=true&amp;amp;characterEncoding=UTF-8</fans.bs.mysql.jdbc.url>
+				<fans.bs.datasource.username>root</fans.bs.datasource.username>
+				<fans.bs.datasource.password>root</fans.bs.datasource.password>
+				<fans.bs.datasource.minEvictableIdleTimeMillis>120000</fans.bs.datasource.minEvictableIdleTimeMillis>
+				<fans.bs.datasource.timeBetweenEvictionRunsMillis>60000</fans.bs.datasource.timeBetweenEvictionRunsMillis>
+				<fans.bs.datasource.maxIdle>10</fans.bs.datasource.maxIdle>
+				<fans.bs.datasource.minIdle>5</fans.bs.datasource.minIdle>
+				<!-- Mongo -->
+				<fans.bs.mongo.host>192.168.166.30</fans.bs.mongo.host>
+				<fans.bs.mongo.port>20011</fans.bs.mongo.port>
+				<fans.bs.mongo.username>salesanalysis_rw</fans.bs.mongo.username>
+				<fans.bs.mongo.password>salesanalysis_pwd</fans.bs.mongo.password>
+				<fans.bs.mongo.db>salesanalysis</fans.bs.mongo.db>
+				<fans.bs.mongo.connectionsPerHost>8</fans.bs.mongo.connectionsPerHost>
+				<fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>5</fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>
+				<fans.bs.mongo.maxWaitTime>1500</fans.bs.mongo.maxWaitTime>
+				<fans.bs.mongo.connectTimeout>1000</fans.bs.mongo.connectTimeout>
+				<fans.bs.mongo.autoConnectRetry>true</fans.bs.mongo.autoConnectRetry>
+				<fans.bs.mongo.socketKeepAlive>true</fans.bs.mongo.socketKeepAlive>
+				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
+				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
+				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
+			</properties>
+		</profile>
+
+		<profile>
 			<id>production</id>
 			<properties>
 				<list.bs.environment>production</list.bs.environment>

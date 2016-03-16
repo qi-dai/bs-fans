@@ -17,6 +17,9 @@ public class UserDaoImpl implements IUserDao {
 
     @Override
     public UserVo qryUserVoByPhonePWD(String phone, String pwd) {
-        return sqlSessionTemplate.selectOne("");
+        UserVo userVo = new UserVo();
+        userVo.setPhone(phone);
+        userVo.setPassword(pwd);
+        return sqlSessionTemplate.selectOne("selectOneUserVo",userVo);
     }
 }

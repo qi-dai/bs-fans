@@ -1,6 +1,7 @@
 package com.eden.fans.bs.domain;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * Created by Administrator on 2016/3/15.
@@ -11,18 +12,18 @@ public class UserVo implements Serializable {
     private String userName;//用户昵称
     private String phone;//手机号码
     private String password;//密码
-    private int userStatus;//用户状态
+    private String userStatus;//用户状态
     private String bgImgUrl;//背景图片
     private String headImgUrl;//头像图片
-    private int gender;//性别
+    private String gender;//性别
     private String constallation;//星座
-    private String city;//城市
-    private int activeLevel;//活跃等级
-    private int userRole;//用户角色
+    private String cityCode;//城市
+    private String activeLevel;//活跃等级
+    private String userRole;//用户角色
     private String signature;//个性签名
-    private int platform;//使用平台
-    private String createTime;//创建时间
-    private String updateTime;//最后更新时间
+    private String platform;//使用平台
+    private Timestamp createTime;//创建时间
+    private Timestamp updateTime;//最后更新时间
 
     public int getId() {
         return id;
@@ -64,11 +65,11 @@ public class UserVo implements Serializable {
         this.password = password;
     }
 
-    public int getUserStatus() {
+    public String getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(int userStatus) {
+    public void setUserStatus(String userStatus) {
         this.userStatus = userStatus;
     }
 
@@ -88,11 +89,11 @@ public class UserVo implements Serializable {
         this.headImgUrl = headImgUrl;
     }
 
-    public int getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -104,27 +105,27 @@ public class UserVo implements Serializable {
         this.constallation = constallation;
     }
 
-    public String getCity() {
-        return city;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-    public int getActiveLevel() {
+    public String getActiveLevel() {
         return activeLevel;
     }
 
-    public void setActiveLevel(int activeLevel) {
+    public void setActiveLevel(String activeLevel) {
         this.activeLevel = activeLevel;
     }
 
-    public int getUserRole() {
+    public String getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(int userRole) {
+    public void setUserRole(String userRole) {
         this.userRole = userRole;
     }
 
@@ -136,27 +137,27 @@ public class UserVo implements Serializable {
         this.signature = signature;
     }
 
-    public int getPlatform() {
+    public String getPlatform() {
         return platform;
     }
 
-    public void setPlatform(int platform) {
+    public void setPlatform(String platform) {
         this.platform = platform;
     }
 
-    public String getCreateTime() {
+    public Timestamp getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(String createTime) {
+    public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
     }
 
-    public String getUpdateTime() {
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(String updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 }
