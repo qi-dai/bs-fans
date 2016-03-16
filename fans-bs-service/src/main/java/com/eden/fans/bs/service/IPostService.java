@@ -4,6 +4,8 @@ import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +14,13 @@ import java.util.List;
  * Created by shengyanpeng on 2016/3/16.
  */
 public interface IPostService {
+
+    /**
+     * 根据帖子标识获取帖子
+     *
+     */
+
+    public PostInfo obtainPostById(String appCode, String id);
 
     /**
      * 创建帖子

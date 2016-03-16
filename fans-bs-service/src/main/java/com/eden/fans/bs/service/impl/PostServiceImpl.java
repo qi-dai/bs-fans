@@ -2,6 +2,7 @@ package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.dao.ICardDao;
 import com.eden.fans.bs.dao.IPostDao;
+import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
@@ -29,6 +30,18 @@ public class PostServiceImpl implements IPostService {
 
     @Autowired
     private IPostDao postDao;
+
+    @Override
+    public PostInfo obtainPostById(String appCode, String id) {
+        PostInfo postInfo = null;
+        BasicDBObject keys = new BasicDBObject();
+        setPostKeys(keys);
+        DBObject object = postDao.obtainPostById(appCode,id,keys);
+        if(null != object){
+            postInfo = new PostInfo();
+        }
+        return postInfo;
+    }
 
     /**
      * 创建帖子
@@ -163,5 +176,42 @@ public class PostServiceImpl implements IPostService {
         dbObject.put("concernUsers","[]");
         dbObject.put("praiseUsers","[]");
         dbObject.put("replyPostInfos","[]");
+    }
+
+    /**
+     * 设置需要获取的帖子的属性
+     * @param keys
+     */
+    private void setPostKeys(BasicDBObject keys){
+        keys.put("title",1);
+        keys.put("type",1);
+        keys.put("content",1);
+        keys.put("userCode",1);
+        keys.put("imgs",1);
+        keys.put("videos",1);
+        keys.put("musics",1);
+        keys.put("others",1);
+        keys.put("createDate",1);
+        keys.put("publishDate",1);
+        keys.put("status",1);
+        keys.put("level",1);
+    }
+
+    private void DBobject2PostInfo(DBObject dbObject,PostInfo postInfo){
+
+        postInfo.setTitle((String)dbObject.get("title"));
+        postInfo.setType(PostType.getPostType((String) dbObject.get("type")));
+        dbObject.get("content");
+        dbObject.get("userCode");
+        dbObject.get("imgs");
+        dbObject.get("videos");
+        dbObject.get("musics");
+        dbObject.get("others");
+        dbObject.get("createDate");
+        dbObject.get("publishDate");
+        dbObject.get("status");
+        dbObject.get("level");
+
+        dbObject.get("title");
     }
 }

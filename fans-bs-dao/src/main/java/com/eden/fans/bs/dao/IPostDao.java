@@ -4,6 +4,7 @@ import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public interface IPostDao {
      *
      */
 
-    public PostInfo obtainPostById(String appCode,String id);
+    public DBObject obtainPostById(String appCode,String id,BasicDBObject keys);
 
     /**
      * 创建帖子

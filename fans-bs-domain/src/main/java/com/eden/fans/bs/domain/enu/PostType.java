@@ -35,9 +35,19 @@ public enum PostType {
         return null;
     }
 
+    public static PostType getPostType(String name) {
+        PostType tmpType = PostType.TEXT_MESSAGE;
+        for (PostType postType : PostType.values()) {
+            if (postType.getName().equals(name)) {
+                return postType;
+            }
+        }
+        return tmpType;
+    }
+
     public static int getValue(String name) {
         for (PostType postType : PostType.values()){
-            if (postType.getName() == name) {
+            if (postType.getName().equals(name)) {
                 return postType.value;
             }
         }

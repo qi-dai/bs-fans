@@ -21,18 +21,28 @@ public enum PostLevel {
     }
 
     public static String getName(int value) {
-        for (PostLevel postType : PostLevel.values()) {
-            if (postType.getValue() == value) {
-                return postType.name;
+        for (PostLevel postLevel : PostLevel.values()) {
+            if (postLevel.getValue() == value) {
+                return postLevel.name;
             }
         }
         return null;
     }
 
+    public static PostLevel getPostLevel(String name) {
+        PostLevel tmpLevel = PostLevel.COMMON;
+        for (PostLevel postLevel : PostLevel.values()) {
+            if (postLevel.getName().equals(name)) {
+                return postLevel;
+            }
+        }
+        return tmpLevel;
+    }
+
     public static int getValue(String name) {
-        for (PostLevel postType : PostLevel.values()){
-            if (postType.getName() == name) {
-                return postType.value;
+        for (PostLevel postLevel : PostLevel.values()){
+            if (postLevel.getName().equals(name)) {
+                return postLevel.value;
             }
         }
         return 0;

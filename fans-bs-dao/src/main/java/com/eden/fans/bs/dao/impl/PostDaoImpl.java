@@ -36,15 +36,11 @@ public class PostDaoImpl implements IPostDao {
      *
      * @param appCode
      * @param id
+     * @param keys
      */
     @Override
-    public PostInfo obtainPostById(String appCode, String id) {
-        BasicDBObject keys = new BasicDBObject();
-        // TODO 设置需要获取的帖子的属性
-        DBObject object = this.mongoTemplate.getCollection(POST_COLLECTION_PREFIX + appCode).findOne(new BasicDBObject("_id",new ObjectId(id)),keys);
-        Map<String,Object> postMap = object.toMap();
-
-        return null;
+    public DBObject obtainPostById(String appCode, String id,BasicDBObject keys) {
+        return this.mongoTemplate.getCollection(POST_COLLECTION_PREFIX + appCode).findOne(new BasicDBObject("_id",new ObjectId(id)),keys);
     }
 
     /**

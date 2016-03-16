@@ -21,18 +21,28 @@ public enum PostStatus {
     }
 
     public static String getName(int value) {
-        for (PostStatus postType : PostStatus.values()) {
-            if (postType.getValue() == value) {
-                return postType.name;
+        for (PostStatus postStatus : PostStatus.values()) {
+            if (postStatus.getValue() == value) {
+                return postStatus.name;
             }
         }
         return null;
     }
 
+    public static PostStatus getPostStatus(String name) {
+        PostStatus tmpStatus = PostStatus.CHECK;
+        for (PostStatus postStatus : PostStatus.values()) {
+            if (postStatus.getName().equals(name)) {
+                return postStatus;
+            }
+        }
+        return tmpStatus;
+    }
+
     public static int getValue(String name) {
-        for (PostStatus postType : PostStatus.values()){
-            if (postType.getName() == name) {
-                return postType.value;
+        for (PostStatus postStatus : PostStatus.values()){
+            if (postStatus.getName().equals(name)) {
+                return postStatus.value;
             }
         }
         return 0;
