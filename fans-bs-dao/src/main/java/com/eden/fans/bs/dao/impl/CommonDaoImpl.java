@@ -27,12 +27,12 @@ public class CommonDaoImpl implements ICommonDao{
 
     @Override
     public void saveKeyValue(String key, String value) {
-        mongoTemplate.save(new ValidCodeVo(key,value),MongoConstant.common.VALID_CODE);
+        mongoTemplate.save(new ValidCodeVo(key,value),MongoConstant.common.VALID_CODE);//需切换成redis缓存
     }
 
     @Override
     public String getValue(String key) {
-        ValidCodeVo validCodeVo = mongoTemplate.findOne(new Query(Criteria.where("key").is(key)), ValidCodeVo.class, MongoConstant.common.VALID_CODE);
+        ValidCodeVo validCodeVo = mongoTemplate.findOne(new Query(Criteria.where("key").is(key)), ValidCodeVo.class, MongoConstant.common.VALID_CODE);//需切换成redis
         if(validCodeVo==null){
             logger.error("验证码错误或已失效！");
             return null;
