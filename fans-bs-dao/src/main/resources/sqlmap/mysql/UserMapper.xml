@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserVoDAO">
+    <resultMap id="userVoMap" type="com.eden.fans.bs.domain.UserVo">
+        <result column="id" property="id" jdbcType="INT"/>
+        <result column="user_code" property="userCode" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="user_status" property="userStatus" jdbcType="VARCHAR"/>
+        <result column="bg_img_url" property="bgImgUrl" jdbcType="VARCHAR"/>
+        <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="VARCHAR"/>
+        <result column="constellation" property="constallation" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="active_level" property="activeLevel" jdbcType="VARCHAR"/>
+        <result column="user_role" property="userRole" jdbcType="VARCHAR"/>
+        <result column="signature" property="signature" jdbcType="VARCHAR"/>
+        <result column="platform" property="platform" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectOneUserVo" resultMap="userVoMap" parameterMap="">
+        select nickname,password from user_info where id=1
+    </select>
+</mapper>
