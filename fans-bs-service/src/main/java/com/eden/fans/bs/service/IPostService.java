@@ -1,31 +1,22 @@
-package com.eden.fans.bs.dao;
+package com.eden.fans.bs.service;
 
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
-import com.mongodb.DBObject;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * 帖子有关操作定义
- *
- * Created by Administrator on 2016/3/15.
+ * Created by shengyanpeng on 2016/3/16.
  */
-public interface IPostDao {
-
-    /**
-     * 根据帖子标识获取帖子
-     *
-     */
-
-    public PostInfo obtainPostById(String appCode,String id);
+public interface IPostService {
 
     /**
      * 创建帖子
      */
-    public boolean createPost(String appCode,DBObject post);
+    public boolean createPost(String appCode,PostInfo postInfo);
 
     /**
      * 更新帖子状态（status）
@@ -73,5 +64,4 @@ public interface IPostDao {
      * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
      */
     public Long countReplyPostInfos(String appCode);
-
 }

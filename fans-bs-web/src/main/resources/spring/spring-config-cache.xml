@@ -8,8 +8,7 @@
     <!-- redis 配置 -->
     <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxIdle" value="${fans.bs.redis.maxIdle}" />
-        <property name="maxActive" value="${fans.bs.redis.maxActive}" />
-        <property name="maxWait" value="${fans.bs.redis.maxWait}" />
+        <property name="maxWaitMillis" value="${fans.bs.redis.maxWait}" />
         <property name="testOnBorrow" value="${fans.bs.redis.testOnBorrow}" />
     </bean>
 
