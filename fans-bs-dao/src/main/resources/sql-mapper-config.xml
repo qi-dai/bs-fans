@@ -15,5 +15,6 @@
     <!-- SQL Mapper -->
     <mappers>
         <mapper resource="sqlmap/mysql/PlistAdmin.xml" />
+        <mapper resource="sqlmap/mysql/UserMapper.xml" />
     </mappers>
  </configuration>
