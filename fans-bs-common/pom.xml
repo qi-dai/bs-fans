@@ -92,6 +92,6 @@
 			<artifactId>commons-collections</artifactId>
 		</dependency>
 
-	</dependencies>
+  </dependencies>
 
 </project>

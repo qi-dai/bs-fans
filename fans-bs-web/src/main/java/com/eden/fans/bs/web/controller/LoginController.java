@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by lee on 2016/3/15.
  */
 @Controller
-@RequestMapping(value = "/verifyCode")
+@RequestMapping(value = "/login")
 public class LoginController {
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
     @Autowired
@@ -26,8 +26,9 @@ public class LoginController {
     private static Gson gson = new Gson();
 
     @RequestMapping(value = "/validateCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
-    public String validateCode(String phone, String password) throws Exception {
-        return gson.toJson(commonService.checkUserInfo(phone, password));
+    @ResponseBody
+    public String validateCode(String phone, String password,String deviceId) throws Exception {
+        return gson.toJson(commonService.checkUserInfo(phone, password,deviceId));
     }
 
     @RequestMapping(value = "/getJson", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
@@ -36,7 +37,6 @@ public class LoginController {
         Map<String,String> map = new HashMap<String, String>();
         map.put("kye1","vlue2");
         map.put("kye2","刘先生");
-
         //return ;
         return gson.toJson(map);
     }

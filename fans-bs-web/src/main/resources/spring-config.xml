@@ -15,4 +15,5 @@
 	<import resource="spring/spring-config-datasource-dbcp.xml" />
 	<import resource="spring/spring-config-mongo.xml" />
 	<import resource="spring/spring-config-service.xml" />
+	<import resource="spring/spring-config-cache.xml" />
 </beans>

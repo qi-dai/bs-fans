@@ -1,7 +1,10 @@
 package com.eden.fans.bs.service.impl;
 
-import com.eden.fans.bs.dao.ICommonDao;
+import com.eden.fans.bs.common.util.Constant;
+import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.LoginInfo;
 import com.eden.fans.bs.domain.UserVo;
 import com.eden.fans.bs.service.ICommonService;
 import org.slf4j.Logger;
@@ -19,28 +22,31 @@ public class CommonServiceImpl implements ICommonService{
     private static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 
     @Autowired
-    ICommonDao commonDao;
+    private RedisCache redisCache;
     @Autowired
     IUserDao userDao;
 
     @Override
     public void saveValidCode(String validCode,String timestamp) {
-        commonDao.saveKeyValue(validCode, timestamp);
+        redisCache.set(validCode, timestamp);
     }
 
     @Override
     public boolean checkValidCode(String timestamp,String validCode) {
-        String sourceCode = commonDao.getValue(timestamp);
+        String sourceCode = redisCache.get(timestamp);
         return sourceCode.equals(validCode);
     }
 
     @Override
-    public String checkUserInfo(String phone,String pwd) {
+    public String checkUserInfo(String phone,String pwd,String deviceId) {
         try{
-            UserVo userVo = userDao.qryUserVoByPhonePWD(phone,pwd);
+            //拿到密码再次加密MD5
+            UserVo userVo = userDao.qryUserVoByPhonePWD(phone,MD5Util.md5(pwd, Constant.MD5_KEY));
             if (userVo!=null&&userVo.getId()>0){
                 String token = UUID.randomUUID().toString();
-                //将用户信息，放入缓存-待做。
+                token = token.replace("-","");
+                //将用户信息，放入缓存
+                redisCache.set(token,userVo);
                 logger.error("生成唯一token:{},phone:{}",token,phone);
                 return token;
             }

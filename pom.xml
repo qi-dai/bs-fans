@@ -291,7 +291,6 @@
           <version>${commons-beanutils.version}</version>
       </dependency>
       <!--json end-->
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>

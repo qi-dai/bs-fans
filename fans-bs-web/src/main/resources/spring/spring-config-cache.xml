@@ -22,5 +22,9 @@
     <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
         <property name="connectionFactory"   ref="connectionFactory" />
     </bean>
+
+    <bean id="redisCache" class="com.eden.fans.bs.dao.util.RedisCache">
+        <property name="redisTemplate"   ref="redisTemplate" />
+    </bean>
 	
 </beans>

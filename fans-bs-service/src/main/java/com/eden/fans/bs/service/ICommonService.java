@@ -21,5 +21,5 @@ public interface ICommonService {
      * @param phone 手机号
      * @param pwd 密文
      * */
-    public String checkUserInfo(String phone,String pwd);
+    public String checkUserInfo(String phone,String pwd,String deviceId);
 }

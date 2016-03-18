@@ -132,6 +132,14 @@
 				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
 				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
 				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
+
+				<!-- REDIS -->
+				<fans.bs.redis.maxIdle>300</fans.bs.redis.maxIdle>
+				<fans.bs.redis.maxWait>1000</fans.bs.redis.maxWait>
+				<fans.bs.redis.testOnBorrow>true</fans.bs.redis.testOnBorrow>
+				<fans.bs.redis.host>127.0.0.1</fans.bs.redis.host>
+				<fans.bs.redis.port>6379</fans.bs.redis.port>
+				<fans.bs.redis.password></fans.bs.redis.password>
 			</properties>
 		</profile>
 

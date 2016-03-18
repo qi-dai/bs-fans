@@ -146,7 +146,7 @@ public class CommonController {
 		return new Color(r, g, b);
 	}
 
-	@RequestMapping(value = "/validateCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+	@RequestMapping(value = "/checkValidCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
 	public String validateCode(String veryCode, String timestamp) throws Exception {
 		return gson.toJson(commonService.checkValidCode(timestamp, veryCode));
 	}
