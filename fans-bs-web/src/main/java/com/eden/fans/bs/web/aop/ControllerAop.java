@@ -29,9 +29,9 @@ public class ControllerAop {
 
     /**
      * controller处理：
-     * 1.rpc异常就直接抛出，rpc aop已经做过处理
-     * 2.由service层手动抛出，抛出时已经打标，直接抛出
-     * 3.service层运行时异常，自动捕捉，打标后，直接抛出
+     * 1.打印返回报文全量信息
+     * 2.监控接口响应时间，讨论是否要做。
+     * 3.其他。
      * */
     @Around("aspect()")
     public Object call(JoinPoint joinPoint) throws Throwable {
