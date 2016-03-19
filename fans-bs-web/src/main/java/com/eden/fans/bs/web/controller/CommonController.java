@@ -1,5 +1,6 @@
 package com.eden.fans.bs.web.controller;
 
+import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.ICommonService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -147,6 +148,7 @@ public class CommonController {
 	}
 
 	@RequestMapping(value = "/checkValidCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+	@ResponseBody
 	public String validateCode(String veryCode, String timestamp) throws Exception {
 		return gson.toJson(commonService.checkValidCode(timestamp, veryCode));
 	}

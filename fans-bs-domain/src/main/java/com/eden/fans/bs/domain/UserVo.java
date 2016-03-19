@@ -8,7 +8,7 @@ import java.sql.Timestamp;
  */
 public class UserVo implements Serializable {
     private int id;
-    private String userCode;//用户编码
+    private Integer userCode;//用户编码
     private String userName;//用户昵称
     private String phone;//手机号码
     private String password;//密码
@@ -33,11 +33,11 @@ public class UserVo implements Serializable {
         this.id = id;
     }
 
-    public String getUserCode() {
+    public Integer getUserCode() {
         return userCode;
     }
 
-    public void setUserCode(String userCode) {
+    public void setUserCode(Integer userCode) {
         this.userCode = userCode;
     }
 

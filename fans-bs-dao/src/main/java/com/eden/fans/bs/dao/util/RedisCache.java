@@ -21,7 +21,7 @@ public class RedisCache {
     /**
      * 设置key:value,在固定时间后失效
      * */
-    public void saveKeyValue(String key, String value) {
+    public void set(String key, String value) {
         redisTemplate.opsForValue().set(key, value, Constant.REDIS.VALID_CODE_TIMES, TimeUnit.SECONDS);//设置缓存时间300秒自动失效
     }
     /**

@@ -6,6 +6,8 @@ import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.LoginInfo;
 import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.response.ResponseCode;
+import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.ICommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +29,27 @@ public class CommonServiceImpl implements ICommonService{
     IUserDao userDao;
 
     @Override
-    public void saveValidCode(String validCode,String timestamp) {
-        redisCache.set(validCode, timestamp);
+    public void saveValidCode(String timestamp,String validCode) {
+        redisCache.set(timestamp, validCode);
     }
 
     @Override
-    public boolean checkValidCode(String timestamp,String validCode) {
+    public ServiceResponse<Boolean> checkValidCode(String timestamp,String validCode) {
+        ServiceResponse<Boolean> serviceResponse = new ServiceResponse<Boolean>();
         String sourceCode = redisCache.get(timestamp);
-        return sourceCode.equals(validCode);
+        if(validCode==null){
+            serviceResponse.setResult(false);
+        }else {
+            validCode = validCode.toUpperCase();
+            serviceResponse.setResult(sourceCode.toUpperCase().equals(validCode));
+        }
+        logger.error("validCode:{},sourceCode:{}",validCode,sourceCode);
+        return serviceResponse;
     }
 
     @Override
-    public String checkUserInfo(String phone,String pwd,String deviceId) {
+    public ServiceResponse<String> checkUserInfo(String phone,String pwd,String deviceId) {
+        ServiceResponse<String> serviceResponse = null;
         try{
             //拿到密码再次加密MD5
             UserVo userVo = userDao.qryUserVoByPhonePWD(phone,MD5Util.md5(pwd, Constant.MD5_KEY));
@@ -48,7 +59,9 @@ public class CommonServiceImpl implements ICommonService{
                 //将用户信息，放入缓存
                 redisCache.set(token,userVo);
                 logger.error("生成唯一token:{},phone:{}",token,phone);
-                return token;
+                serviceResponse = new ServiceResponse(token);
+            }else{
+                serviceResponse = new ServiceResponse(ResponseCode.LOGIN_CHECK_FAILED);
             }
             logger.error("没有查询到用户信息{}",phone);
         }catch (Exception e){
@@ -56,6 +69,6 @@ public class CommonServiceImpl implements ICommonService{
         }finally {
 
         }
-        return null;
+        return serviceResponse;
     }
 }

@@ -25,9 +25,9 @@ public class LoginController {
 
     private static Gson gson = new Gson();
 
-    @RequestMapping(value = "/validateCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/checkUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String validateCode(String phone, String password,String deviceId) throws Exception {
+    public String checkUser(String phone, String password,String deviceId) throws Exception {
         return gson.toJson(commonService.checkUserInfo(phone, password,deviceId));
     }
 
