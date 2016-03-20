@@ -4,6 +4,7 @@ import com.eden.fans.bs.domain.enu.PostConcern;
 import com.eden.fans.bs.domain.enu.PostPraise;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 关注用户
@@ -20,6 +21,11 @@ public class ConcernUser implements Serializable {
      */
     private int concern;
 
+    /**
+     * 关注的时间
+     */
+    private Date time;
+
     public Integer getUserCode() {
         return userCode;
     }
@@ -34,5 +40,13 @@ public class ConcernUser implements Serializable {
 
     public void setConcern(int concern) {
         this.concern = concern;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

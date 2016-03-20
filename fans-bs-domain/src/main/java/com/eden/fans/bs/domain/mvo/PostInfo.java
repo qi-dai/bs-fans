@@ -29,7 +29,7 @@ public class PostInfo implements Serializable {
     private String title;
 
     /**
-     *帖子的类型
+     *帖子的类型（该字段需要建索引）
      */
     private PostType type;
 
@@ -64,12 +64,12 @@ public class PostInfo implements Serializable {
     private List<PostOtherMedia> others;
 
     /**
-     *帖子的创建时间
+     *帖子的创建时间（该字段需要建索引）
      */
     private Date createDate;
 
     /**
-     *帖子的发布时间
+     *帖子的发布时间（该字段需要建索引）
      */
     private Date publishDate;
 
@@ -79,7 +79,7 @@ public class PostInfo implements Serializable {
     private PostStatus status;
 
     /**
-     *帖子的级别
+     *帖子的级别（该字段需要建索引）
      */
     private PostLevel level;
 
@@ -90,15 +90,15 @@ public class PostInfo implements Serializable {
     /**
      * 用户对帖子的两种操作：关注和点赞是相互独立的，并且同一类型操作状态是互斥的
      */
-    private List<ConcernUser> concernUsers;
-    private List<PraiseUser> praiseUsers;
+    private List<ConcernUser> concernUsers;//该属性的time字段需要建索引
+    private List<PraiseUser> praiseUsers;// 该属性的time字段需要建索引
 
     /**
      * 回帖信息列表
      * @return
      */
 
-    private List<ReplyPostInfo> replyPostInfos;
+    private List<ReplyPostInfo> replyPostInfos;// 该属性的replyTime字段需要建索引
 
     public String getId() {
         return id;

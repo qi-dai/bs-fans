@@ -82,7 +82,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean updatePraiseUsers(String appCode, String id, PraiseUser praiseUser) {
-        return false;
+        return  postDao.updatePraiseUsers(appCode,id,praiseUser);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean updateConcernUsers(String appCode, String id, ConcernUser concernUser) {
-        return false;
+        return postDao.updateConcernUsers(appCode,id,concernUser);
     }
 
     /**
@@ -103,8 +103,8 @@ public class PostServiceImpl implements IPostService {
      * @param appCode
      */
     @Override
-    public Long countPraiseUsers(String appCode) {
-        return null;
+    public Long countPraiseUsers(String postId,String appCode) {
+        return postDao.countPraiseUsers(postId, appCode);
     }
 
     /**
@@ -113,8 +113,8 @@ public class PostServiceImpl implements IPostService {
      * @param appCode
      */
     @Override
-    public Long countConcernUsers(String appCode) {
-        return null;
+    public Long countConcernUsers(String postId,String appCode) {
+        return postDao.countConcernUsers(postId, appCode);
     }
 
     /**
@@ -122,11 +122,11 @@ public class PostServiceImpl implements IPostService {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param time
      */
     @Override
-    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id, Date time) {
+        return postDao.queryConcernUsersByPage(appCode, id, time);
     }
 
     /**
@@ -134,11 +134,11 @@ public class PostServiceImpl implements IPostService {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param time
      */
     @Override
-    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id, Date time) {
+        return postDao.queryPraiseUsersByPage(appCode, id, time);
     }
 
     /**
@@ -146,11 +146,11 @@ public class PostServiceImpl implements IPostService {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param replyTime
      */
     @Override
-    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Date replyTime) {
+        return postDao.queryReplyPostInfosByPage(appCode, id, replyTime);
     }
 
     /**
@@ -159,7 +159,7 @@ public class PostServiceImpl implements IPostService {
      * @param appCode
      */
     @Override
-    public Long countReplyPostInfos(String appCode) {
+    public Long countReplyPostInfos(String postId,String appCode) {
 
 
         return null;

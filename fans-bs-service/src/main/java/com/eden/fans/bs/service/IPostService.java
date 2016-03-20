@@ -8,6 +8,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,17 +58,17 @@ public interface IPostService {
     /**
      * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      */
-    public List<ConcernUser> queryConcernUsersByPage(String appCode,String id, Integer pageNum);
+    public List<ConcernUser> queryConcernUsersByPage(String appCode,String id, Date time);
 
     /**
      * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      */
-    public List<PraiseUser> queryPraiseUsersByPage(String appCode,String id, Integer pageNum);
+    public List<PraiseUser> queryPraiseUsersByPage(String appCode,String id, Date time);
 
     /**
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      */
-    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
+    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode,String id,Date replyTime);
 
     /**
      * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）

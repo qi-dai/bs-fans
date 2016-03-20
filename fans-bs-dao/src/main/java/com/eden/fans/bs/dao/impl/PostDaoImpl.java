@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,6 +90,7 @@ public class PostDaoImpl implements IPostDao {
     public boolean updatePraiseUsers(String appCode, String id, PraiseUser praiseUser) {
         Update update = new Update();
         update.set("praiseUsers.$.praise",praiseUser.getPraise());
+        update.set("praiseUsers.$.time",praiseUser.getTime());
         Query query = Query.query(Criteria.where("_id").is(id).and("praiseUsers.userCode").is(praiseUser.getUserCode()));
 
         int reslut = this.mongoTemplate.upsert(query,update,PostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
@@ -108,8 +110,9 @@ public class PostDaoImpl implements IPostDao {
     public boolean updateConcernUsers(String appCode, String id, ConcernUser concernUser) {
         Update update = new Update();
         update.set("concernUsers.$.concern",concernUser.getConcern());
+        update.set("concernUsers.$.time",concernUser.getTime());
         Query query = Query.query(Criteria.where("_id").is(id).and("concernUsers.userCode").is(concernUser.getUserCode()));
-
+        //mongoTemplate.findAndModify() 谁更好？
         int reslut = this.mongoTemplate.upsert(query,update,PostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         if(reslut>0)
             return true;
@@ -144,11 +147,17 @@ public class PostDaoImpl implements IPostDao {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param time
      */
     @Override
-    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id, Date time) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("_id").is(id).and("concernUsers.time").gt(time);
+        query.addCriteria(criteria);
+        query.limit(10);
+        query.fields().include("concernUsers");
+        // TODO
+        return this.mongoTemplate.find(query,ConcernUser.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
     }
 
     /**
@@ -156,11 +165,17 @@ public class PostDaoImpl implements IPostDao {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param time
      */
     @Override
-    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id, Date time) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("_id").is(id).and("praiseUsers.time").gt(time);
+        query.addCriteria(criteria);
+        query.limit(10);
+        query.fields().include("praiseUsers");
+        // TODO
+        return this.mongoTemplate.find(query,PraiseUser.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
     }
 
     /**
@@ -168,11 +183,17 @@ public class PostDaoImpl implements IPostDao {
      *
      * @param appCode
      * @param id
-     * @param pageNum
+     * @param replyTime
      */
     @Override
-    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Integer pageNum) {
-        return null;
+    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Date replyTime) {
+        Query query = new Query();
+        Criteria criteria = Criteria.where("_id").is(id).and("replyPostInfos.replyTime").gt(replyTime);
+        query.addCriteria(criteria);
+        query.limit(10);
+        query.fields().include("replyPostInfos");
+        // TODO
+        return this.mongoTemplate.find(query,ReplyPostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
     }
 
     /**

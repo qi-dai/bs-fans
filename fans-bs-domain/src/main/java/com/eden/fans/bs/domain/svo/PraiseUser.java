@@ -3,6 +3,7 @@ package com.eden.fans.bs.domain.svo;
 import com.eden.fans.bs.domain.enu.PostPraise;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 点赞用户
@@ -19,6 +20,11 @@ public class PraiseUser implements Serializable {
      */
     private int praise;
 
+    /**
+     * 点赞的时间
+     */
+    private Date time;
+
     public Integer getUserCode() {
         return userCode;
     }
@@ -33,5 +39,13 @@ public class PraiseUser implements Serializable {
 
     public void setPraise(int praise) {
         this.praise = praise;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }
