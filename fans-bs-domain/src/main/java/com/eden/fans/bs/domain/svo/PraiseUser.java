@@ -10,14 +10,14 @@ import java.io.Serializable;
  */
 public class PraiseUser implements Serializable {
     /**
-     *
+     *用户编码
      */
     private Integer userCode;
 
     /**
-     *
+     *1：点赞，0取消点赞
      */
-    private PostPraise praise;
+    private int praise;
 
     public Integer getUserCode() {
         return userCode;
@@ -27,11 +27,11 @@ public class PraiseUser implements Serializable {
         this.userCode = userCode;
     }
 
-    public PostPraise getPraise() {
+    public int getPraise() {
         return praise;
     }
 
-    public void setPraise(PostPraise praise) {
+    public void setPraise(int praise) {
         this.praise = praise;
     }
 }

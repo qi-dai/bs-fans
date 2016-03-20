@@ -44,15 +44,15 @@ public interface IPostService {
     public boolean updateConcernUsers(String appCode,String id, ConcernUser concernUser);
 
     /**
-     * 根据帖子标志获取点赞用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取点赞用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      *
      */
-    public Long countPraiseUsers(String appCode);
+    public Long countPraiseUsers(String postId,String appCode);
 
     /**
-     * 根据帖子标志获取关注用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取关注用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      */
-    public Long countConcernUsers(String appCode);
+    public Long countConcernUsers(String postId,String appCode);
 
     /**
      * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
@@ -70,7 +70,7 @@ public interface IPostService {
     public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
 
     /**
-     * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      */
-    public Long countReplyPostInfos(String appCode);
+    public Long countReplyPostInfos(String postId,String appCode);
 }

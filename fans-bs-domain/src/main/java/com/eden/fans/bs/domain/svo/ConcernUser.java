@@ -11,14 +11,14 @@ import java.io.Serializable;
  */
 public class ConcernUser implements Serializable {
     /**
-     *
+     *用户编码
      */
     private Integer userCode;
 
     /**
-     *
+     *1：关注，0：取消关注
      */
-    private PostConcern concern;
+    private int concern;
 
     public Integer getUserCode() {
         return userCode;
@@ -28,11 +28,11 @@ public class ConcernUser implements Serializable {
         this.userCode = userCode;
     }
 
-    public PostConcern getConcern() {
+    public int getConcern() {
         return concern;
     }
 
-    public void setConcern(PostConcern concern) {
+    public void setConcern(int concern) {
         this.concern = concern;
     }
 }

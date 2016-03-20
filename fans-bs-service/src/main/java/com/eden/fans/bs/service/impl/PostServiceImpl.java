@@ -1,22 +1,25 @@
 package com.eden.fans.bs.service.impl;
 
-import com.eden.fans.bs.dao.ICardDao;
 import com.eden.fans.bs.dao.IPostDao;
+import com.eden.fans.bs.domain.enu.PostLevel;
+import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
-import com.eden.fans.bs.service.ICardService;
 import com.eden.fans.bs.service.IPostService;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.apache.commons.httpclient.util.DateParseException;
+import org.apache.commons.httpclient.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +42,7 @@ public class PostServiceImpl implements IPostService {
         DBObject object = postDao.obtainPostById(appCode,id,keys);
         if(null != object){
             postInfo = new PostInfo();
+            DBobject2PostInfo(object,postInfo);
         }
         return postInfo;
     }
@@ -94,7 +98,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     /**
-     * 根据帖子标志获取点赞用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取点赞用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      *
      * @param appCode
      */
@@ -104,7 +108,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     /**
-     * 根据帖子标志获取关注用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取关注用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      *
      * @param appCode
      */
@@ -150,18 +154,25 @@ public class PostServiceImpl implements IPostService {
     }
 
     /**
-     * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在是获取持久层的数据，并更新缓存）
+     * 根据帖子标志获取回帖用户总数（建议先读取缓存，缓存数据不存在时获取持久层的数据，并更新缓存）
      *
      * @param appCode
      */
     @Override
     public Long countReplyPostInfos(String appCode) {
+
+
         return null;
     }
 
+    /**
+     * 创建帖子时 帖子对象转换成mongo对象
+     * @param postInfo
+     * @param dbObject
+     */
     private void post2DBObject(PostInfo postInfo,DBObject dbObject){
         dbObject.put("title", postInfo.getTitle());
-        dbObject.put("type", postInfo.getType());
+        dbObject.put("type", postInfo.getType().getValue());// 此处有可能会根据帖子的类型进行聚合 所以此处保存value
         dbObject.put("content", postInfo.getContent());
         dbObject.put("userCode", postInfo.getUserCode());
         dbObject.put("imgs", null == postInfo.getImgs() ? "" : PARSER.toJson(postInfo.getImgs()));
@@ -170,9 +181,10 @@ public class PostServiceImpl implements IPostService {
         dbObject.put("others", null == postInfo.getOthers() ? "" : PARSER.toJson(postInfo.getOthers()));
         dbObject.put("createDate", postInfo.getCreateDate());
         dbObject.put("publishDate", postInfo.getPublishDate());
-        dbObject.put("status", postInfo.getStatus());
-        dbObject.put("level",postInfo.getLevel());
+        dbObject.put("status", postInfo.getStatus().getName());
+        dbObject.put("level",postInfo.getLevel().getName());
         dbObject.put("operatorList", null == postInfo.getOperatorList()?"[]":PARSER.toJson(postInfo.getOperatorList()));
+        // 以下属性是以帖子的维度去获取，帖子基本信息不包含如下属性，同事根据帖子的ID在获取帖子的信息的时候也不做返回的数据
         dbObject.put("concernUsers","[]");
         dbObject.put("praiseUsers","[]");
         dbObject.put("replyPostInfos","[]");
@@ -197,21 +209,36 @@ public class PostServiceImpl implements IPostService {
         keys.put("level",1);
     }
 
+    /**
+     * Mongo对象转换成帖子
+     * @param dbObject
+     * @param postInfo
+     */
     private void DBobject2PostInfo(DBObject dbObject,PostInfo postInfo){
-
+        // TODO 如果直接调用 toString 方法如何
         postInfo.setTitle((String)dbObject.get("title"));
         postInfo.setType(PostType.getPostType((String) dbObject.get("type")));
-        dbObject.get("content");
-        dbObject.get("userCode");
-        dbObject.get("imgs");
-        dbObject.get("videos");
-        dbObject.get("musics");
-        dbObject.get("others");
-        dbObject.get("createDate");
-        dbObject.get("publishDate");
-        dbObject.get("status");
-        dbObject.get("level");
+        postInfo.setContent((String) dbObject.get("content"));
+        postInfo.setUserCode((Integer) dbObject.get("userCode"));
+        postInfo.setImgs("[]".equals(dbObject.get("imgs"))?null:PARSER.fromJson((String)dbObject.get("imgs"),List.class));
+        postInfo.setVideos("[]".equals(dbObject.get("videos"))?null:PARSER.fromJson((String)dbObject.get("videos"),List.class));
+        postInfo.setMusics("[]".equals(dbObject.get("musics"))?null:PARSER.fromJson((String)dbObject.get("musics"),List.class));
+        postInfo.setOthers("[]".equals(dbObject.get("others"))?null:PARSER.fromJson((String)dbObject.get("others"),List.class));
 
-        dbObject.get("title");
+        try{
+            postInfo.setCreateDate(DateUtil.parseDate((String)dbObject.get("createDate")));
+        } catch (DateParseException dpe){
+            postInfo.setCreateDate(new Date());
+        }
+
+        try{
+            postInfo.setPublishDate(DateUtil.parseDate((String)dbObject.get("publishDate")));
+        } catch (DateParseException dpe){
+            postInfo.setPublishDate(new Date());
+        }
+
+        postInfo.setStatus(PostStatus.getPostStatus((String)dbObject.get("status")));
+        postInfo.setLevel(PostLevel.getPostLevel((String)dbObject.get("level")));
+
     }
 }

@@ -7,4 +7,5 @@ public class MongoConstant {
     public static class common{
         public static final String VALID_CODE = "valid_code";
     }
+    public static String POST_COLLECTION_PREFIX = "post_";
 }

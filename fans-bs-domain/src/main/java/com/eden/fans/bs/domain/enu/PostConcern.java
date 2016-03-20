@@ -6,7 +6,7 @@ package com.eden.fans.bs.domain.enu;
  */
 public enum PostConcern {
     COMMIT("关注",1),
-    CANCLE("取消关注",0);
+    CANCEL("取消关注",0);
     private String name;
     private int value;
     private PostConcern(String name, int value){
