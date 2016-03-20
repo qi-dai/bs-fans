@@ -10,7 +10,9 @@ public enum ResponseCode {
     SYSTEM_ERROR("999", "网络繁忙，请稍后再试","系统异常"), //
     // 参数校验
     PARAM_NULL("111", "网络繁忙，请稍后再试", "参数校验不通过"),
-    LOGIN_CHECK_FAILED("1001", "用户名不存在或密码错误", "用户信息校验不通过");
+    LOGIN_CHECK_FAILED("1001", "用户名不存在或密码错误", "用户信息校验不通过"),
+    ADD_USER_FAILED("1002", "用户注册失败", "存储数据库发生异常"),
+    USER_EXIST_FAILED("1003", "用户注册失败", "该用户已经注册！");
     //RPC调用异常
     public String code;
     public String msg;

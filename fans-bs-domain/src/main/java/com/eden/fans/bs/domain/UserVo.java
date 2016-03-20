@@ -12,19 +12,27 @@ public class UserVo implements Serializable {
     private String userName;//用户昵称
     private String phone;//手机号码
     private String password;//密码
-    private String userStatus;//用户状态
+    private int userStatus;//用户状态
     private String bgImgUrl;//背景图片
     private String headImgUrl;//头像图片
     private String gender;//性别
     private String constallation;//星座
     private String cityCode;//城市
-    private String activeLevel;//活跃等级
+    private Integer activeLevel;//活跃等级
     private String userRole;//用户角色
     private String signature;//个性签名
     private String platform;//使用平台
     private Timestamp createTime;//创建时间
     private Timestamp updateTime;//最后更新时间
 
+    public UserVo(){
+
+    }
+
+    public UserVo(String phone,String password){
+        this.phone = phone;
+        this.password = password;
+    }
     public int getId() {
         return id;
     }
@@ -65,11 +73,11 @@ public class UserVo implements Serializable {
         this.password = password;
     }
 
-    public String getUserStatus() {
+    public int getUserStatus() {
         return userStatus;
     }
 
-    public void setUserStatus(String userStatus) {
+    public void setUserStatus(int userStatus) {
         this.userStatus = userStatus;
     }
 
@@ -113,11 +121,11 @@ public class UserVo implements Serializable {
         this.cityCode = cityCode;
     }
 
-    public String getActiveLevel() {
+    public Integer getActiveLevel() {
         return activeLevel;
     }
 
-    public void setActiveLevel(String activeLevel) {
+    public void setActiveLevel(Integer activeLevel) {
         this.activeLevel = activeLevel;
     }
 

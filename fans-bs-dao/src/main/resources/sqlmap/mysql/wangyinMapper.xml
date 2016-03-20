@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="WangyinMapper">
+
+    <!-- 初始化网银记录-->
+    <insert id="initWangyinRecord"
+            parameterType="com.jd.o2o.app.domain.domain.TradeRecord">
+    INSERT INTO wangyin_trade_record(
+          trade_num,jd_pin,merchant_order_num,trade_time,trade_amount,trade_status
+    ) VALUES (
+         #{tradeNum,jdbcType=VARCHAR},#{jdPin,jdbcType=VARCHAR},#{merchantOrderNum,jdbcType=VARCHAR},#{tradeTime,jdbcType=VARCHAR}
+         ,#{tradeAmount,jdbcType=BIGINT},#{tradeStatus,jdbcType=BIGINT}
+    )
+   </insert>
+
+    <!-- 更新网银记录状态-->
+    <update id="updateWangyinRecordStatus"
+            parameterType="com.jd.o2o.app.domain.domain.TradeRecord">
+    update wangyin_trade_record set trade_type = #{tradeType,jdbcType=BIGINT} ,trade_status = #{tradeStatus,jdbcType=BIGINT},
+            modifytime = now(),ret_trade_amount  = #{retTradeAmount,jdbcType=BIGINT},ret_trade_date = #{retTradeDate,jdbcType=VARCHAR},
+            ret_trade_time = #{retTradeTime,jdbcType=VARCHAR}
+    where trade_num = #{tradeNum,jdbcType=VARCHAR}
+   </update>
+
+    <!-- 查询交易号对应的订单号-->
+    <select id="queryOrderNumByTradeNum" resultType="com.jd.o2o.app.domain.domain.TradeRecord">
+        SELECT merchant_order_num merchantOrderNum,jd_pin jdPin
+        FROM wangyin_trade_record
+        where trade_num = #{tradeNum,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 查询交易号对应的订单号-->
+    <select id="queryTradeNumsByOrderId" resultType="com.jd.o2o.app.domain.domain.TradeRecord">
+        select trade_num
+        from wangyin_trade_record
+        where trade_type = 'S'
+        and merchant_order_num = #{merchantOrderNum,jdbcType=VARCHAR} and jd_pin= #{jdPin,jdbcType=VARCHAR}
+        and trade_status = 0 and ret_trade_amount >0
+    </select>
+
+    <!-- 查询订单号对应的订单交易状态-->
+    <select id="queryTradeStatusByMerchantTradeNum" resultType="com.jd.o2o.app.domain.domain.TradeRecord">
+        SELECT trade_status tradeStatus
+        FROM wangyin_trade_record
+        where merchant_order_num = #{merchantOrderNum,jdbcType=VARCHAR}
+        and trade_status = 0
+    </select>
+
+    <!-- 按日期删除订单交易 借用retTradeTime字段作为截止日期-->
+    <select id="deleteTradeRecordByTradeTime" parameterType="com.jd.o2o.app.domain.domain.TradeRecord">
+        DELETE
+        FROM wangyin_trade_record
+        WHERE trade_time BETWEEN #{tradeTime,jdbcType=VARCHAR} and #{retTradeTime,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

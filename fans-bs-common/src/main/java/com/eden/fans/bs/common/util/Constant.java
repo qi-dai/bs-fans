@@ -7,5 +7,6 @@ public class Constant {
     public static final String MD5_KEY = "k9opz";
     public static class REDIS{
         public static final int VALID_CODE_TIMES=300;
+        public static final String TOKEN = "_TOKEN";
     }
 }

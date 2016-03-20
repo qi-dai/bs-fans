@@ -52,18 +52,28 @@ public class CommonServiceImpl implements ICommonService{
         ServiceResponse<String> serviceResponse = null;
         try{
             //拿到密码再次加密MD5
-            UserVo userVo = userDao.qryUserVoByPhonePWD(phone,MD5Util.md5(pwd, Constant.MD5_KEY));
+            UserVo userVo = userDao.qryUserVoByPhonePWD(new UserVo(phone,MD5Util.md5(pwd, Constant.MD5_KEY)));
             if (userVo!=null&&userVo.getId()>0){
                 String token = UUID.randomUUID().toString();
                 token = token.replace("-","");
-                //将用户信息，放入缓存
-                redisCache.set(token,userVo);
-                logger.error("生成唯一token:{},phone:{}",token,phone);
+                //1.以手机号为主键，将用户信息，放入缓存
+                redisCache.set(phone,userVo);
+                //2.以手机号_token做主键，存放登录信息集合
+                StringBuffer tokensb = new StringBuffer();
+                String tokenSrc = redisCache.get(phone+Constant.REDIS.TOKEN);//获取已登录tokens集合
+                if (tokenSrc!=null){
+                    tokensb.append(tokenSrc);
+                    tokensb.append("_");
+                }
+                tokensb.append(token);
+                redisCache.set(phone+Constant.REDIS.TOKEN,tokensb.toString());//多个设备上登录，存放token集合，以_作为分隔符
+                logger.error("生成唯一token:{},phone:{}", token, phone);
                 serviceResponse = new ServiceResponse(token);
+                serviceResponse.setDetail("登录成功!");
             }else{
+                logger.error("没有查询到用户信息{}",phone);
                 serviceResponse = new ServiceResponse(ResponseCode.LOGIN_CHECK_FAILED);
             }
-            logger.error("没有查询到用户信息{}",phone);
         }catch (Exception e){
             logger.error("处理出错",e);
         }finally {

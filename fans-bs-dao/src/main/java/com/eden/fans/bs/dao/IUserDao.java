@@ -8,8 +8,21 @@ import com.eden.fans.bs.domain.UserVo;
 public interface IUserDao {
     /**
      * 查询用户信息
-     * @param phone 用户注册名/手机号
-     * @param pwd  用户登录凭证  前端加密
+     * @param userVo 用户注册名/手机号 用户登录凭证  前端加密
      * */
-    public UserVo qryUserVoByPhonePWD(String phone,String pwd);
+    public UserVo qryUserVoByPhonePWD(UserVo userVo);
+
+    /**
+     * 快速注册用户，新增用户信息记录
+     * @param userVo 用户信息实体
+     * @Return boolean 插入成功标记
+     * */
+    public boolean addUserRecord(UserVo userVo);
+
+    /**
+     * 详细注册用户，新增用户信息记录
+     * @param userVo 用户信息实体
+     * @Return boolean 插入成功标记
+     * */
+    public boolean addUserRecordDetail(UserVo userVo);
 }
