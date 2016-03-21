@@ -1,4 +1,4 @@
-package com.eden.fans.bs.domain;
+package com.eden.fans.bs.domain.user;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * Created by Administrator on 2016/3/15.
  */
 public class UserVo implements Serializable {
-    private int id;
+    private Long id;
     private Integer userCode;//用户编码
     private String userName;//用户昵称
     private String phone;//手机号码
@@ -33,11 +33,11 @@ public class UserVo implements Serializable {
         this.phone = phone;
         this.password = password;
     }
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

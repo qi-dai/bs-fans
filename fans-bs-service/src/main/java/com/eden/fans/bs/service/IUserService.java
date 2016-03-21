@@ -1,6 +1,6 @@
 package com.eden.fans.bs.service;
 
-import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 
 /**

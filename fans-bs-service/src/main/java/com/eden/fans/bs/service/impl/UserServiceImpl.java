@@ -3,7 +3,7 @@ package com.eden.fans.bs.service.impl;
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.dao.IUserDao;
-import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ResponseCode;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.IUserService;

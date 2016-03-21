@@ -1,6 +1,6 @@
 package com.eden.fans.bs.dao;
 
-import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.user.UserVo;
 
 /**
  * Created by Administrator on 2016/3/15.

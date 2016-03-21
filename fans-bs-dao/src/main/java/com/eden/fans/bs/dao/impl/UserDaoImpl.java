@@ -2,7 +2,7 @@ package com.eden.fans.bs.dao.impl;
 
 import com.eden.fans.bs.dao.BaseDao;
 import com.eden.fans.bs.dao.IUserDao;
-import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.user.UserVo;
 import org.springframework.stereotype.Repository;
 
 /**

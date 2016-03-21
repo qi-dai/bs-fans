@@ -1,6 +1,6 @@
 package com.eden.fans.bs.web.controller;
 
-import com.eden.fans.bs.domain.UserVo;
+import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.IUserService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
