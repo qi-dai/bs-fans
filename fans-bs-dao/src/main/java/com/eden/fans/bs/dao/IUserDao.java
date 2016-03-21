@@ -10,7 +10,7 @@ public interface IUserDao {
      * 查询用户信息
      * @param userVo 用户注册名/手机号 用户登录凭证  前端加密
      * */
-    public UserVo qryUserVoByPhonePWD(UserVo userVo);
+    public UserVo qryUserVo(UserVo userVo);
 
     /**
      * 快速注册用户，新增用户信息记录

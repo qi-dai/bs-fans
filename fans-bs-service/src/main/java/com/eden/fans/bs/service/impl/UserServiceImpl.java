@@ -30,7 +30,7 @@ public class UserServiceImpl implements IUserService {
 
             UserVo userVo = new UserVo();//加密用户密码
             userVo.setPhone(phone);
-            UserVo userVo1 = userDao.qryUserVoByPhonePWD(userVo);
+            UserVo userVo1 = userDao.qryUserVo(userVo);
             if (userVo1!=null){
                 serviceResponse = new ServiceResponse<Boolean>(ResponseCode.USER_EXIST_FAILED);
                 return serviceResponse;
@@ -56,6 +56,52 @@ public class UserServiceImpl implements IUserService {
      * */
     @Override
     public ServiceResponse<Boolean> addUserInfoDetail(UserVo userVo){
-        return null;
+        ServiceResponse<Boolean> serviceResponse = null;
+        try{
+            //1.查询用户是否已存在
+            UserVo userVo1 = userDao.qryUserVo(userVo);
+            if (userVo1!=null){
+                serviceResponse = new ServiceResponse<Boolean>(ResponseCode.USER_EXIST_FAILED);
+                return serviceResponse;
+            }
+            userVo.setPassword(MD5Util.md5(userVo.getPassword(), Constant.MD5_KEY));
+            userVo.setActiveLevel(0);//等级默认是0
+            userVo.setUserStatus(1);//状态默认 1 正常
+            userVo.setUserRole("01");//角色，默认是01 普通用户
+            boolean flag = userDao.addUserRecordDetail(userVo);
+            serviceResponse = new ServiceResponse<Boolean>(flag);
+            serviceResponse.setDetail("注册成功！");
+        }catch (Exception e){
+            logger.error("{}用户注册失败，操作数据库异常:{}",userVo.getPhone(),e);
+            serviceResponse = new ServiceResponse<Boolean>(ResponseCode.ADD_USER_FAILED);
+        }
+        return serviceResponse;
+    }
+
+
+    @Override
+    public ServiceResponse<UserVo> qryUserInfo(String userCode) {
+        ServiceResponse<UserVo> qryUserResponse = null;
+        try{
+            UserVo userVoQry = new UserVo();
+            userVoQry.setUserCode(Integer.valueOf(userCode));
+            UserVo userVoResult = userDao.qryUserVo(userVoQry);
+            if(userVoResult!=null){
+                //查询其他详细,1.查询关注用户，2.查询被关注用户
+            }else{
+
+            }
+            qryUserResponse = new ServiceResponse<UserVo>();
+            qryUserResponse.setResult(userVoResult);
+            qryUserResponse.setDetail("查询用户详细信息成功");
+        }catch (NumberFormatException e){
+            logger.error("userCode:{}转换Integer出错！{}",userCode,e);
+            qryUserResponse = new ServiceResponse<UserVo>(ResponseCode.USER_CODE_ERROR);
+        }catch (Exception e){
+            logger.error("查询{}用户信息出错！{}",userCode,e);
+            qryUserResponse = new ServiceResponse<UserVo>(ResponseCode.QRY_USER_INFO_ERROR);
+        }
+
+        return qryUserResponse;
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     @Override
-    public UserVo qryUserVoByPhonePWD(UserVo userVo) {
+    public UserVo qryUserVo(UserVo userVo) {
         return super.queryForObject("UserMapper.selectOneUserVo",userVo);
     }
 

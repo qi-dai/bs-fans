@@ -15,4 +15,9 @@ public interface IUserService {
      * 用户填写详细资料注册service
      * */
     public ServiceResponse<Boolean> addUserInfoDetail(UserVo userVo);
+
+    /**
+     * 根据用户编号查询详细资料
+     * */
+    public ServiceResponse<UserVo> qryUserInfo(String userCode);
 }

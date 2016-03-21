@@ -36,6 +36,9 @@
         <if test="password != null">
             and password = #{password,jdbcType=BIGINT}
         </if>
+        <if test="userCode != null">
+            and user_code = #{userCode,jdbcType=BIGINT}
+        </if>
     </select>
     <!-- 注册用户，插入新用户数据-->
     <insert id="addUserInfo"

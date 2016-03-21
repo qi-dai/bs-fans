@@ -35,4 +35,10 @@ public class UserController {
     public String registerUserDetail(UserVo userVo) throws Exception {
         return gson.toJson(userService.addUserInfoDetail(userVo));
     }
+
+    @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String qryUserInfo(UserVo userVo) throws Exception {
+        return gson.toJson(userService.addUserInfoDetail(userVo));
+    }
 }
