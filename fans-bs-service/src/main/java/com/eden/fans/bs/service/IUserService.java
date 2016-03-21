@@ -19,5 +19,5 @@ public interface IUserService {
     /**
      * 根据用户编号查询详细资料
      * */
-    public ServiceResponse<UserVo> qryUserInfo(String userCode);
+    public ServiceResponse<UserVo> qryUserInfo(Integer userCode);
 }

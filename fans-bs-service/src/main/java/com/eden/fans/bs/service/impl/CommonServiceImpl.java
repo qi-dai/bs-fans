@@ -51,7 +51,7 @@ public class CommonServiceImpl implements ICommonService{
         ServiceResponse<String> serviceResponse = null;
         try{
             //拿到密码再次加密MD5
-            UserVo userVo = userDao.qryUserVoByPhonePWD(new UserVo(phone,MD5Util.md5(pwd, Constant.MD5_KEY)));
+            UserVo userVo = userDao.qryUserVo(new UserVo(phone,MD5Util.md5(pwd, Constant.MD5_KEY)));
             if (userVo!=null&&userVo.getId()>0){
                 String token = UUID.randomUUID().toString();
                 token = token.replace("-","");

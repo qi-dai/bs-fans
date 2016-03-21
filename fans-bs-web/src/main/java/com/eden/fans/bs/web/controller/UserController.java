@@ -39,6 +39,6 @@ public class UserController {
     @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String qryUserInfo(UserVo userVo) throws Exception {
-        return gson.toJson(userService.addUserInfoDetail(userVo));
+        return gson.toJson(userService.qryUserInfo(userVo.getUserCode()));
     }
 }

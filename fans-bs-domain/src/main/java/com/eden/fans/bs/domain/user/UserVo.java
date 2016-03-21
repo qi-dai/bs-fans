@@ -1,7 +1,10 @@
 package com.eden.fans.bs.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by Administrator on 2016/3/15.
@@ -16,14 +19,14 @@ public class UserVo implements Serializable {
     private String bgImgUrl;//背景图片
     private String headImgUrl;//头像图片
     private String gender;//性别
-    private String constallation;//星座
+    private String constellation;//星座
     private String cityCode;//城市
     private Integer activeLevel;//活跃等级
     private String userRole;//用户角色
     private String signature;//个性签名
     private String platform;//使用平台
-    private Timestamp createTime;//创建时间
-    private Timestamp updateTime;//最后更新时间
+    private Date createTime;//创建时间
+    private Date updateTime;//最后更新时间
 
     public UserVo(){
 
@@ -105,12 +108,12 @@ public class UserVo implements Serializable {
         this.gender = gender;
     }
 
-    public String getConstallation() {
-        return constallation;
+    public String getConstellation() {
+        return constellation;
     }
 
-    public void setConstallation(String constallation) {
-        this.constallation = constallation;
+    public void setConstellation(String constallation) {
+        this.constellation = constallation;
     }
 
     public String getCityCode() {
@@ -152,20 +155,21 @@ public class UserVo implements Serializable {
     public void setPlatform(String platform) {
         this.platform = platform;
     }
-
-    public Timestamp getCreateTime() {
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
-    public Timestamp getUpdateTime() {
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    public Date getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Timestamp updateTime) {
+    public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
 }

@@ -80,7 +80,7 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ServiceResponse<UserVo> qryUserInfo(String userCode) {
+    public ServiceResponse<UserVo> qryUserInfo(Integer userCode) {
         ServiceResponse<UserVo> qryUserResponse = null;
         try{
             UserVo userVoQry = new UserVo();

@@ -12,7 +12,7 @@
         <result column="bg_img_url" property="bgImgUrl" jdbcType="VARCHAR"/>
         <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
         <result column="gender" property="gender" jdbcType="VARCHAR"/>
-        <result column="constellation" property="constallation" jdbcType="VARCHAR"/>
+        <result column="constellation" property="constellation" jdbcType="VARCHAR"/>
         <result column="city_code" property="cityCode" jdbcType="VARCHAR"/>
         <result column="active_level" property="activeLevel" jdbcType="VARCHAR"/>
         <result column="user_role" property="userRole" jdbcType="VARCHAR"/>
