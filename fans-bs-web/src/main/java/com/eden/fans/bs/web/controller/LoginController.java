@@ -1,5 +1,6 @@
 package com.eden.fans.bs.web.controller;
 
+import com.eden.fans.bs.domain.request.LoginRequest;
 import com.eden.fans.bs.service.ICommonService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -27,17 +28,7 @@ public class LoginController {
 
     @RequestMapping(value = "/checkUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String checkUser(String phone, String password,String deviceId) throws Exception {
-        return gson.toJson(commonService.checkUserInfo(phone, password,deviceId));
-    }
-
-    @RequestMapping(value = "/getJson", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String getJson(String phone, String password) throws Exception {
-        Map<String,String> map = new HashMap<String, String>();
-        map.put("kye1","vlue2");
-        map.put("kye2","刘先生");
-        //return ;
-        return gson.toJson(map);
+    public String checkUser(LoginRequest loginRequest) throws Exception {
+        return gson.toJson(commonService.checkUserInfo(loginRequest));
     }
 }

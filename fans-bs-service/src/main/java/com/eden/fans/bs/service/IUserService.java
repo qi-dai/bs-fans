@@ -20,4 +20,9 @@ public interface IUserService {
      * 根据用户编号查询详细资料
      * */
     public ServiceResponse<UserVo> qryUserInfo(Integer userCode);
+
+    /**
+     * 根据用户编号更新详细资料
+     * */
+    public ServiceResponse<Boolean> updateUserInfo(UserVo userVo);
 }

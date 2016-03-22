@@ -1,5 +1,7 @@
 package com.eden.fans.bs.service;
 
+import com.eden.fans.bs.domain.request.LoginRequest;
+import com.eden.fans.bs.domain.response.LoginResponse;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 
 /**
@@ -17,11 +19,10 @@ public interface ICommonService {
      * @param timestamp 时间戳 key
      * @param validCode 四位数随机验证码 value
      * */
-    public ServiceResponse<Boolean> checkValidCode(String timestamp,String validCode);
+    public boolean checkValidCode(String timestamp,String validCode);
     /**
      * 验证用户登录信息是否正确
-     * @param phone 手机号
-     * @param pwd 密文
+     * @param loginRequest 登录验证需要参数
      * */
-    public ServiceResponse<String> checkUserInfo(String phone,String pwd,String deviceId);
+    public ServiceResponse<LoginResponse> checkUserInfo(LoginRequest loginRequest);
 }

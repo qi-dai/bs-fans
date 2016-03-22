@@ -172,4 +172,10 @@ public class UserVo implements Serializable {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+    @Override
+    public String toString() {
+        return "UserVo [userCode=" + userCode + ", phone="
+                + phone + "]";
+    }
 }

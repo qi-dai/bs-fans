@@ -25,4 +25,11 @@ public interface IUserDao {
      * @Return boolean 插入成功标记
      * */
     public boolean addUserRecordDetail(UserVo userVo);
+
+    /**
+     * 更新用户信息
+     * @param userVo 用户信息实体
+     * @Return boolean 更新成功标记
+     * */
+    public boolean updateUserRecord(UserVo userVo);
 }

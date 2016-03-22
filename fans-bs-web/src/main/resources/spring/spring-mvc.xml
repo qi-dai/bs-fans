@@ -65,7 +65,7 @@
             <mvc:mapping path="/" />
             <mvc:mapping path="/common/**" />
             <mvc:mapping path="/login/**" />
-            <bean id="demoInterceptor" class="com.eden.fans.bs.web.interceptor.DemoInterceptor"></bean>
+            <bean id="demoInterceptor" class="com.eden.fans.bs.web.interceptor.SecurityInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
 </beans>

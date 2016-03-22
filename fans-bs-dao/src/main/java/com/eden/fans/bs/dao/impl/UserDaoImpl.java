@@ -24,4 +24,9 @@ public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     public boolean addUserRecordDetail(UserVo userVo) {
         return super.insert("UserMapper.addUserInfoDetail",userVo);
     }
+
+    @Override
+    public boolean updateUserRecord(UserVo userVo) {
+        return super.update("UserMapper.updateUserInfo",userVo);
+    }
 }

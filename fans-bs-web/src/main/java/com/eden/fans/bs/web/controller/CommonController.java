@@ -147,11 +147,6 @@ public class CommonController {
 		return new Color(r, g, b);
 	}
 
-	@RequestMapping(value = "/checkValidCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String validateCode(String veryCode, String timestamp) throws Exception {
-		return gson.toJson(commonService.checkValidCode(timestamp, veryCode));
-	}
 	/**获取指定目录图片*/
 	@RequestMapping(value = "/getImage2", method = RequestMethod.GET)
 	public void getImage(HttpServletRequest req, HttpServletResponse resp)

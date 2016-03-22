@@ -104,4 +104,23 @@ public class UserServiceImpl implements IUserService {
 
         return qryUserResponse;
     }
+
+    @Override
+    public ServiceResponse<Boolean> updateUserInfo(UserVo userVo) {
+        ServiceResponse<Boolean> updateUserResponse = null;
+        try{
+            boolean updateFlag = userDao.updateUserRecord(userVo);
+            if(!updateFlag){
+                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.USER_NOTEXIST_ERROR);
+                return updateUserResponse;
+            }
+            updateUserResponse = new ServiceResponse<Boolean>();
+            updateUserResponse.setResult(true);
+            updateUserResponse.setDetail("更新用户详细信息成功");
+        }catch (Exception e){
+            logger.error("更新{}用户信息出错！{}",userVo.getUserCode(),e);
+            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.UPDATE_USER_INFO_FAILED);
+        }
+        return updateUserResponse;
+    }
 }

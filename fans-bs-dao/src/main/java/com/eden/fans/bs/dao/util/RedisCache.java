@@ -19,10 +19,10 @@ public class RedisCache {
     private static Gson gson = new Gson();
 
     /**
-     * 设置key:value,在固定时间后失效
+     * 设置key:value,永久存在
      * */
     public void set(String key, String value) {
-        redisTemplate.opsForValue().set(key, value);//设置缓存时间300秒自动失效
+        redisTemplate.opsForValue().set(key, value);
     }
     /**
      * 设置key:value,自定义失效时间后失效
