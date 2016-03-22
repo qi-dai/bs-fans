@@ -22,6 +22,16 @@ public enum PostConcern {
         return null;
     }
 
+    public static PostConcern getPostConcern(int value) {
+        PostConcern tmpConcern = PostConcern.COMMIT;
+        for (PostConcern postConcern : PostConcern.values()) {
+            if (postConcern.getValue() == value) {
+                return tmpConcern;
+            }
+        }
+        return tmpConcern;
+    }
+
     public static int getValue(String name) {
         for (PostConcern postConcern : PostConcern.values()){
             if (postConcern.getName() == name) {

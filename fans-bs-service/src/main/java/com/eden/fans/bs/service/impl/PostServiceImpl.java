@@ -1,5 +1,6 @@
 package com.eden.fans.bs.service.impl;
 
+import com.eden.fans.bs.common.util.GsonEnumUtil;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.domain.enu.PostLevel;
 import com.eden.fans.bs.domain.enu.PostStatus;
@@ -12,6 +13,7 @@ import com.eden.fans.bs.service.IPostService;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import org.apache.commons.httpclient.util.DateParseException;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.slf4j.Logger;
@@ -55,9 +57,8 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean createPost(String appCode, PostInfo postInfo) {
-        // 创建Mongo存储对象并进行属性赋值
-        DBObject dbObject = new BasicDBObject();
-        post2DBObject(postInfo,dbObject);
+        String postString = GsonEnumUtil.enumParseGson().toJson(postInfo);
+        DBObject dbObject = (DBObject)JSON.parse(postString);
         return postDao.createPost(appCode,dbObject);
     }
 
@@ -163,31 +164,6 @@ public class PostServiceImpl implements IPostService {
 
 
         return null;
-    }
-
-    /**
-     * 创建帖子时 帖子对象转换成mongo对象
-     * @param postInfo
-     * @param dbObject
-     */
-    private void post2DBObject(PostInfo postInfo,DBObject dbObject){
-        dbObject.put("title", postInfo.getTitle());
-        dbObject.put("type", postInfo.getType().getValue());// 此处有可能会根据帖子的类型进行聚合 所以此处保存value
-        dbObject.put("content", postInfo.getContent());
-        dbObject.put("userCode", postInfo.getUserCode());
-        dbObject.put("imgs", null == postInfo.getImgs() ? "" : PARSER.toJson(postInfo.getImgs()));
-        dbObject.put("videos", null == postInfo.getVideos() ? "" : PARSER.toJson(postInfo.getVideos()));
-        dbObject.put("musics", null == postInfo.getMusics() ? "" : PARSER.toJson(postInfo.getMusics()));
-        dbObject.put("others", null == postInfo.getOthers() ? "" : PARSER.toJson(postInfo.getOthers()));
-        dbObject.put("createDate", postInfo.getCreateDate());
-        dbObject.put("publishDate", postInfo.getPublishDate());
-        dbObject.put("status", postInfo.getStatus().getName());
-        dbObject.put("level",postInfo.getLevel().getName());
-        dbObject.put("operatorList", null == postInfo.getOperatorList()?"[]":PARSER.toJson(postInfo.getOperatorList()));
-        // 以下属性是以帖子的维度去获取，帖子基本信息不包含如下属性，同事根据帖子的ID在获取帖子的信息的时候也不做返回的数据
-        dbObject.put("concernUsers","[]");
-        dbObject.put("praiseUsers","[]");
-        dbObject.put("replyPostInfos","[]");
     }
 
     /**

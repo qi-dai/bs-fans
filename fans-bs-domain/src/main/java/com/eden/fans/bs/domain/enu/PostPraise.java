@@ -22,6 +22,16 @@ public enum PostPraise {
         return null;
     }
 
+    public static PostPraise getPostPraise(int value) {
+        PostPraise tmpPraise = PostPraise.COMMIT;
+        for (PostPraise postPraise : PostPraise.values()) {
+            if (postPraise.getValue() == value) {
+                return tmpPraise;
+            }
+        }
+        return tmpPraise;
+    }
+
     public static int getValue(String name) {
         for (PostPraise postPraise : PostPraise.values()){
             if (postPraise.getName() == name) {

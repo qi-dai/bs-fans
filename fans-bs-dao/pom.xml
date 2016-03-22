@@ -13,7 +13,7 @@
 	<dependencies>
 			<dependency>
 				<groupId>com.eden.fans.bs</groupId>
-				<artifactId>fans-bs-domain</artifactId>
+				<artifactId>fans-bs-common</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
 			</dependency>
 			<!-- MYBATIS begin -->
