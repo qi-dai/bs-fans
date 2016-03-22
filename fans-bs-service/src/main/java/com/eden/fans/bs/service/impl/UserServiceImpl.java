@@ -4,6 +4,7 @@ import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ResponseCode;
@@ -83,26 +84,31 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ServiceResponse<UserVo> qryUserInfo(Long userCode) {
-        ServiceResponse<UserVo> qryUserResponse = null;
+    public ServiceResponse<UserDetailResponse> qryUserInfo(Long userCode) {
+        ServiceResponse<UserDetailResponse> qryUserResponse = null;
         try{
             UserVo userVoQry = new UserVo();
             userVoQry.setUserCode(Long.valueOf(userCode));
             UserVo userVoResult = userDao.qryUserVo(userVoQry);
+            UserDetailResponse detailResponse = new UserDetailResponse();
+            detailResponse.setUserVo(userVoResult);
             if(userVoResult!=null){
                 //查询其他详细,1.查询关注用户，2.查询被关注用户
+                detailResponse.setAttentionNum(0);//Todo
+                detailResponse.setFansNum(0);//Todo
             }else{
-
+                qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.QRY_USER_INFO_ERROR);
+                return qryUserResponse;
             }
-            qryUserResponse = new ServiceResponse<UserVo>();
-            qryUserResponse.setResult(userVoResult);
+            qryUserResponse = new ServiceResponse<UserDetailResponse>();
+            qryUserResponse.setResult(detailResponse);
             qryUserResponse.setDetail("查询用户详细信息成功");
         }catch (NumberFormatException e){
             logger.error("userCode:{}转换Integer出错！{}",userCode,e);
-            qryUserResponse = new ServiceResponse<UserVo>(ResponseCode.USER_CODE_ERROR);
+            qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.USER_CODE_ERROR);
         }catch (Exception e){
             logger.error("查询{}用户信息出错！{}",userCode,e);
-            qryUserResponse = new ServiceResponse<UserVo>(ResponseCode.QRY_USER_INFO_ERROR);
+            qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.QRY_USER_INFO_FAILED);
         }
 
         return qryUserResponse;
@@ -133,7 +139,7 @@ public class UserServiceImpl implements IUserService {
         try{
             UserVo adminUser = new UserVo();
             adminUser.setUserCode(Long.valueOf(targetUserCode));
-            adminUser.setUserRole(String.valueOf(0));
+            adminUser.setUserRole("02");//管理员编码02
             boolean updateFlag = userDao.updateUserRecord(adminUser);
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_ERROR);
@@ -145,7 +151,7 @@ public class UserServiceImpl implements IUserService {
                     userOperVo.setOperCode(Long.valueOf(adminUserCode));
                     userOperVo.setUserCode(Long.valueOf(targetUserCode));
                     userOperVo.setOperDesc("设置管理员");
-                    userOperVo.setOperType("05");
+                    userOperVo.setOperType("05");//设置管理员
                     boolean flag = operUserDao.addOperUserRecord(userOperVo);
                     if(!flag){
                         logger.error("管理员：{},设置{}成管理员失败",adminUserCode,targetUserCode);

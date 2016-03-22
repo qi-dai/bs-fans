@@ -1,5 +1,6 @@
 package com.eden.fans.bs.service;
 
+import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 
@@ -19,7 +20,7 @@ public interface IUserService {
     /**
      * 根据用户编号查询详细资料
      * */
-    public ServiceResponse<UserVo> qryUserInfo(Long userCode);
+    public ServiceResponse<UserDetailResponse> qryUserInfo(Long userCode);
 
     /**
      * 根据用户编号更新详细资料
