@@ -18,6 +18,8 @@ public enum ResponseCode {
     USER_CODE_ERROR("1004", "用户账号不存在或已注销", "用户编码格式不正确，不是纯数字！"),
     USER_NOTEXIST_ERROR("10011", "修改用户资料出错", "用户不存在或已注销！"),
     UPDATE_USER_INFO_FAILED("10012", "修改用户资料出错", "操作数据库发生异常！"),
+    SET_ADMIN_ERROR("10013", "设置管理员出错!", "用户不存在或已注销！"),
+    SET_ADMIN_FAILED("10014", "设置管理员出错!", "操作数据发生异常！"),
     QRY_USER_INFO_ERROR("1010", "查询用户信息出错", "数据库查询发生异常！");
     //RPC调用异常
     public String code;

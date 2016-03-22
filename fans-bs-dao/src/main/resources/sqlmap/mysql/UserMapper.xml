@@ -90,4 +90,9 @@
         update_time = now()
         where user_code = #{userCode,jdbcType=BIGINT}
     </update>
+    <!-- 设置管理员 -->
+    <update id="setAdmin" parameterType="com.eden.fans.bs.domain.user.UserVo">
+        update user_info set user_role = #{userRole,jdbcType=VARCHAR},update_time = now()
+        where user_code = #{userCode,jdbcType=BIGINT}
+    </update>
 </mapper>

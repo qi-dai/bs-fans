@@ -2,7 +2,9 @@ package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
+import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ResponseCode;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -20,14 +22,15 @@ public class UserServiceImpl implements IUserService {
     private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    private IUserDao userDao;
+    private IUserDao userDao;//用户信息
+    @Autowired
+    private IOperUserDao operUserDao;//操作用户记录
 
     @Override
     public ServiceResponse<Boolean> addUserInfo(String phone,String password,String platform) {
         ServiceResponse<Boolean> serviceResponse = null;
         try{
             //1.查询用户是否已存在
-
             UserVo userVo = new UserVo();//加密用户密码
             userVo.setPhone(phone);
             UserVo userVo1 = userDao.qryUserVo(userVo);
@@ -80,11 +83,11 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ServiceResponse<UserVo> qryUserInfo(Integer userCode) {
+    public ServiceResponse<UserVo> qryUserInfo(Long userCode) {
         ServiceResponse<UserVo> qryUserResponse = null;
         try{
             UserVo userVoQry = new UserVo();
-            userVoQry.setUserCode(Integer.valueOf(userCode));
+            userVoQry.setUserCode(Long.valueOf(userCode));
             UserVo userVoResult = userDao.qryUserVo(userVoQry);
             if(userVoResult!=null){
                 //查询其他详细,1.查询关注用户，2.查询被关注用户
@@ -120,6 +123,43 @@ public class UserServiceImpl implements IUserService {
         }catch (Exception e){
             logger.error("更新{}用户信息出错！{}",userVo.getUserCode(),e);
             updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.UPDATE_USER_INFO_FAILED);
+        }
+        return updateUserResponse;
+    }
+
+    @Override
+    public ServiceResponse<Boolean> setAdminRole(String adminUserCode, String targetUserCode) {
+        ServiceResponse<Boolean> updateUserResponse = null;
+        try{
+            UserVo adminUser = new UserVo();
+            adminUser.setUserCode(Long.valueOf(targetUserCode));
+            adminUser.setUserRole(String.valueOf(0));
+            boolean updateFlag = userDao.updateUserRecord(adminUser);
+            if(!updateFlag){
+                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_ERROR);
+                return updateUserResponse;
+            }else{
+                //增加操作记录，可降级，增加不成功也算设置成功。
+                try{
+                    UserOperVo userOperVo = new UserOperVo();
+                    userOperVo.setOperCode(Long.valueOf(adminUserCode));
+                    userOperVo.setUserCode(Long.valueOf(targetUserCode));
+                    userOperVo.setOperDesc("设置管理员");
+                    userOperVo.setOperType("05");
+                    boolean flag = operUserDao.addOperUserRecord(userOperVo);
+                    if(!flag){
+                        logger.error("管理员：{},设置{}成管理员失败",adminUserCode,targetUserCode);
+                    }
+                }catch(Exception e){
+                    logger.error("管理员：{},设置{}成管理员失败,操作数据库异常，",adminUserCode,targetUserCode,e);
+                }
+            }
+            updateUserResponse = new ServiceResponse<Boolean>();
+            updateUserResponse.setResult(true);
+            updateUserResponse.setDetail("设置管理员成功");
+        }catch (Exception e){
+            logger.error("设置管理员出错{}！{}",targetUserCode,e);
+            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_FAILED);
         }
         return updateUserResponse;
     }

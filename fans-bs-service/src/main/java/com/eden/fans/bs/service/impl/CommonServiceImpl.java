@@ -65,7 +65,7 @@ public class CommonServiceImpl implements ICommonService{
                 if(!validFlag){
                     /**验证码错误直接返回*/
                     serviceResponse = new ServiceResponse<LoginResponse>(ResponseCode.VALIDCODE_CHECK_FAILED);
-                    return serviceResponse;
+                     return serviceResponse;
                 }
             }
 
@@ -76,6 +76,10 @@ public class CommonServiceImpl implements ICommonService{
                 UserVo loginUserQry = new UserVo();
                 loginUserQry.setPhone(loginRequest.getPhone());
                 userVo = userDao.qryUserVo(loginUserQry);
+                if (userVo!=null){
+                    //手机号为主键，将用户信息放入缓存
+                    redisCache.set(loginRequest.getPhone(),userVo);
+                }
             }
 
             /**2.用户名不存在*/
@@ -99,8 +103,7 @@ public class CommonServiceImpl implements ICommonService{
             /**4.验证通过，a存放用户信息到redis；b存放登录信息到redis*/
             String token = UUID.randomUUID().toString();
             token = token.replace("-","");
-            //手机号为主键，将用户信息放入缓存
-            redisCache.set(loginRequest.getPhone(),userVo);
+
             //以TOKEN_手机号做主键，存放登录信息集合,多个设备登录有多个token
             StringBuffer tokensb = new StringBuffer();
             String tokenSrc = redisCache.get(Constant.REDIS.TOKEN+loginRequest.getPhone());//获取已登录tokens集合

@@ -19,10 +19,16 @@ public interface IUserService {
     /**
      * 根据用户编号查询详细资料
      * */
-    public ServiceResponse<UserVo> qryUserInfo(Integer userCode);
+    public ServiceResponse<UserVo> qryUserInfo(Long userCode);
 
     /**
      * 根据用户编号更新详细资料
      * */
     public ServiceResponse<Boolean> updateUserInfo(UserVo userVo);
+
+    /**
+     * 设置管理员
+     * 记录管理员操作记录
+     * */
+    public ServiceResponse<Boolean> setAdminRole(String adminUserCode,String targetUserCode);
 }

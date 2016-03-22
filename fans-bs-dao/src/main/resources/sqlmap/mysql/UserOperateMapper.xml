@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserOperateMapper">
+    <resultMap id="userVoMap" type="com.eden.fans.bs.domain.user.UserOperVo">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="oper_code" property="operCode" jdbcType="BIGINT"/>
+        <result column="user_code" property="userCode" jdbcType="BIGINT"/>
+        <result column="oper_type" property="operType" jdbcType="VARCHAR"/>
+        <result column="oper_time" property="operTime" jdbcType="TIMESTAMP"/>
+        <result column="oper_desc" property="operDesc" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="allColumn">
+        select id,oper_code,user_code,oper_type,oper_time,oper_desc
+        from user_operate_record
+    </sql>
+    <!-- 根据操作人编码、操作类型、日期范围分页查询管理员操作记录信息 -->
+    <select id="selectUserOperRecords" resultMap="userVoMap" parameterType="java.util.Map">
+        <include refid="allColumn"/>
+        where 1=1
+        <if test="operCode != null">
+            and oper_code = #{operCode,jdbcType=VARCHAR}
+        </if>
+        <if test="operType != null">
+            and oper_type = #{operType,jdbcType=VARCHAR}
+        </if>
+        <if test="dateRange != null and dateRange !=  null">
+            <![CDATA[and oper_time BETWEEN #{dateRange.start} and #{dateRange.end})]]>
+        </if>
+        order by oper_time DESC LIMIT #{page.startIndex},#{page.endIndex}
+    </select>
+    <!-- 插入操作用户记录-->
+    <insert id="addUserOperRecord"
+            parameterType="com.eden.fans.bs.domain.user.UserOperVo">
+        INSERT INTO user_operate_record(oper_code,user_code,oper_type,oper_desc)
+        VALUES (#{operCode,jdbcType=BIGINT},#{userCode,jdbcType=BIGINT},#{operType,jdbcType=VARCHAR},#{operDesc,jdbcType=VARCHAR})
+    </insert>
+</mapper>

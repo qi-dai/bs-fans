@@ -48,8 +48,11 @@ public class SecurityInterceptor implements HandlerInterceptor {
              * 如果传入token在登录tokens中，则合法用户，否则非法请求，拒绝服务
              * */
             String tokenSrc = redisCache.get(Constant.REDIS.TOKEN+phone);
-            if(tokenSrc!=null&&tokenSrc.indexOf(token)>0){
-                return true;
+            if(tokenSrc!=null){
+                String[] tokenArr = tokenSrc.split("_");
+                for (String tStr : tokenArr){
+                    if(tStr.equals(token)) return true;
+                }
             }
             pwriter = httpServletResponse.getWriter();
             ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(ResponseCode.ILLEGAL_REQUEST);

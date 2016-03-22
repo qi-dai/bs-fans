@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class UserVo implements Serializable {
     private Long id;
-    private Integer userCode;//用户编码
+    private Long userCode;//用户编码
     private String userName;//用户昵称
     private String phone;//手机号码
     private String password;//密码
@@ -44,11 +44,11 @@ public class UserVo implements Serializable {
         this.id = id;
     }
 
-    public Integer getUserCode() {
+    public Long getUserCode() {
         return userCode;
     }
 
-    public void setUserCode(Integer userCode) {
+    public void setUserCode(Long userCode) {
         this.userCode = userCode;
     }
 
