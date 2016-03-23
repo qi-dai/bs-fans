@@ -83,6 +83,7 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongo-java-driver</artifactId>
 				<version>2.14.0</version>
+				<!-- Mongo 版本较高时启用高版本的客户端和连接配置 <version>3.1.0</version>-->
 			</dependency>
 			<!-- MONGO END -->
 			<!-- SPRING REDIS BEGIN-->
