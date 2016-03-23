@@ -36,7 +36,7 @@
     	<spring.version>4.2.0.RELEASE</spring.version>
 		<aspectj.version>1.6.11</aspectj.version>
     	<quartz.version>1.8.4</quartz.version>
-		<junit.version>4.8.2</junit.version>
+		<junit.version>4.9</junit.version>
     	<!-- apache common package -->
     	<commons-pool.version>1.5.4</commons-pool.version>
     	<commons-dbcp.version>1.4</commons-dbcp.version>
