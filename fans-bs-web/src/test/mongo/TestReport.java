@@ -113,21 +113,53 @@ public class TestReport {
     @Test
     public void  addReplyPostInfo(){
         Gson gson = new Gson();
-        String postId = "56f1f3e52845769d003dd0d0";
+        String postId = "56f2a807b1484132229c6f73";
         ReplyPostInfo replyPostInfo = new ReplyPostInfo();
-        replyPostInfo.setTitle("aa");
+        replyPostInfo.setTitle("ddd");
         replyPostInfo.setMedias(new ArrayList<String>());
         replyPostInfo.setContent("huifu");
         replyPostInfo.setReplyTime(new Date());
 
         Query query = Query.query(Criteria.where("_id").is(postId));
         Update update = new Update();
-        update.addToSet("replyPostInfos", JSON.parse(gson.toJson(replyPostInfo)));
-
-        this.mongoTemplate.getCollection(POST_COLLECTION).findAndModify(query.getQueryObject(),update.getUpdateObject());
+        Update.AddToSetBuilder bulider = update.addToSet("replyPostInfos");
+        bulider.each(JSON.parse(gson.toJson(replyPostInfo)));
+        this.mongoTemplate.updateFirst(query,update,POST_COLLECTION);
     }
 
 
+    @Test
+    public void queryReplyPostInfoByPage(){
+        String postId = "56f2a807b1484132229c6f73";
+        Query query = Query.query(Criteria.where("_id").is(postId));
+        DBObject queryObject = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject keys = new BasicDBObject();
+        keys.put("_id",1);
+        keys.put("replyPostInfos", new BasicDBObject("$slice",-3));//new Integer[]{0,3}
+        DBCursor cursor = null;
+        try{
+            cursor = this.mongoTemplate.getCollection(POST_COLLECTION).find(queryObject,keys);
+            while (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                System.out.println(JSON.serialize(dbObject));
+            }
+        } finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+    }
+
+    @Test
+    public void countReplyPostInfo(){
+        String postId = "56f2a807b1484132229c6f73";
+
+        Query query = new BasicQuery(new BasicDBObject("$size","$replyPostInfos"),new BasicDBObject("_id",new ObjectId(postId)));
+        //Criteria.where("_id").is(postId).
+
+        this.mongoTemplate.count(query,POST_COLLECTION);
+        //System.out.println(this.mongoTemplate.getCollection(POST_COLLECTION).findOne(postId,cond));
+    }
 
     @Test
     public void deletePost(){
