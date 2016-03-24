@@ -1,7 +1,9 @@
 package com.eden.fans.bs.web.controller;
 
+import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.request.LoginRequest;
 import com.eden.fans.bs.service.ICommonService;
+import com.eden.fans.bs.web.aop.BaseEntity;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,9 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController {
+    /*static {
+        BaseEntity.init(LoginRequest.class);
+    }*/
     private static Logger logger = LoggerFactory.getLogger(LoginController.class);
     @Autowired
     private ICommonService commonService;
@@ -28,7 +33,7 @@ public class LoginController {
 
     @RequestMapping(value = "/checkUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String checkUser(LoginRequest loginRequest) throws Exception {
+    public String checkUser(@ReqCheckParam LoginRequest loginRequest) throws Exception {
         return gson.toJson(commonService.checkUserInfo(loginRequest));
     }
 }

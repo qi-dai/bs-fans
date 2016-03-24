@@ -6,8 +6,9 @@ import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.request.LoginRequest;
 import com.eden.fans.bs.domain.response.LoginResponse;
+import com.eden.fans.bs.domain.response.SystemErrorEnum;
 import com.eden.fans.bs.domain.user.UserVo;
-import com.eden.fans.bs.domain.response.ResponseCode;
+import com.eden.fans.bs.domain.response.UserErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.ICommonService;
 import org.apache.commons.lang.StringUtils;
@@ -64,7 +65,7 @@ public class CommonServiceImpl implements ICommonService{
                 boolean validFlag = checkValidCode(loginRequest.getTimestamp(),loginRequest.getValidCode());
                 if(!validFlag){
                     /**验证码错误直接返回*/
-                    serviceResponse = new ServiceResponse<LoginResponse>(ResponseCode.VALIDCODE_CHECK_FAILED);
+                    serviceResponse = new ServiceResponse<LoginResponse>(UserErrorCodeEnum.VALIDCODE_CHECK_FAILED);
                      return serviceResponse;
                 }
             }
@@ -85,7 +86,7 @@ public class CommonServiceImpl implements ICommonService{
             /**2.用户名不存在*/
             if(userVo==null){
                 logger.error("没有查询到用户信息{}",loginRequest.getPhone());
-                serviceResponse = new ServiceResponse<LoginResponse>(ResponseCode.LOGIN_CHECK_FAILED);
+                serviceResponse = new ServiceResponse<LoginResponse>(UserErrorCodeEnum.LOGIN_CHECK_FAILED);
                 return serviceResponse;
             }
 
@@ -96,7 +97,7 @@ public class CommonServiceImpl implements ICommonService{
                 redisCache.set(loginRequest.getPhone()+Constant.REDIS.PWD_ERROR_NUM,String.valueOf(errorCount));
                 loginResponse.setErrorNum(errorCount);
                 loginResponse.setIsSuccess(false);
-                serviceResponse = new ServiceResponse<LoginResponse>(ResponseCode.LOGIN_CHECK_FAILED);
+                serviceResponse = new ServiceResponse<LoginResponse>(UserErrorCodeEnum.LOGIN_CHECK_FAILED);
                 serviceResponse.setResult(loginResponse);
                 return serviceResponse;
             }
@@ -137,7 +138,7 @@ public class CommonServiceImpl implements ICommonService{
             return serviceResponse;
         }catch (Exception e){
             logger.error("登录处理出错",e);
-            serviceResponse = new ServiceResponse<LoginResponse>(ResponseCode.SYSTEM_ERROR);
+            serviceResponse = ServiceResponse.errorResponse();
         }finally {
 
         }
