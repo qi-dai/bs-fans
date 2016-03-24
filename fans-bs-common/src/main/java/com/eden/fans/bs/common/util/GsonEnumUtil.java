@@ -25,6 +25,7 @@ public class GsonEnumUtil {
         gsonBuilder.registerTypeAdapter(PostPraise.class, new PostPraiseAdapter());
         gson = gsonBuilder.create();
     }
+
     public static Gson enumParseGson(){
         return gson;
     }

@@ -187,6 +187,7 @@ public class TestReport {
     }
 
     private void createPost(PostInfo postInfo){
+
         postInfo.setTitle("测试帖子");
         postInfo.setType(PostType.TEXT_MESSAGE);
         postInfo.setContent("测试帖子的内容");
