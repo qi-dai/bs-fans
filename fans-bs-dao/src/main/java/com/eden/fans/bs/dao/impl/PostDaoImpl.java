@@ -1,5 +1,7 @@
 package com.eden.fans.bs.dao.impl;
 
+import com.eden.fans.bs.common.util.Constant;
+import com.eden.fans.bs.common.util.GsonEnumUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.ICardDao;
 import com.eden.fans.bs.dao.IPostDao;
@@ -7,9 +9,12 @@ import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
+import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +26,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -32,19 +34,65 @@ import java.util.Set;
 @Repository
 public class PostDaoImpl implements IPostDao {
     private static Logger logger = LoggerFactory.getLogger(PostDaoImpl.class);
-
+    private static Gson PARSER = GsonEnumUtil.enumParseGson();
     @Autowired
     private MongoTemplate mongoTemplate;
 
+
     /**
-     * 根据帖子标识获取帖子
-     *
+     * 根据用户标识获取帖子列表
      * @param appCode
-     * @param id
-     * @param keys
+     * @param userCode
+     * @param pageNum
+     * @return
      */
     @Override
-    public DBObject obtainPostById(String appCode, String id,BasicDBObject keys) {
+    public List<DBObject> obtainPostByUserCode(String appCode, Integer userCode, Integer pageNum) {
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject query = new BasicDBObject("userCode",userCode);
+        DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
+        keys.put("title", 1);
+        keys.put("createDate", 1);
+        DBCursor cursor = null;
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).skip(pageNum*10).limit(10);
+            while (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                dbObjectList.add(dbObject);
+            }
+        } catch (Exception e){
+            logger.error("根据用户标识获取帖子列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        } finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return dbObjectList;
+    }
+
+    /**
+     * 根据帖子标识获取帖子
+     * @param appCode
+     * @param id
+     */
+    @Override
+    public DBObject obtainPostById(String appCode, String id) {
+        //设置需要返回的属性列表(不包含点赞、关注和回帖用户列表)
+        BasicDBObject keys = new BasicDBObject();
+        keys.put("title",1);
+        keys.put("type",1);
+        keys.put("content",1);
+        keys.put("userCode",1);
+        keys.put("imgs",1);
+        keys.put("videos",1);
+        keys.put("musics",1);
+        keys.put("others",1);
+        keys.put("createDate",1);
+        keys.put("publishDate",1);
+        keys.put("status",1);
+        keys.put("level",1);
+
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(new BasicDBObject("_id",new ObjectId(id)),keys);
     }
 
@@ -56,10 +104,9 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean createPost(String appCode, DBObject post) {
-        int result  = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).insert(post).getN();
-        if(result>0){
+        int result = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).insert(post).getN();
+        if(0 == result)
             return true;
-        }
         return false;
     }
 
@@ -72,11 +119,16 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updateStatus(String appCode, String id, Integer status) {
-        int result = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).update(new BasicDBObject("_id",new ObjectId(id)),new BasicDBObject("status",status)).getN();
-        if(result>0){
-            return true;
+        Query query = Query.query(Criteria.where("_id").is(id));
+        Update update = new Update();
+        update.set("status",status);
+        update.set("publishDate", new Date().getTime());
+
+        int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        if(0 == result){
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -88,15 +140,23 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updatePraiseUsers(String appCode, String id, PraiseUser praiseUser) {
+        // 先更新内嵌文档
         Update update = new Update();
         update.set("praiseUsers.$.praise",praiseUser.getPraise());
-        update.set("praiseUsers.$.time",praiseUser.getTime());
+        update.set("praiseUsers.$.time",praiseUser.getTime().getTime());
         Query query = Query.query(Criteria.where("_id").is(id).and("praiseUsers.userCode").is(praiseUser.getUserCode()));
-
-        int reslut = this.mongoTemplate.upsert(query,update,PostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
-        if(reslut>0)
-            return true;
-        return false;
+        int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        // 更新失败插入
+        if(result<=0){
+            Update insert = new Update();
+            Update.AddToSetBuilder builder = insert.addToSet("praiseUsers");
+            builder.each(JSON.parse(PARSER.toJson(praiseUser)));
+            Query  insertQuery = Query.query(Criteria.where("_id").is(id));
+            result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        }
+        if(0 == result)
+            return false;
+        return true;
     }
 
     /**
@@ -108,15 +168,24 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updateConcernUsers(String appCode, String id, ConcernUser concernUser) {
+        // 先更新内嵌文档
         Update update = new Update();
         update.set("concernUsers.$.concern",concernUser.getConcern());
-        update.set("concernUsers.$.time",concernUser.getTime());
+        update.set("concernUsers.$.time",concernUser.getTime().getTime());
         Query query = Query.query(Criteria.where("_id").is(id).and("concernUsers.userCode").is(concernUser.getUserCode()));
-        //mongoTemplate.findAndModify() 谁更好？
-        int reslut = this.mongoTemplate.upsert(query,update,PostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
-        if(reslut>0)
-            return true;
-        return false;
+        int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        // 更新失败插入
+        if(result<=0){
+            Update insert = new Update();
+            Update.AddToSetBuilder builder = insert.addToSet("concernUsers");
+            builder.each(JSON.parse(PARSER.toJson(concernUser)));
+            Query  insertQuery = Query.query(Criteria.where("_id").is(id));
+            result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        }
+        if(0 == result)
+            return false;
+        return true;
+
     }
 
     /**

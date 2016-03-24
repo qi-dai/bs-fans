@@ -31,7 +31,7 @@ import java.util.List;
 public class PostServiceImpl implements IPostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
-    private static Gson PARSER = new Gson();
+    private static Gson PARSER = GsonEnumUtil.enumParseGson();
 
     @Autowired
     private IPostDao postDao;
@@ -39,12 +39,9 @@ public class PostServiceImpl implements IPostService {
     @Override
     public PostInfo obtainPostById(String appCode, String id) {
         PostInfo postInfo = null;
-        BasicDBObject keys = new BasicDBObject();
-        setPostKeys(keys);
-        DBObject object = postDao.obtainPostById(appCode,id,keys);
+        DBObject object = postDao.obtainPostById(appCode,id);
         if(null != object){
-            postInfo = new PostInfo();
-            DBobject2PostInfo(object,postInfo);
+            postInfo = PARSER.fromJson(JSON.serialize(object),PostInfo.class);
         }
         return postInfo;
     }
@@ -57,7 +54,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean createPost(String appCode, PostInfo postInfo) {
-        String postString = GsonEnumUtil.enumParseGson().toJson(postInfo);
+        String postString = PARSER.toJson(postInfo);
         DBObject dbObject = (DBObject)JSON.parse(postString);
         return postDao.createPost(appCode,dbObject);
     }
@@ -166,55 +163,4 @@ public class PostServiceImpl implements IPostService {
         return null;
     }
 
-    /**
-     * 设置需要获取的帖子的属性
-     * @param keys
-     */
-    private void setPostKeys(BasicDBObject keys){
-        keys.put("title",1);
-        keys.put("type",1);
-        keys.put("content",1);
-        keys.put("userCode",1);
-        keys.put("imgs",1);
-        keys.put("videos",1);
-        keys.put("musics",1);
-        keys.put("others",1);
-        keys.put("createDate",1);
-        keys.put("publishDate",1);
-        keys.put("status",1);
-        keys.put("level",1);
-    }
-
-    /**
-     * Mongo对象转换成帖子
-     * @param dbObject
-     * @param postInfo
-     */
-    private void DBobject2PostInfo(DBObject dbObject,PostInfo postInfo){
-        // TODO 如果直接调用 toString 方法如何
-        postInfo.setTitle((String)dbObject.get("title"));
-        postInfo.setType(PostType.getPostType((String) dbObject.get("type")));
-        postInfo.setContent((String) dbObject.get("content"));
-        postInfo.setUserCode((Integer) dbObject.get("userCode"));
-        postInfo.setImgs("[]".equals(dbObject.get("imgs"))?null:PARSER.fromJson((String)dbObject.get("imgs"),List.class));
-        postInfo.setVideos("[]".equals(dbObject.get("videos"))?null:PARSER.fromJson((String)dbObject.get("videos"),List.class));
-        postInfo.setMusics("[]".equals(dbObject.get("musics"))?null:PARSER.fromJson((String)dbObject.get("musics"),List.class));
-        postInfo.setOthers("[]".equals(dbObject.get("others"))?null:PARSER.fromJson((String)dbObject.get("others"),List.class));
-
-        try{
-            postInfo.setCreateDate(DateUtil.parseDate((String)dbObject.get("createDate")));
-        } catch (DateParseException dpe){
-            postInfo.setCreateDate(new Date());
-        }
-
-        try{
-            postInfo.setPublishDate(DateUtil.parseDate((String)dbObject.get("publishDate")));
-        } catch (DateParseException dpe){
-            postInfo.setPublishDate(new Date());
-        }
-
-        postInfo.setStatus(PostStatus.getPostStatus((String)dbObject.get("status")));
-        postInfo.setLevel(PostLevel.getPostLevel((String)dbObject.get("level")));
-
-    }
 }

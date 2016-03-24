@@ -18,13 +18,19 @@ import java.util.List;
 public interface IPostDao {
 
 
+    /**
+     * 根据用户标识获取用户发的帖子列表
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
+    public List<DBObject> obtainPostByUserCode(String appCode,Integer userCode,Integer pageNum);
 
     /**
      * 根据帖子标识获取帖子
      *
      */
-
-    public DBObject obtainPostById(String appCode,String id,BasicDBObject keys);
+    public DBObject obtainPostById(String appCode,String id);
 
     /**
      * 创建帖子
