@@ -31,5 +31,5 @@ public interface IUserDao {
      * @param userVo 用户信息实体
      * @Return boolean 更新成功标记
      * */
-    public boolean updateUserRecord(UserVo userVo);
+    public boolean updateUserRecord(UserVo userVo,String sqlId);
 }

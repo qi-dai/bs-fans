@@ -1,5 +1,6 @@
 package com.eden.fans.bs.service;
 
+import com.eden.fans.bs.domain.request.ResetPwdRequest;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -32,4 +33,9 @@ public interface IUserService {
      * 记录管理员操作记录
      * */
     public ServiceResponse<Boolean> setAdminRole(String adminUserCode,String targetUserCode);
+
+    /**
+     * 重设密码
+     * */
+    public ServiceResponse<Boolean> resetPwd(ResetPwdRequest resetPwdRequest);
 }

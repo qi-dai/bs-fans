@@ -4,6 +4,8 @@ import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.request.ResetPwdRequest;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
@@ -26,6 +28,9 @@ public class UserServiceImpl implements IUserService {
     private IUserDao userDao;//用户信息
     @Autowired
     private IOperUserDao operUserDao;//操作用户记录
+    @Autowired
+    private RedisCache redisCache;
+
 
     @Override
     public ServiceResponse<Boolean> addUserInfo(String phone,String password,String platform) {
@@ -118,7 +123,7 @@ public class UserServiceImpl implements IUserService {
     public ServiceResponse<Boolean> updateUserInfo(UserVo userVo) {
         ServiceResponse<Boolean> updateUserResponse = null;
         try{
-            boolean updateFlag = userDao.updateUserRecord(userVo);
+            boolean updateFlag = userDao.updateUserRecord(userVo,"UserMapper.updateUserInfo");
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.USER_NOTEXIST_ERROR);
                 return updateUserResponse;
@@ -140,7 +145,7 @@ public class UserServiceImpl implements IUserService {
             UserVo adminUser = new UserVo();
             adminUser.setUserCode(Long.valueOf(targetUserCode));
             adminUser.setUserRole("02");//管理员编码02
-            boolean updateFlag = userDao.updateUserRecord(adminUser);
+            boolean updateFlag = userDao.updateUserRecord(adminUser,"UserMapper.setAdmin");
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_ERROR);
                 return updateUserResponse;
@@ -166,6 +171,45 @@ public class UserServiceImpl implements IUserService {
         }catch (Exception e){
             logger.error("设置管理员出错{}！{}",targetUserCode,e);
             updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_FAILED);
+        }
+        return updateUserResponse;
+    }
+
+    @Override
+    public ServiceResponse<Boolean> resetPwd(ResetPwdRequest resetPwdRequest) {
+        ServiceResponse<Boolean> updateUserResponse = null;
+        try{
+            //1.先校验原密码是否正确
+            UserVo userVo = redisCache.get(resetPwdRequest.getPhone(),UserVo.class );
+            if (userVo==null){
+                UserVo qryUserVo = new UserVo();
+                qryUserVo.setPhone(resetPwdRequest.getPhone());
+                userVo = userDao.qryUserVo(qryUserVo);
+            }
+            if (userVo==null){
+                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_FAILED);
+                return updateUserResponse;
+            }
+            String oldPwd=null;
+            if(!userVo.getPassword().equals(MD5Util.md5(oldPwd = resetPwdRequest.getNewPwd(), Constant.MD5_KEY))){
+                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.OLD_PWD_ERROR);
+                return updateUserResponse;
+            }
+            //2.更新密码
+            UserVo pwdUser = new UserVo();
+            pwdUser.setPhone(resetPwdRequest.getPhone());
+            pwdUser.setPassword(oldPwd);
+            boolean updateFlag = userDao.updateUserRecord(pwdUser,"UserMapper.resetPwd");
+            if(!updateFlag){
+                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_ERROR);
+                return updateUserResponse;
+            }
+            updateUserResponse = new ServiceResponse<Boolean>();
+            updateUserResponse.setResult(true);
+            updateUserResponse.setDetail("设置密码成功");
+        }catch (Exception e){
+            logger.error("重设密码出错{}！{}",resetPwdRequest.getPhone(),e);
+            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_FAILED);
         }
         return updateUserResponse;
     }
