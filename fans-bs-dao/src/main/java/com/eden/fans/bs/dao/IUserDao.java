@@ -13,6 +13,18 @@ public interface IUserDao {
     public UserVo qryUserVo(UserVo userVo);
 
     /**
+     * 查询用户信息
+     * @param phone 用户手机号
+     * */
+    public UserVo qryUserVoByPhone(String phone);
+
+    /**
+     * 查询用户信息
+     * @param userCode 用户编号
+     * */
+    public UserVo qryUserVoByUserCode(Long userCode);
+
+    /**
      * 快速注册用户，新增用户信息记录
      * @param userVo 用户信息实体
      * @Return boolean 插入成功标记

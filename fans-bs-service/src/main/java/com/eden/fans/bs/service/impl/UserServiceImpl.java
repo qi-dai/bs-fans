@@ -6,12 +6,15 @@ import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
+import com.eden.fans.bs.domain.response.LoginResponse;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.UserErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IUserService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class UserServiceImpl implements IUserService {
     private IOperUserDao operUserDao;//操作用户记录
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private ICommonService commonService;
 
 
     @Override
@@ -128,6 +133,8 @@ public class UserServiceImpl implements IUserService {
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_NOTEXIST_ERROR);
                 return updateUserResponse;
             }
+            //刷新缓存
+            redisCache.set(userVo.getPhone(),userDao.qryUserVo(userVo));
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("更新用户详细信息成功");
@@ -165,6 +172,8 @@ public class UserServiceImpl implements IUserService {
                     logger.error("管理员：{},设置{}成管理员失败,操作数据库异常，",adminUserCode,targetUserCode,e);
                 }
             }
+            UserVo userVoAdmin =userDao.qryUserVoByUserCode(Long.valueOf(targetUserCode));
+            redisCache.set(userVoAdmin.getPhone(),userVoAdmin);
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("设置管理员成功");
@@ -179,6 +188,14 @@ public class UserServiceImpl implements IUserService {
     public ServiceResponse<Boolean> resetPwd(ResetPwdRequest resetPwdRequest) {
         ServiceResponse<Boolean> updateUserResponse = null;
         try{
+            //0.校验验证码
+            boolean validFlag = commonService.checkValidCode(resetPwdRequest.getTimestamp(), resetPwdRequest.getValidCode());
+            if(!validFlag){
+                /**验证码错误直接返回*/
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.VALIDCODE_CHECK_FAILED);
+                updateUserResponse.setResult(false);
+                return updateUserResponse;
+            }
             //1.先校验原密码是否正确
             UserVo userVo = redisCache.get(resetPwdRequest.getPhone(),UserVo.class );
             if (userVo==null){
@@ -187,29 +204,32 @@ public class UserServiceImpl implements IUserService {
                 userVo = userDao.qryUserVo(qryUserVo);
             }
             if (userVo==null){
-                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_FAILED);
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_FAILED);
                 return updateUserResponse;
             }
-            String oldPwd=null;
-            if(!userVo.getPassword().equals(MD5Util.md5(oldPwd = resetPwdRequest.getNewPwd(), Constant.MD5_KEY))){
-                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.OLD_PWD_ERROR);
+            if(!userVo.getPassword().equals(MD5Util.md5(resetPwdRequest.getOldPwd(), Constant.MD5_KEY))){
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.OLD_PWD_ERROR);
                 return updateUserResponse;
             }
+
             //2.更新密码
+            String  newPwd =MD5Util.md5(resetPwdRequest.getNewPwd(), Constant.MD5_KEY);
             UserVo pwdUser = new UserVo();
+            pwdUser.setUserCode(resetPwdRequest.getUserCode());
             pwdUser.setPhone(resetPwdRequest.getPhone());
-            pwdUser.setPassword(oldPwd);
+            pwdUser.setPassword(newPwd);
             boolean updateFlag = userDao.updateUserRecord(pwdUser,"UserMapper.resetPwd");
             if(!updateFlag){
-                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_ERROR);
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_ERROR);
                 return updateUserResponse;
             }
+            redisCache.set(userVo.getPhone(),userDao.qryUserVoByUserCode(resetPwdRequest.getUserCode()));
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("设置密码成功");
         }catch (Exception e){
             logger.error("重设密码出错{}！{}",resetPwdRequest.getPhone(),e);
-            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.RESET_PWD_FAILED);
+            updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_FAILED);
         }
         return updateUserResponse;
     }

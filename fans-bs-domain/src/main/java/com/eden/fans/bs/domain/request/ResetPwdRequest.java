@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class ResetPwdRequest implements Serializable{
     private String token;
     private String phone;
+    private Long userCode;
     private String oldPwd;
     private String newPwd;
     private String timestamp;
@@ -28,6 +29,14 @@ public class ResetPwdRequest implements Serializable{
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
     }
 
     public String getOldPwd() {

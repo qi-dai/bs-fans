@@ -14,7 +14,12 @@ public enum UserErrorCodeEnum implements BaseCodeEnum {
     USER_NOTEXIST_ERROR("1011", "修改用户资料出错", "用户不存在或已注销！"),
     UPDATE_USER_INFO_FAILED("1012", "修改用户资料出错", "操作数据库发生异常！"),
     SET_ADMIN_ERROR("1013", "设置管理员出错!", "用户不存在或已注销！"),
-    SET_ADMIN_FAILED("1014", "设置管理员出错!", "操作数据发生异常！");
+    SET_ADMIN_FAILED("1014", "设置管理员出错!", "操作数据发生异常！"),
+    RESET_PWD_FAILED("1015", "设置密码出错!", "操作数据发生异常！"),
+    OLD_PWD_ERROR("1016", "原密码输入不正确，请重新输入!", "原密码不正确！"),
+    RESET_PWD_ERROR("1017", "设置密码出错!", "用户不存在或已注销！");
+
+            ;
     //RPC调用异常
     public String code;
     public String msg;

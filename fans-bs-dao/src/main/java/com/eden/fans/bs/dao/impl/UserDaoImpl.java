@@ -16,6 +16,21 @@ public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     }
 
     @Override
+    public UserVo qryUserVoByPhone(String phone) {
+        UserVo user = new UserVo();
+        user.setPhone(phone);
+        return super.queryForObject("UserMapper.selectOneUserVo",user);
+    }
+
+    @Override
+    public UserVo qryUserVoByUserCode(Long userCode) {
+        UserVo user = new UserVo();
+        user.setUserCode(userCode);
+        return super.queryForObject("UserMapper.selectOneUserVo",user);
+    }
+
+
+    @Override
     public boolean addUserRecord(UserVo userVo) {
         return super.insert("UserMapper.addUserInfo",userVo);
     }

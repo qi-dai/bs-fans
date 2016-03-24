@@ -25,17 +25,6 @@ public class UserController {
 
     private static Gson gson = new Gson();
 
-    @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String registerUser(String phone, String password,String platform) throws Exception {
-        return gson.toJson(userService.addUserInfo(phone, password, platform));
-    }
-
-    @RequestMapping(value = "/registerDetail", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
-    @ResponseBody
-    public String registerUserDetail(UserVo userVo) throws Exception {
-        return gson.toJson(userService.addUserInfoDetail(userVo));
-    }
 
     @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
