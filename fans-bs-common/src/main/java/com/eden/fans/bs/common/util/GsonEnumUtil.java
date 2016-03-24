@@ -1,9 +1,12 @@
 package com.eden.fans.bs.common.util;
 
+import com.eden.fans.bs.domain.DateAdapter;
 import com.eden.fans.bs.domain.enu.*;
 import com.eden.fans.bs.domain.enu.adapter.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Date;
 
 /**
  * 暂时没有更好的办法 不能在此处浪费过多的时间
@@ -14,6 +17,7 @@ public class GsonEnumUtil {
     private static Gson gson;
     static{
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Date.class, new DateAdapter());
         gsonBuilder.registerTypeAdapter(PostStatus.class, new PostStatusAdapter());
         gsonBuilder.registerTypeAdapter(PostLevel.class, new PostLevelAdapter());
         gsonBuilder.registerTypeAdapter(PostType.class, new PostTypeAdapter());

@@ -88,6 +88,7 @@ public class TestReport {
     @Test
     public void queryPostByPage(){
         //DBObject query = new BasicDBObject("$size","praiseUsers");
+
         DBObject query = new BasicDBObject("userCode",1234567);
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
@@ -112,10 +113,12 @@ public class TestReport {
 
     @Test
     public void  addReplyPostInfo(){
-        Gson gson = new Gson();
-        String postId = "56f2a807b1484132229c6f73";
+
+
+        Gson gson = GsonEnumUtil.enumParseGson();
+        String postId = "56f268bf28459a384d1db60c";
         ReplyPostInfo replyPostInfo = new ReplyPostInfo();
-        replyPostInfo.setTitle("ddd");
+        replyPostInfo.setTitle("aa");
         replyPostInfo.setMedias(new ArrayList<String>());
         replyPostInfo.setContent("huifu");
         replyPostInfo.setReplyTime(new Date());
@@ -124,21 +127,21 @@ public class TestReport {
         Update update = new Update();
         Update.AddToSetBuilder bulider = update.addToSet("replyPostInfos");
         bulider.each(JSON.parse(gson.toJson(replyPostInfo)));
-        this.mongoTemplate.updateFirst(query,update,POST_COLLECTION);
+        this.mongoTemplate.updateFirst(query, update, POST_COLLECTION);
     }
 
 
     @Test
     public void queryReplyPostInfoByPage(){
-        String postId = "56f2a807b1484132229c6f73";
+        String postId = "56f268bf28459a384d1db60c";
         Query query = Query.query(Criteria.where("_id").is(postId));
         DBObject queryObject = new BasicDBObject("_id",new ObjectId(postId));
         DBObject keys = new BasicDBObject();
-        keys.put("_id",1);
-        keys.put("replyPostInfos", new BasicDBObject("$slice",-3));//new Integer[]{0,3}
+        keys.put("_id", 1);
+        keys.put("replyPostInfos", new BasicDBObject("$slice", new Integer[]{0,3}));//new Integer[]{0,3}
         DBCursor cursor = null;
         try{
-            cursor = this.mongoTemplate.getCollection(POST_COLLECTION).find(queryObject,keys);
+            cursor = this.mongoTemplate.getCollection(POST_COLLECTION).find(queryObject, keys);
             while (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 System.out.println(JSON.serialize(dbObject));
@@ -151,23 +154,36 @@ public class TestReport {
     }
 
     @Test
-    public void countReplyPostInfo(){
-        String postId = "56f2a807b1484132229c6f73";
+    public void createIndex(){
+        DBObject index = new BasicDBObject("replyPostInfos.replyTime",-1);
+        this.mongoTemplate.getCollection(POST_COLLECTION).createIndex(index);
+    }
 
-        Query query = new BasicQuery(new BasicDBObject("$size","$replyPostInfos"),new BasicDBObject("_id",new ObjectId(postId)));
-        //Criteria.where("_id").is(postId).
+    @Test
+    public void updateReplyPostInfo(){
+        Gson gson = new Gson();
 
-        this.mongoTemplate.count(query,POST_COLLECTION);
-        //System.out.println(this.mongoTemplate.getCollection(POST_COLLECTION).findOne(postId,cond));
+        String postId = "56f1f3e52845769d003dd0d0";
+        ReplyPostInfo replyPostInfo = new ReplyPostInfo();
+        replyPostInfo.setTitle("sss");
+        replyPostInfo.setContent("KKKKK");
+        replyPostInfo.setReplyTime(new Date());
+
+        Update update = new Update();
+        update.set("replyPostInfos.$.content", replyPostInfo.getContent());
+        update.set("replyPostInfos.$.replyTime", replyPostInfo.getReplyTime().getTime());
+        Query query = Query.query(Criteria.where("_id").is(postId).and("replyPostInfos.title").is(replyPostInfo.getTitle()));
+
+        this.mongoTemplate.updateFirst(query, update, POST_COLLECTION);
     }
 
     @Test
     public void deletePost(){
        /* Query query = Query.query(Criteria.where("_id").is(""));
         this.mongoTemplate.findAllAndRemove(query, PostInfo.class, POST_COLLECTION);*/
-        String postId = "56efb274284500197e9ffaa3";
+        String postId = "56f1f3e52845769d003dd0d0";
         DBObject dbObject = new BasicDBObject("_id",new ObjectId(postId));
-        this.mongoTemplate.getCollection(POST_COLLECTION).remove(dbObject);
+         this.mongoTemplate.getCollection(POST_COLLECTION).remove(dbObject);
     }
 
     private void createPost(PostInfo postInfo){
