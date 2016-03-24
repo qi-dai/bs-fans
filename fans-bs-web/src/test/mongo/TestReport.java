@@ -28,6 +28,7 @@ import java.util.*;
 public class TestReport {
 
     public static final String POST_COLLECTION = "post";
+    private static Gson PARSER = GsonEnumUtil.enumParseGson();
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -44,19 +45,32 @@ public class TestReport {
 
     @Test
      public void testUpsert(){
-        String id = "";
+        String id = "56f2a808b1484132229c6f8c";
+
         ConcernUser concernUser = new ConcernUser();
         concernUser.setTime(new Date());
         concernUser.setConcern(1);
-        concernUser.setUserCode(123);
+        concernUser.setUserCode(1234);
+
+        Update insert = new Update();
+        Update.AddToSetBuilder builder = insert.addToSet("concernUsers");
+        builder.each(JSON.parse(PARSER.toJson(concernUser)));
 
         Update update = new Update();
         update.set("concernUsers.$.concern",concernUser.getConcern());
         update.set("concernUsers.$.time", concernUser.getTime());
-        Query query = Query.query(Criteria.where("_id").is(id).and("concernUsers.userCode").is(concernUser.getUserCode()));
+
+        Query  insertQuery = Query.query(Criteria.where("_id").is(id));
+        Query updateQuery = Query.query(Criteria.where("_id").is(id).and("concernUsers.userCode").is(concernUser.getUserCode()));
+
+         int reslut = this.mongoTemplate.updateFirst(updateQuery,update,POST_COLLECTION).getN();
+         System.out.println(reslut);
+
+        reslut = this.mongoTemplate.upsert(insertQuery,insert,POST_COLLECTION).getN();
+
         //mongoTemplate.findAndModify() 谁更好？
-        int reslut = this.mongoTemplate.upsert(query, update, PostInfo.class, "report").getN();
-        System.out.println("");
+        //int reslut = this.mongoTemplate.getCollection(POST_COLLECTION).findAndModify().updateFirst(query, update,POST_COLLECTION).getN();
+        System.out.println(reslut);
     }
 
     @Test
@@ -65,7 +79,7 @@ public class TestReport {
         PostInfo postInfo = new PostInfo();
         createPost(postInfo);
         Gson gson = GsonEnumUtil.enumParseGson();
-        for(int i=0;i<101;i++){
+        for(int i=0;i<10;i++){
             DBObject dbObject = (DBObject) JSON.parse(gson.toJson(postInfo));
             int result = this.mongoTemplate.getCollection(POST_COLLECTION).insert(dbObject).getN();
             System.out.println(result);
@@ -185,13 +199,12 @@ public class TestReport {
         DBObject dbObject = new BasicDBObject("_id",new ObjectId(postId));
          this.mongoTemplate.getCollection(POST_COLLECTION).remove(dbObject);
     }
-
     private void createPost(PostInfo postInfo){
 
         postInfo.setTitle("测试帖子");
         postInfo.setType(PostType.TEXT_MESSAGE);
         postInfo.setContent("测试帖子的内容");
-        postInfo.setUserCode(123456);
+        postInfo.setUserCode(12345610);
         PostImg img1 = new PostImg();
         img1.setIndex(1);
         img1.setImgUrl("http://y1.ifengimg.com/a/2016_13/d653ddbb945c9b0.jpg");
