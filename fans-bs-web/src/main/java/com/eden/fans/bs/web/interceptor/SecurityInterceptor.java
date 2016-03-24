@@ -2,7 +2,8 @@ package com.eden.fans.bs.web.interceptor;
 
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.dao.util.RedisCache;
-import com.eden.fans.bs.domain.response.ResponseCode;
+import com.eden.fans.bs.domain.response.SystemErrorEnum;
+import com.eden.fans.bs.domain.response.UserErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -13,10 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by lirong on 2016/3/3.
@@ -55,7 +53,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
                 }
             }
             pwriter = httpServletResponse.getWriter();
-            ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(ResponseCode.ILLEGAL_REQUEST);
+            ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(SystemErrorEnum.ILLEGAL_REQUEST);
             interCeptorResponse.setResult("中文输出乱码！");//To do 未解决
             pwriter.print(gson.toJson(interCeptorResponse));
             pwriter.flush();
