@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/data/mongo  http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd
+          http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<mongo:mongo id="mongo" host="192.168.166.30" port="20011">
+		<!-- 一些连接属性的设置 -->
+		<mongo:options
+
+				connections-per-host="8"
+				threads-allowed-to-block-for-connection-multiplier="5"
+				connect-timeout="1000"
+				max-wait-time="1500"
+				auto-connect-retry="true"
+				socket-keep-alive="true"
+				socket-timeout="1500"
+				slave-ok="false"
+				write-number="1"
+				write-timeout="0"
+				write-fsync="true" />
+	</mongo:mongo>
+
+	<bean id="userCredentials" class="org.springframework.data.authentication.UserCredentials">
+		<constructor-arg name="username" value="salesanalysis_rw"/>
+		<constructor-arg name="password" value="salesanalysis_pwd"/>
+	</bean>
+
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongo" ref="mongo" />
+		<constructor-arg name="databaseName" value="salesanalysis" />
+		<constructor-arg name="userCredentials" ref="userCredentials" />
+	</bean>
+
+</beans>

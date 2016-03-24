@@ -17,6 +17,8 @@ import java.util.List;
  */
 public interface IPostDao {
 
+
+
     /**
      * 根据帖子标识获取帖子
      *

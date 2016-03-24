@@ -7,6 +7,7 @@ import com.eden.fans.bs.domain.svo.*;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,32 +47,32 @@ public class PostInfo implements Serializable {
     /**
      *帖子包含的图片列表
      */
-    private List<PostImg> imgs;
+    private List<PostImg> imgs = new ArrayList<PostImg>();
 
     /**
      *帖子包含的视频列表
      */
-    private List<PostVideo> videos;
+    private List<PostVideo> videos = new ArrayList<PostVideo>();
 
     /**
      *帖子的包含的音乐列表
      */
-    private List<PostMusic> musics;
+    private List<PostMusic> musics = new ArrayList<PostMusic>();
 
     /**
      *帖子包含的其他媒体列表
      */
-    private List<PostOtherMedia> others;
+    private List<PostOtherMedia> others = new ArrayList<PostOtherMedia>();
 
     /**
      *帖子的创建时间（该字段需要建索引）
      */
-    private Date createDate;
+    private Date createDate = new Date();
 
     /**
      *帖子的发布时间（该字段需要建索引）
      */
-    private Date publishDate;
+    private Date publishDate = new Date();
 
     /**
      *帖子的状态
@@ -86,19 +87,19 @@ public class PostInfo implements Serializable {
     /**
      *帖子的管理员操作列表
      */
-    private List<Integer> operatorList;
+    private List<Integer> operatorList = new ArrayList<Integer>();
     /**
      * 用户对帖子的两种操作：关注和点赞是相互独立的，并且同一类型操作状态是互斥的
      */
-    private List<ConcernUser> concernUsers;//该属性的time字段需要建索引
-    private List<PraiseUser> praiseUsers;// 该属性的time字段需要建索引
+    private List<ConcernUser> concernUsers = new ArrayList<ConcernUser>();//该属性的time字段需要建索引
+    private List<PraiseUser> praiseUsers = new ArrayList<PraiseUser>();// 该属性的time字段需要建索引
 
     /**
      * 回帖信息列表
      * @return
      */
 
-    private List<ReplyPostInfo> replyPostInfos;// 该属性的replyTime字段需要建索引
+    private List<ReplyPostInfo> replyPostInfos = new ArrayList<ReplyPostInfo>();// 该属性的replyTime字段需要建索引
 
     public String getId() {
         return id;

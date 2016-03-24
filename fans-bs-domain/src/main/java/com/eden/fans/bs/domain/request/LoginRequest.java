@@ -1,5 +1,7 @@
 package com.eden.fans.bs.domain.request;
 
+import com.eden.fans.bs.domain.annotation.ActionInput;
+
 import java.io.Serializable;
 
 /**
@@ -12,6 +14,7 @@ public class LoginRequest implements Serializable{
     private String validCode;
     private String timestamp;
 
+    @ActionInput(notNull = true)
     public String getPhone() {
         return phone;
     }

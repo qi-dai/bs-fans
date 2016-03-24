@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/data/mongo  http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd
+          http://www.springframework.org/schema/beans  http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Server Host-->
+	<bean id="serverAddress" class="com.mongodb.ServerAddress">
+		<constructor-arg type="java.lang.String" name="host" value="192.168.166.30" />
+		<constructor-arg type="int" name="port" value="20011" />
+	</bean>
+
+	<!-- Credentials -->
+	<bean id="mongoCredential" class="com.mongodb.MongoCredential">
+		<constructor-arg name="mechanism" value = "#{T(com.mongodb.AuthenticationMechanism).SCRAM_SHA_1}" />
+		<constructor-arg type="java.lang.String" name="userName" value="salesanalysis_rw"/>
+		<constructor-arg type="java.lang.String" name="source" value="salesanalysis_rw"/>
+		<constructor-arg type="char[]" name="password" value="salesanalysis_pwd"/>
+	</bean>
+	<bean id="credentialsList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<ref bean="mongoCredential" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="mongoClient" class="com.mongodb.MongoClient">
+		<constructor-arg name="addr" ref="serverAddress" />
+		<constructor-arg name="credentialsList" ref="credentialsList"  />
+	</bean>
+
+
+	<!-- MongoClientOptions 已经提供了非常好的默认配置-->
+	<!--
+<mongo:mongo id="mongo" host="192.168.166.30" port="20011">
+            一些连接属性的设置
+		<mongo:options
+				connections-per-host="8"
+				threads-allowed-to-block-for-connection-multiplier="5"
+				connect-timeout="1000"
+				max-wait-time="1500"
+				auto-connect-retry="true"
+				socket-keep-alive="true"
+				socket-timeout="1500"
+				slave-ok="false"
+				write-number="1"
+				write-timeout="0"
+				write-fsync="true" />
+	</mongo:mongo>
+-->
+
+
+	<!-- MongoDbFactory -->
+	<bean id="simpleMongoDbFactory" class="org.springframework.data.mongodb.core.SimpleMongoDbFactory">
+		<constructor-arg name="mongo" ref="mongoClient" />
+		<constructor-arg name="databaseName" value="salesanalysis" />
+	</bean>
+	<!-- MongoTemplate -->
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="simpleMongoDbFactory" />
+	</bean>
+
+</beans>

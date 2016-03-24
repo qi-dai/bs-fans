@@ -12,29 +12,50 @@ public class ServiceResponse<T> implements Serializable{
     private T result;
 
     /**
-     * 默认创建成功报文
+     * 默认创建成功报文，隐式创建
      * */
     public ServiceResponse(){
-        this.code = ResponseCode.SUCCESS.code;
-        this.msg = ResponseCode.SUCCESS.msg;
-        this.detail = ResponseCode.SUCCESS.detail;
+        this.code = SystemErrorEnum.SUCCESS.code;
+        this.msg = SystemErrorEnum.SUCCESS.msg;
+        this.detail = SystemErrorEnum.SUCCESS.detail;
+    }
+
+    /**
+     * 显式创建：系统成功报文
+     * */
+    public static ServiceResponse successResponse() {
+        return new ServiceResponse(SystemErrorEnum.SUCCESS);
+    }
+
+    /**
+     * 显式创建：系统失败报文
+     * */
+    public static ServiceResponse failureResponse() {
+        return new ServiceResponse(SystemErrorEnum.FAILED);
+    }
+
+    /**
+     * 显式创建：接口逻辑处理错误
+     * */
+    public static ServiceResponse errorResponse() {
+        return new ServiceResponse(SystemErrorEnum.SYSTEM_ERROR);
     }
     /**
      *自定义返回枚举
      * */
-    public ServiceResponse(ResponseCode responseCode){
-        this.code = responseCode.code;
-        this.msg = responseCode.msg;
-        this.detail = responseCode.detail;
+    public ServiceResponse(BaseCodeEnum baseCodeEnum){
+        this.code = baseCodeEnum.getCode();
+        this.msg = baseCodeEnum.getMsg();
+        this.detail = baseCodeEnum.getDetail();
     }
 
     /**
      * 自定义返回带结果集
      * */
     public ServiceResponse(T result){
-        this.code = ResponseCode.SUCCESS.code;
-        this.msg = ResponseCode.SUCCESS.msg;
-        this.detail = ResponseCode.SUCCESS.detail;
+        this.code = SystemErrorEnum.SUCCESS.code;
+        this.msg = SystemErrorEnum.SUCCESS.msg;
+        this.detail = SystemErrorEnum.SUCCESS.detail;
         this.setResult(result);
     }
 

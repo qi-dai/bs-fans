@@ -10,24 +10,11 @@
   <version>1.0.0-SNAPSHOT</version>
   
   <dependencies>
-  	  <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
 	  <dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-log4j12</artifactId>
+		  <groupId>com.eden.fans.bs</groupId>
+		  <artifactId>fans-bs-domain</artifactId>
+		  <version>1.0.0-SNAPSHOT</version>
 	  </dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-		</dependency>
-		<dependency>
-		 	<groupId>ch.qos.logback</groupId>
-		 	<artifactId>logback-classic</artifactId>
-		</dependency>
-
-
 	  <dependency>
 		  <groupId>cglib</groupId>
 		  <artifactId>cglib</artifactId>
@@ -38,60 +25,6 @@
 		  <artifactId>cglib-asm</artifactId>
 		  <version>1.0</version>
 	  </dependency>
-		<!-- servlet jsp begin -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.4</version>
-		</dependency>
-
-		<!-- apache commons -->
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-chain</groupId>
-			<artifactId>commons-chain</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-		</dependency>
-
   </dependencies>
 
 </project>

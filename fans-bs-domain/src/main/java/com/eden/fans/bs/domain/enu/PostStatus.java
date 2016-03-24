@@ -5,7 +5,7 @@ package com.eden.fans.bs.domain.enu;
  *
  * Created by Administrator on 2016/3/13.
  */
-public enum PostStatus {
+public enum PostStatus{
     CHECK("待审",1),
     NORMAL("正常",2),
     LOCK("锁定",3),

@@ -9,7 +9,7 @@ import com.eden.fans.bs.domain.request.ResetPwdRequest;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
-import com.eden.fans.bs.domain.response.ResponseCode;
+import com.eden.fans.bs.domain.response.UserErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.IUserService;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements IUserService {
             userVo.setPhone(phone);
             UserVo userVo1 = userDao.qryUserVo(userVo);
             if (userVo1!=null){
-                serviceResponse = new ServiceResponse<Boolean>(ResponseCode.USER_EXIST_FAILED);
+                serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_EXIST_FAILED);
                 return serviceResponse;
             }
             userVo.setPassword(MD5Util.md5(password, Constant.MD5_KEY));
@@ -56,7 +56,7 @@ public class UserServiceImpl implements IUserService {
             serviceResponse.setDetail("注册成功！");
         }catch (Exception e){
             logger.error("{}用户注册失败，操作数据库异常:{}",phone,e);
-            serviceResponse = new ServiceResponse<Boolean>(ResponseCode.ADD_USER_FAILED);
+            serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.ADD_USER_FAILED);
         }
         return serviceResponse;
     }
@@ -70,7 +70,7 @@ public class UserServiceImpl implements IUserService {
             //1.查询用户是否已存在
             UserVo userVo1 = userDao.qryUserVo(userVo);
             if (userVo1!=null){
-                serviceResponse = new ServiceResponse<Boolean>(ResponseCode.USER_EXIST_FAILED);
+                serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_EXIST_FAILED);
                 return serviceResponse;
             }
             userVo.setPassword(MD5Util.md5(userVo.getPassword(), Constant.MD5_KEY));
@@ -82,7 +82,7 @@ public class UserServiceImpl implements IUserService {
             serviceResponse.setDetail("注册成功！");
         }catch (Exception e){
             logger.error("{}用户注册失败，操作数据库异常:{}",userVo.getPhone(),e);
-            serviceResponse = new ServiceResponse<Boolean>(ResponseCode.ADD_USER_FAILED);
+            serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.ADD_USER_FAILED);
         }
         return serviceResponse;
     }
@@ -102,7 +102,7 @@ public class UserServiceImpl implements IUserService {
                 detailResponse.setAttentionNum(0);//Todo
                 detailResponse.setFansNum(0);//Todo
             }else{
-                qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.QRY_USER_INFO_ERROR);
+                qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_ERROR);
                 return qryUserResponse;
             }
             qryUserResponse = new ServiceResponse<UserDetailResponse>();
@@ -110,10 +110,10 @@ public class UserServiceImpl implements IUserService {
             qryUserResponse.setDetail("查询用户详细信息成功");
         }catch (NumberFormatException e){
             logger.error("userCode:{}转换Integer出错！{}",userCode,e);
-            qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.USER_CODE_ERROR);
+            qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.USER_CODE_ERROR);
         }catch (Exception e){
             logger.error("查询{}用户信息出错！{}",userCode,e);
-            qryUserResponse = new ServiceResponse<UserDetailResponse>(ResponseCode.QRY_USER_INFO_FAILED);
+            qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_FAILED);
         }
 
         return qryUserResponse;
@@ -125,7 +125,7 @@ public class UserServiceImpl implements IUserService {
         try{
             boolean updateFlag = userDao.updateUserRecord(userVo,"UserMapper.updateUserInfo");
             if(!updateFlag){
-                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.USER_NOTEXIST_ERROR);
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_NOTEXIST_ERROR);
                 return updateUserResponse;
             }
             updateUserResponse = new ServiceResponse<Boolean>();
@@ -133,7 +133,7 @@ public class UserServiceImpl implements IUserService {
             updateUserResponse.setDetail("更新用户详细信息成功");
         }catch (Exception e){
             logger.error("更新{}用户信息出错！{}",userVo.getUserCode(),e);
-            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.UPDATE_USER_INFO_FAILED);
+            updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.UPDATE_USER_INFO_FAILED);
         }
         return updateUserResponse;
     }
@@ -147,7 +147,7 @@ public class UserServiceImpl implements IUserService {
             adminUser.setUserRole("02");//管理员编码02
             boolean updateFlag = userDao.updateUserRecord(adminUser,"UserMapper.setAdmin");
             if(!updateFlag){
-                updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_ERROR);
+                updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.SET_ADMIN_ERROR);
                 return updateUserResponse;
             }else{
                 //增加操作记录，可降级，增加不成功也算设置成功。
@@ -170,7 +170,7 @@ public class UserServiceImpl implements IUserService {
             updateUserResponse.setDetail("设置管理员成功");
         }catch (Exception e){
             logger.error("设置管理员出错{}！{}",targetUserCode,e);
-            updateUserResponse = new ServiceResponse<Boolean>(ResponseCode.SET_ADMIN_FAILED);
+            updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.SET_ADMIN_FAILED);
         }
         return updateUserResponse;
     }

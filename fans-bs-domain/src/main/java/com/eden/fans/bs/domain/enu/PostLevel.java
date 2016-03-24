@@ -5,8 +5,8 @@ package com.eden.fans.bs.domain.enu;
  *
  * Created by Administrator on 2016/3/13.
  */
-public enum PostLevel {
-    COMMON("普通",1),
+public enum PostLevel{
+    COMMON("普通",1) ,
     BOUTIQUE("精品",2),
     HIGH_GREEN("高亮绿",3),
     HIGH_RED("高亮红",4);
