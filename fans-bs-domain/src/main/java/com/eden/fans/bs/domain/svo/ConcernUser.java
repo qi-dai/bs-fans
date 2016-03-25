@@ -22,7 +22,7 @@ public class ConcernUser implements Serializable {
     private String userName;
 
     /**
-     *1：点赞，0取消点赞
+     *1：关注，0：取消关注
      */
     private int concern;
 

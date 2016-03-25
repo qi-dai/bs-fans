@@ -228,7 +228,9 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countPraiseUsers(String postId,String appCode) {
-        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject object = new BasicDBObject();
+        object.put("praiseUsers.praise",1);
+        object.put("_id",new ObjectId(postId));
         DBObject keys = new BasicDBObject();
         keys.put("praiseUsers.userCode",1);
 
@@ -247,7 +249,9 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countConcernUsers(String postId,String appCode) {
-        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject object = new BasicDBObject();
+        object.put("_id",new ObjectId(postId));
+        object.put("concernUsers.concern",1);
         DBObject keys = new BasicDBObject();
         keys.put("concernUsers.userCode",1);
 
@@ -286,7 +290,9 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public List<ConcernUser> queryAllConcernUsers(String appCode, String id) {
-        DBObject object = new BasicDBObject("_id",new ObjectId(id));
+        DBObject object = new BasicDBObject();
+        object.put("_id",new ObjectId(id));
+        object.put("concernUsers.concern",1);
         DBObject keys = new BasicDBObject();
         keys.put("concernUsers.userCode", 1);
         keys.put("concernUsers.userName", 1);
@@ -307,7 +313,10 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public List<PraiseUser> queryAllPraiseUsers(String appCode, String id) {
-        DBObject object = new BasicDBObject("_id",new ObjectId(id));
+        DBObject object = new BasicDBObject();
+        object.put("_id",new ObjectId(id));
+        object.put("praiseUsers.praise",1);
+
         DBObject keys = new BasicDBObject();
         keys.put("praiseUsers.userCode", 1);
         keys.put("praiseUsers.userName", 1);
@@ -348,7 +357,9 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public List<ConcernUser> queryConcernUsersByPage(String appCode, String id,Integer pageNum) {
-        DBObject queryObject = new BasicDBObject("_id",new ObjectId(id));
+        DBObject queryObject = new BasicDBObject();
+        queryObject.put("_id",new ObjectId(id));
+        queryObject.put("concernUsers.concern",1);
         DBObject keys = new BasicDBObject();
         keys.put("concernUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
         DBCursor cursor = null;
@@ -379,7 +390,10 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id,Integer pageNum) {
-        DBObject queryObject = new BasicDBObject("_id",new ObjectId(id));
+        DBObject queryObject = new BasicDBObject();
+        queryObject.put("praiseUsers.praise",1);
+        queryObject.put("_id",new ObjectId(id));
+
         DBObject keys = new BasicDBObject();
         keys.put("praiseUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
         DBCursor cursor = null;
