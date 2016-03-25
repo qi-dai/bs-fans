@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserPraiseMapper">
+    <resultMap id="attentionVoMap" type="com.eden.fans.bs.domain.user.UserPraiseVo">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="from_user_code" property="fromUserCode" jdbcType="BIGINT"/>
+        <result column="to_user_code" property="toUserCode" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="allColumn">
+        select id,from_user_code,to_user_code,create_time
+        from user_praise
+    </sql>
+    <!-- 根据用户关注其他用户刘表 -->
+    <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        <include refid="allColumn"/>
+        where 1=1
+        <if test="attType != null">
+            and att_type = #{attType,jdbcType=VARCHAR}
+        </if>
+        <if test="fromUserCode != null">
+            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
+        </if>
+    </select>
+    <!-- 根据用户赞或者被赞数量统计 -->
+    <select id="qryPraiseCount" parameterType="java.lang.Long" resultType="int">
+        <include refid="allColumn"/>
+        where 1=1
+        <if test="attType != null">
+            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
+        </if>
+        <if test="toUserCode != null">
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <!-- 插入赞或者被赞记录-->
+    <insert id="addPraiseRecord"
+            parameterType="com.eden.fans.bs.domain.user.UserPraiseVo">
+        INSERT INTO user_praise(
+        from_user_code,to_user_code
+        ) VALUES (#{fromUserCode,jdbcType=BIGINT},#{toUserCode,jdbcType=BIGINT})
+    </insert>
+
+</mapper>
