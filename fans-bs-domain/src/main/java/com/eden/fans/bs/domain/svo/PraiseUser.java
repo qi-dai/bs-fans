@@ -13,7 +13,12 @@ public class PraiseUser implements Serializable {
     /**
      *用户编码
      */
-    private Integer userCode;
+    private Long userCode;
+
+    /**
+     * 用户昵称
+     */
+    private String userName;
 
     /**
      *1：点赞，0取消点赞
@@ -25,12 +30,20 @@ public class PraiseUser implements Serializable {
      */
     private Date time;
 
-    public Integer getUserCode() {
+    public Long getUserCode() {
         return userCode;
     }
 
-    public void setUserCode(Integer userCode) {
+    public void setUserCode(Long userCode) {
         this.userCode = userCode;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public int getPraise() {

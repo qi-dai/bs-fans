@@ -13,7 +13,7 @@ import java.util.Date;
  *
  * Created by Administrator on 2016/3/23.
  */
-public class GsonEnumUtil {
+public class GsonUtil {
     private static Gson gson;
     static{
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -26,7 +26,7 @@ public class GsonEnumUtil {
         gson = gsonBuilder.create();
     }
 
-    public static Gson enumParseGson(){
+    public static Gson getGson(){
         return gson;
     }
 }

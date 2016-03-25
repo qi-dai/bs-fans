@@ -42,7 +42,8 @@ public class PostInfo implements Serializable {
     /**
      *创建帖子的用户标识
      */
-    private Integer userCode;
+    private Long userCode;
+    private String userName;
 
     /**
      *帖子包含的图片列表
@@ -133,12 +134,20 @@ public class PostInfo implements Serializable {
         this.content = content;
     }
 
-    public Integer getUserCode() {
+    public Long getUserCode() {
         return userCode;
     }
 
-    public void setUserCode(Integer userCode) {
+    public void setUserCode(Long userCode) {
         this.userCode = userCode;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public List<PostImg> getImgs() {

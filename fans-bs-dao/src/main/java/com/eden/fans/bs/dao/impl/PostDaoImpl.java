@@ -1,9 +1,7 @@
 package com.eden.fans.bs.dao.impl;
 
-import com.eden.fans.bs.common.util.Constant;
-import com.eden.fans.bs.common.util.GsonEnumUtil;
+import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
-import com.eden.fans.bs.dao.ICardDao;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
@@ -11,7 +9,6 @@ import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
@@ -20,13 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -34,10 +33,42 @@ import java.util.*;
 @Repository
 public class PostDaoImpl implements IPostDao {
     private static Logger logger = LoggerFactory.getLogger(PostDaoImpl.class);
-    private static Gson PARSER = GsonEnumUtil.enumParseGson();
+    private static Gson PARSER = GsonUtil.getGson();
     @Autowired
     private MongoTemplate mongoTemplate;
 
+
+    /**
+     * 分页获取帖子
+     *
+     * @param appCode
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public List<DBObject> obtainPostByPage(String appCode, Integer pageNum) {
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject sort = new BasicDBObject();
+        sort.put("createDate",-1);
+        DBObject keys = new BasicDBObject();
+        keys.put("title", 1);
+        keys.put("createDate", 1);
+        DBCursor cursor = null;
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(new BasicDBObject(),keys).sort(sort).skip(pageNum * 10).limit(10);
+            while (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                dbObjectList.add(dbObject);
+            }
+        } catch (Exception e){
+            logger.error("根据用户标识获取帖子列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        } finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return dbObjectList;
+    }
 
     /**
      * 根据用户标识获取帖子列表
@@ -49,6 +80,8 @@ public class PostDaoImpl implements IPostDao {
     @Override
     public List<DBObject> obtainPostByUserCode(String appCode, Integer userCode, Integer pageNum) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject sort = new BasicDBObject();
+        sort.put("createDate",-1);
         DBObject query = new BasicDBObject("userCode",userCode);
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
@@ -56,7 +89,7 @@ public class PostDaoImpl implements IPostDao {
         keys.put("createDate", 1);
         DBCursor cursor = null;
         try{
-            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).skip(pageNum*10).limit(10);
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).sort(sort).skip(pageNum*10).limit(10);
             while (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 dbObjectList.add(dbObject);
@@ -124,7 +157,7 @@ public class PostDaoImpl implements IPostDao {
         update.set("status",status);
         update.set("publishDate", new Date().getTime());
 
-        int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        int result = this.mongoTemplate.updateFirst(query, update, MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         if(0 == result){
             return false;
         }
@@ -195,8 +228,16 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countPraiseUsers(String postId,String appCode) {
-        Query query = new BasicQuery(new BasicDBObject("$size","praiseUsers"),new BasicDBObject("_id",new ObjectId(postId)));
-        return this.mongoTemplate.count(query,MongoConstant.POST_COLLECTION_PREFIX + appCode);
+        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject keys = new BasicDBObject();
+        keys.put("praiseUsers.userCode",1);
+
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return 0L;
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return Long.valueOf(postInfo.getPraiseUsers().size());
     }
 
     /**
@@ -206,63 +247,16 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countConcernUsers(String postId,String appCode) {
-        Query query = new BasicQuery(new BasicDBObject("$size","concernUsers"),new BasicDBObject("_id",new ObjectId(postId)));
-        return this.mongoTemplate.count(query,MongoConstant.POST_COLLECTION_PREFIX + appCode);
+        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject keys = new BasicDBObject();
+        keys.put("concernUsers.userCode",1);
 
-    }
-
-    /**
-     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
-     *
-     * @param appCode
-     * @param id
-     * @param time
-     */
-    @Override
-    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id, Date time) {
-        Query query = new Query();
-        Criteria criteria = Criteria.where("_id").is(id).and("concernUsers.time").gt(time);
-        query.addCriteria(criteria);
-        query.limit(10);
-        query.fields().include("concernUsers");
-        // TODO
-        return this.mongoTemplate.find(query,ConcernUser.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
-    }
-
-    /**
-     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
-     *
-     * @param appCode
-     * @param id
-     * @param time
-     */
-    @Override
-    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id, Date time) {
-        Query query = new Query();
-        Criteria criteria = Criteria.where("_id").is(id).and("praiseUsers.time").gt(time);
-        query.addCriteria(criteria);
-        query.limit(10);
-        query.fields().include("praiseUsers");
-        // TODO
-        return this.mongoTemplate.find(query,PraiseUser.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
-    }
-
-    /**
-     * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
-     *
-     * @param appCode
-     * @param id
-     * @param replyTime
-     */
-    @Override
-    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Date replyTime) {
-        Query query = new Query();
-        Criteria criteria = Criteria.where("_id").is(id).and("replyPostInfos.replyTime").gt(replyTime);
-        query.addCriteria(criteria);
-        query.limit(10);
-        query.fields().include("replyPostInfos");
-        // TODO
-        return this.mongoTemplate.find(query,ReplyPostInfo.class,MongoConstant.POST_COLLECTION_PREFIX + appCode);
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return 0L;
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return Long.valueOf(postInfo.getConcernUsers().size());
     }
 
     /**
@@ -272,7 +266,170 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countReplyPostInfos(String postId,String appCode) {
-        Query query = new BasicQuery(new BasicDBObject("$size","$replyPostInfos"),new BasicDBObject("_id",new ObjectId(postId)));
-        return this.mongoTemplate.count(query,MongoConstant.POST_COLLECTION_PREFIX + appCode);
+        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject keys = new BasicDBObject();
+        keys.put("replyPostInfos.replyTime",1);
+
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return 0L;
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return Long.valueOf(postInfo.getConcernUsers().size());
     }
+
+    /**
+     * 获取所有关注的用户
+     *
+     * @param appCode
+     * @param id
+     */
+    @Override
+    public List<ConcernUser> queryAllConcernUsers(String appCode, String id) {
+        DBObject object = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("concernUsers.userCode", 1);
+        keys.put("concernUsers.userName", 1);
+
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return  new ArrayList<ConcernUser>();
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return postInfo.getConcernUsers();
+    }
+
+    /**
+     * 获取所有点赞的用户
+     *
+     * @param appCode
+     * @param id
+     */
+    @Override
+    public List<PraiseUser> queryAllPraiseUsers(String appCode, String id) {
+        DBObject object = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("praiseUsers.userCode", 1);
+        keys.put("praiseUsers.userName", 1);
+
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return  new ArrayList<PraiseUser>();
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return postInfo.getPraiseUsers();
+    }
+
+    /**
+     * 获取所有回帖信息列表
+     *
+     * @param appCode
+     * @param id
+     */
+    @Override
+    public List<ReplyPostInfo> queryAllReplyPostInfos(String appCode, String id) {
+        DBObject object = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("replyPostInfos", 1);
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        if(null == postObject){
+            return  new ArrayList<ReplyPostInfo>();
+        }
+        PostInfo postInfo = PARSER.fromJson(JSON.serialize(postObject), PostInfo.class);
+        return postInfo.getReplyPostInfos();
+    }
+
+    /**
+     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
+     *
+     * @param appCode
+     * @param id
+     * @param pageNum
+     */
+    @Override
+    public List<ConcernUser> queryConcernUsersByPage(String appCode, String id,Integer pageNum) {
+        DBObject queryObject = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("concernUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+        DBCursor cursor = null;
+        List<ConcernUser> concernUsers = new ArrayList<ConcernUser>();
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
+            if (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                PostInfo postInfo = PARSER.fromJson(JSON.serialize(dbObject), PostInfo.class);
+                concernUsers =  postInfo.getConcernUsers();
+            }
+        } catch (Exception e){
+            logger.error("根据帖子的标志获取帖子下的点赞用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        }finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return concernUsers;
+    }
+
+    /**
+     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
+     *
+     * @param appCode
+     * @param id
+     * @param pageNum
+     */
+    @Override
+    public List<PraiseUser> queryPraiseUsersByPage(String appCode, String id,Integer pageNum) {
+        DBObject queryObject = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("praiseUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+        DBCursor cursor = null;
+        List<PraiseUser> concernUsers = new ArrayList<PraiseUser>();
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
+            if (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                PostInfo postInfo = PARSER.fromJson(JSON.serialize(dbObject), PostInfo.class);
+                concernUsers =  postInfo.getPraiseUsers();
+            }
+        } catch (Exception e){
+            logger.error("根据帖子的标志获取帖子下关注的用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        }finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return concernUsers;
+    }
+
+    /**
+     * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
+     *
+     * @param appCode
+     * @param id
+     * @param pageNum
+     */
+    @Override
+    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode, String id, Integer pageNum) {
+        DBObject queryObject = new BasicDBObject("_id",new ObjectId(id));
+        DBObject keys = new BasicDBObject();
+        keys.put("replyPostInfos", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));//new Integer[]{0,3}
+        DBCursor cursor = null;
+        List<ReplyPostInfo> replyPostInfos = new ArrayList<ReplyPostInfo>();
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
+            if (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                PostInfo postInfo = PARSER.fromJson(JSON.serialize(dbObject), PostInfo.class);
+                replyPostInfos =  postInfo.getReplyPostInfos();
+            }
+        }catch (Exception e){
+            logger.error("根据帖子的标志获取回帖信息列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        }finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return replyPostInfos;
+    }
+
 }

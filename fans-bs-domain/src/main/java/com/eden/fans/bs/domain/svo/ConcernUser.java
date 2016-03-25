@@ -14,24 +14,37 @@ public class ConcernUser implements Serializable {
     /**
      *用户编码
      */
-    private Integer userCode;
+    private Long userCode;
 
     /**
-     *1：关注，0：取消关注
+     * 用户昵称
+     */
+    private String userName;
+
+    /**
+     *1：点赞，0取消点赞
      */
     private int concern;
 
     /**
-     * 关注的时间
+     * 点赞的时间
      */
     private Date time;
 
-    public Integer getUserCode() {
+    public Long getUserCode() {
         return userCode;
     }
 
-    public void setUserCode(Integer userCode) {
+    public void setUserCode(Long userCode) {
         this.userCode = userCode;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public int getConcern() {
