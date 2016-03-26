@@ -22,7 +22,7 @@ public interface IPostService {
      * @param pageNum
      * @return
      */
-    public List<PostInfo> obtainPostByPage(String appCode,Integer pageNum);
+    public String obtainPostByPage(String appCode,Integer pageNum);
 
 
     /**
@@ -31,13 +31,13 @@ public interface IPostService {
      * @param pageNum
      * @return
      */
-    public List<PostInfo> obtainPostByUserCode(String appCode,Integer userCode,Integer pageNum);
+    public String obtainPostByUserCode(String appCode,Long userCode,Integer pageNum);
 
     /**
      * 根据帖子标识获取帖子
      *
      */
-    public PostInfo obtainPostById(String appCode,String id);
+    public String obtainPostById(String appCode,String id);
 
     /**
      * 创建帖子

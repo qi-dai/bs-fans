@@ -19,6 +19,20 @@ public interface IPostDao {
 
 
     /**
+     * 统计帖子的数目
+     * @param appCode
+     * @return
+     */
+    public Long countPost(String appCode);
+
+    /**
+     * 根据用户标识统计帖子的数目
+     * @param appCode
+     * @return
+     */
+    public Long countPostByUserCode(String appCode,Long userCode);
+
+    /**
      * 分页获取帖子
      * @param appCode
      * @param pageNum

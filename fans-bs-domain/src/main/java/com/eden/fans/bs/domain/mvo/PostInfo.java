@@ -22,7 +22,7 @@ public class PostInfo implements Serializable {
     /**
      * 帖子的唯一标识
      */
-    private String id;
+    private String _id;
 
     /**
      * 帖子的标题
@@ -102,12 +102,12 @@ public class PostInfo implements Serializable {
 
     private List<ReplyPostInfo> replyPostInfos = new ArrayList<ReplyPostInfo>();// 该属性的replyTime字段需要建索引
 
-    public String getId() {
-        return id;
+    public String get_id() {
+        return _id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getTitle() {

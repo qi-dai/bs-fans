@@ -20,42 +20,82 @@ public class RedisCache {
 
     /**
      * 设置key:value,永久存在
-     * */
+     * @param key
+     * @param value
+     */
     public void set(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
+
     /**
      * 设置key:value,自定义失效时间后失效
-     * */
+     * @param key
+     * @param value
+     * @param times
+     */
     public void set(String key, String value,long times) {
         redisTemplate.opsForValue().set(key, value, times, TimeUnit.SECONDS);
     }
 
     /**
      * 设置key:value,自定义失效时间后失效
-     * */
+     * @param key
+     * @param value
+     * @param times
+     * @param timeUnit
+     */
     public void set(String key, String value,long times,TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, value, times, timeUnit);
     }
 
     /**
      * 设置key:value,自定义失效时间后失效
-     * */
+     * @param key
+     * @return
+     */
     public String get(String key) {
        return redisTemplate.opsForValue().get(key);
     }
 
     /**
      * 设置对象到缓存
-     * */
+     * @param key
+     * @param obj
+     */
     public void set(String key,Object obj){
         redisTemplate.opsForValue().set(key, gson.toJson(obj));
     }
+
     /**
      * 从缓存中获取指定对象
-     * */
+     * @param key
+     * @param classOfT
+     * @param <T>
+     * @return
+     */
     public <T> T  get(String key,Class<T> classOfT){
         return gson.fromJson(redisTemplate.opsForValue().get(key),classOfT);
+    }
+
+
+    /**
+     * 设置key:value(自增)
+     */
+    public void incr(String key) {
+        redisTemplate.getConnectionFactory().getConnection().incr(key.getBytes());
+    }
+
+    /**
+     * 置key:value(自减)
+     * @param key
+     * @return
+     */
+     public void decr(String key) {
+        redisTemplate.getConnectionFactory().getConnection().decr(key.getBytes());
+    }
+
+    public void delete(String key){
+        redisTemplate.delete(key);
     }
 
     public StringRedisTemplate getRedisTemplate() {
@@ -66,7 +106,7 @@ public class RedisCache {
         this.redisTemplate = redisTemplate;
     }
 
-    public void delete(String key){
-        redisTemplate.delete(key);
-    }
+
+
+
 }

@@ -3,17 +3,14 @@ package com.eden.fans.bs.dao.impl;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IUserPostDao;
-import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.mvo.UserPostInfo;
 import com.eden.fans.bs.domain.svo.ConcernPost;
 import com.eden.fans.bs.domain.svo.PraisePost;
-import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,7 +1,10 @@
 package com.eden.fans.bs.service.impl;
 
+import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.dao.IPostDao;
+import com.eden.fans.bs.dao.IUserPostDao;
+import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
@@ -10,46 +13,62 @@ import com.eden.fans.bs.service.IPostService;
 import com.google.gson.Gson;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
  */
-@Service()
+@Service
 public class PostServiceImpl implements IPostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
     private static Gson PARSER = GsonUtil.getGson();
 
     @Autowired
+    private IUserPostDao userPostDao;
+    @Autowired
     private IPostDao postDao;
-
+    @Autowired
+    private RedisCache redisCache;
     /**
-     * 根据用户标识获取用户发的帖子列表
+     * 分页获取帖子列表
      *
      * @param appCode
      * @param pageNum
      * @return
      */
     @Override
-    public List<PostInfo> obtainPostByPage(String appCode, Integer pageNum) {
+    public String obtainPostByPage(String appCode, Integer pageNum) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{");
+        Long count = 0L;
+        String postCount = redisCache.get(Constant.REDIS.POST_COUNT_PREFIX + appCode);
+        if(null == postCount){
+            logger.warn("帖子的数量在缓存中不存在 请检查缓存设置~");
+            count = postDao.countPost(appCode);
+            redisCache.set(Constant.REDIS.POST_COUNT_PREFIX+appCode,count + "");
+        }
+
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
-        List<PostInfo> postInfoList = new ArrayList<PostInfo>(10);
+
         List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
-        if(null != dbObjectList && dbObjectList.size()>0){
-            for(DBObject dbObject:dbObjectList){
-                PostInfo postInfo = PARSER.fromJson(JSON.serialize(dbObject),PostInfo.class);
-                postInfoList.add(postInfo);
-            }
-        }
-        return postInfoList;
+        logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
+        dbObject2PostString(dbObjectList,stringBuilder,format);
+        stringBuilder.append(",\"total\":" + count);
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     /**
@@ -61,28 +80,44 @@ public class PostServiceImpl implements IPostService {
      * @return
      */
     @Override
-    public List<PostInfo> obtainPostByUserCode(String appCode, Integer userCode, Integer pageNum) {
+    public String obtainPostByUserCode(String appCode, Long userCode, Integer pageNum) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{");
+        Long count = 0L;
+        String postCount = redisCache.get(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode);
+        if(null == postCount){
+            logger.warn("用户的数量在缓存中不存在 请检查缓存设置~");
+            count = postDao.countPostByUserCode(appCode,userCode);
+            redisCache.set(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode,count + "");
+        }
+
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
-        List<PostInfo> postInfoList = new ArrayList<PostInfo>(10);
-        List<DBObject> dbObjectList = postDao.obtainPostByUserCode(appCode, userCode, pageNum);
-        if(null != dbObjectList && dbObjectList.size()>0){
-            for(DBObject dbObject:dbObjectList){
-                PostInfo postInfo = PARSER.fromJson(JSON.serialize(dbObject),PostInfo.class);
-                postInfoList.add(postInfo);
-            }
-        }
-        return postInfoList;
+
+        List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
+        logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
+        dbObject2PostString(dbObjectList,stringBuilder,format);
+        stringBuilder.append(",\"total\":" + count);
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
     @Override
-    public PostInfo obtainPostById(String appCode, String id) {
-        PostInfo postInfo = null;
+    public String obtainPostById(String appCode, String id) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("{");
         DBObject object = postDao.obtainPostById(appCode,id);
         if(null != object){
-            postInfo = PARSER.fromJson(JSON.serialize(object),PostInfo.class);
+            Set<String> keys = object.keySet();
+            keys.remove("_id");
+            for(String key:keys){
+                stringBuilder.append("\""+key+"\":\"" + object.get(key) + "\",");
+            }
+            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
         }
-        return postInfo;
+        stringBuilder.append("}");
+        return stringBuilder.toString();
     }
 
 
@@ -96,7 +131,12 @@ public class PostServiceImpl implements IPostService {
     public boolean createPost(String appCode, PostInfo postInfo) {
         String postString = PARSER.toJson(postInfo);
         DBObject dbObject = (DBObject)JSON.parse(postString);
-        return postDao.createPost(appCode, dbObject);
+        boolean result =  postDao.createPost(appCode, dbObject);
+        if(result){
+            redisCache.incr(Constant.REDIS.USER_POST_COUNT_PREFIX + postInfo.getUserCode() + "_" + appCode);
+            redisCache.incr(Constant.REDIS.POST_COUNT_PREFIX + appCode);
+        }
+        return result;
     }
 
     /**
@@ -238,6 +278,28 @@ public class PostServiceImpl implements IPostService {
         if(null == pageNum || pageNum<0)
             pageNum = 0;
         return postDao.queryReplyPostInfosByPage(appCode, id, pageNum);
+    }
+
+    /**
+     * 将帖子的对象map转成字符串
+     * @param dbObjectList
+     * @param stringBuilder
+     * @param format
+     */
+    private void dbObject2PostString(List<DBObject> dbObjectList,StringBuilder stringBuilder,SimpleDateFormat format){
+        stringBuilder.append("[");
+        if(null != dbObjectList && dbObjectList.size()>0){
+            for(DBObject dbObject:dbObjectList){
+                Date createTime = new Date((Long)dbObject.get("createTime"));
+                stringBuilder.append("{");
+                stringBuilder.append("\"id\":\"" + ((ObjectId)dbObject.get("_id")).toString() + "\",");
+                stringBuilder.append("\"title\":\"" + (String)dbObject.get("title") + "\",");
+                stringBuilder.append("\"createTime\":\"" + format.format(createTime) + "\"");
+                stringBuilder.append("},");
+            }
+        }
+        stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+        stringBuilder.append("]");
     }
 
 }

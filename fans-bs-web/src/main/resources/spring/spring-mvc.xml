@@ -58,11 +58,12 @@
             </list>
         </property>
     </bean>
-    
+
     <mvc:interceptors>
         <mvc:interceptor>
             <!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
             <mvc:mapping path="/" />
+            <mvc:mapping path="/post/**" />
             <mvc:mapping path="/user/**" />
             <bean id="securityInterceptor" class="com.eden.fans.bs.web.interceptor.SecurityInterceptor"></bean>
         </mvc:interceptor>

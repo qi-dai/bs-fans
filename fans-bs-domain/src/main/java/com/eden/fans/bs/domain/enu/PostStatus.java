@@ -1,7 +1,7 @@
 package com.eden.fans.bs.domain.enu;
 
 /**
- *贴纸类型描述
+ *帖子状态描述
  *
  * Created by Administrator on 2016/3/13.
  */
