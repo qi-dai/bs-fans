@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Administrator on 2016/3/22.
+ * Created by Administrator on 2016/3/26.
  */
 public class DateTimeAdapter implements JsonDeserializer<Date>,JsonSerializer<Date> {
     @Override
