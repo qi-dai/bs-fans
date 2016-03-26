@@ -1,6 +1,8 @@
 package com.eden.fans.bs.service;
 
+import com.eden.fans.bs.domain.request.RegisterRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
+import com.eden.fans.bs.domain.response.RegisterReponse;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -12,7 +14,7 @@ public interface IUserService {
     /**
      * 简易-用户快速注册service
      * */
-    public ServiceResponse<Boolean> addUserInfo(String phone,String password,String platform);
+    public ServiceResponse<RegisterReponse> addUserInfo(RegisterRequest registerRequest);
     /**
      * 用户填写详细资料注册service
      * */

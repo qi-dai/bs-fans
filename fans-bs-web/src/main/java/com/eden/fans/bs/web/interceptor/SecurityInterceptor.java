@@ -54,7 +54,6 @@ public class SecurityInterceptor implements HandlerInterceptor {
             }
             pwriter = httpServletResponse.getWriter();
             ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(SystemErrorEnum.ILLEGAL_REQUEST);
-            interCeptorResponse.setResult("中文输出乱码！");//To do 未解决
             pwriter.print(gson.toJson(interCeptorResponse));
             pwriter.flush();
         }catch (Exception e){

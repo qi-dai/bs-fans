@@ -48,8 +48,8 @@ public class MD5Util {
         MD5Util md51 = new MD5Util();
 
         try {
-            String x = md51.md5("073@1dfg", "k9opz");
-            String y = md51.md5s("073@1dfgk9opz");//加密4
+            String x = md51.md5("333@123", "k9opz");
+            String y = md51.md5s("333@123k9opz");//加密4
             System.out.println(x);
             System.out.println(y);
         } catch (Exception e) {

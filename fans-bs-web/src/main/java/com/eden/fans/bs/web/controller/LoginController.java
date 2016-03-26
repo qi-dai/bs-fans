@@ -2,6 +2,7 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.request.LoginRequest;
+import com.eden.fans.bs.domain.request.RegisterRequest;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IUserService;
@@ -37,8 +38,8 @@ public class LoginController {
 
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String registerUser(String phone, String password,String platform) throws Exception {
-        return gson.toJson(userService.addUserInfo(phone, password, platform));
+    public String registerUser(@ReqCheckParam RegisterRequest registerRequest) throws Exception {
+        return gson.toJson(userService.addUserInfo(registerRequest));
     }
 
     @RequestMapping(value = "/registerDetail", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")

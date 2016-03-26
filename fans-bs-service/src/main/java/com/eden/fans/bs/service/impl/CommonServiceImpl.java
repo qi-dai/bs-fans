@@ -49,7 +49,13 @@ public class CommonServiceImpl implements ICommonService{
             return false;
         }
         validCode = validCode.toUpperCase();
-        return sourceCode.toUpperCase().equals(validCode);
+        boolean checkResult = sourceCode.toUpperCase().equals(validCode);
+        if(checkResult){
+            redisCache.delete(Constant.REDIS.VALID_TIME+timestamp);
+            return checkResult;
+        }else{
+            return false;
+        }
     }
 
     @Override
@@ -133,6 +139,7 @@ public class CommonServiceImpl implements ICommonService{
             serviceResponse = new ServiceResponse<LoginResponse>();
             loginResponse.setToken(token);
             loginResponse.setIsSuccess(true);
+            loginResponse.setUserVo(userVo);
             serviceResponse.setResult(loginResponse);
             serviceResponse.setDetail("登录成功!");
             return serviceResponse;

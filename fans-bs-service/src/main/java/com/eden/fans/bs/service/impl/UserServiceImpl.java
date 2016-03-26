@@ -5,13 +5,11 @@ import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.request.RegisterRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
-import com.eden.fans.bs.domain.response.LoginResponse;
-import com.eden.fans.bs.domain.response.UserDetailResponse;
+import com.eden.fans.bs.domain.response.*;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
-import com.eden.fans.bs.domain.response.UserErrorCodeEnum;
-import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IUserService;
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -38,30 +36,45 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ServiceResponse<Boolean> addUserInfo(String phone,String password,String platform) {
-        ServiceResponse<Boolean> serviceResponse = null;
+    public ServiceResponse<RegisterReponse> addUserInfo(RegisterRequest registerRequest) {
+        ServiceResponse<RegisterReponse> serviceResponse = null;
         try{
-            //1.查询用户是否已存在
-            UserVo userVo = new UserVo();//加密用户密码
-            userVo.setPhone(phone);
-            UserVo userVo1 = userDao.qryUserVo(userVo);
-            if (userVo1!=null){
-                serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_EXIST_FAILED);
+            //0.校验验证码
+            /**输入密码错误次数达到3次，需校验验证码*/
+            boolean validFlag = commonService.checkValidCode(registerRequest.getTimestamp(), registerRequest.getValidCode());
+            if(!validFlag){
+                /**验证码错误直接返回*/
+                serviceResponse = new ServiceResponse<RegisterReponse>(UserErrorCodeEnum.VALIDCODE_CHECK_FAILED);
                 return serviceResponse;
             }
-            userVo.setPassword(MD5Util.md5(password, Constant.MD5_KEY));
-            userVo.setPlatform(platform);//使用平台
-            userVo.setUserName(phone);//手机号码作为默认昵称
+            //1.查询用户是否已存在
+            UserVo userVo = new UserVo();//加密用户密码
+            userVo.setPhone(registerRequest.getPhone());
+            UserVo userVo1 = userDao.qryUserVo(userVo);
+            if (userVo1!=null){
+                serviceResponse = new ServiceResponse<RegisterReponse>(UserErrorCodeEnum.USER_EXIST_FAILED);
+                return serviceResponse;
+            }
+            userVo.setPassword(MD5Util.md5(registerRequest.getPassword(), Constant.MD5_KEY));
+            userVo.setPlatform(registerRequest.getPlatform());//使用平台
+            userVo.setUserName(registerRequest.getPhone());//手机号码作为默认昵称
             userVo.setActiveLevel(0);//等级默认是0
             userVo.setUserStatus(1);//状态默认 1 正常
             userVo.setGender("un");//性别  unkown
             userVo.setUserRole("01");//角色，默认是01 普通用户
             boolean flag = userDao.addUserRecord(userVo);
-            serviceResponse = new ServiceResponse<Boolean>(flag);
-            serviceResponse.setDetail("注册成功！");
+            serviceResponse = new ServiceResponse<RegisterReponse>();
+            if(flag){
+                UserVo addedUser = userDao.qryUserVoByPhone(userVo.getPhone());
+                RegisterReponse registerReponse = new RegisterReponse();
+                registerReponse.setIsSuccess(flag);
+                registerReponse.setUserCode(addedUser.getUserCode());
+                serviceResponse.setResult(registerReponse);
+                serviceResponse.setDetail("注册成功！");
+            }
         }catch (Exception e){
-            logger.error("{}用户注册失败，操作数据库异常:{}",phone,e);
-            serviceResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.ADD_USER_FAILED);
+            logger.error("{}用户注册失败，操作数据库异常:{}",registerRequest.getPhone(),e);
+            serviceResponse = new ServiceResponse<RegisterReponse>(UserErrorCodeEnum.ADD_USER_FAILED);
         }
         return serviceResponse;
     }

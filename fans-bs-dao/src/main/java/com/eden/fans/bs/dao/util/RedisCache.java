@@ -65,4 +65,8 @@ public class RedisCache {
     public void setRedisTemplate(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
+
+    public void delete(String key){
+        redisTemplate.delete(key);
+    }
 }
