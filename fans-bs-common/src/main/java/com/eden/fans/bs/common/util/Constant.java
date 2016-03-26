@@ -36,7 +36,7 @@ public class Constant {
         /**
          *分页查询回帖count前缀
          */
-        public static final String POST_REPLY__COUNT_PREFIX="post_reply_count_";
+        public static final String POST_REPLY_COUNT_PREFIX="post_reply_count_";
 
         /**
          *分页查询某用户关注的帖子count前缀

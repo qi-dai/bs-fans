@@ -94,6 +94,10 @@ public class RedisCache {
         redisTemplate.getConnectionFactory().getConnection().decr(key.getBytes());
     }
 
+    public boolean exists(String key){
+        return redisTemplate.getConnectionFactory().getConnection().exists(key.getBytes());
+    }
+
     public void delete(String key){
         redisTemplate.delete(key);
     }

@@ -1,5 +1,6 @@
 package com.eden.fans.bs.dao;
 
+import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
@@ -62,12 +63,21 @@ public interface IPostDao {
     /**
      * 更新帖子状态（status）
      */
-    public boolean updateStatus(String appCode,String id,Integer status);
+    public boolean updateStatus(String appCode,String id,PostStatus status);
 
     /**
      *更新帖子的点赞用户列表（点赞、取消点赞）
      */
     public boolean updatePraiseUsers(String appCode,String id, PraiseUser praiseUser);
+
+    /**
+     * 更新回帖的列表
+     * @param appCode
+     * @param id
+     * @param replyPostInfo
+     * @return
+     */
+    public boolean updateReplyInfos(String appCode,String id,ReplyPostInfo replyPostInfo);
 
     /**
      *更新帖子的关注用户列表（关注、取消关注）
@@ -94,31 +104,31 @@ public interface IPostDao {
     /**
      * 获取所有关注的用户
      */
-    public List<ConcernUser> queryAllConcernUsers(String appCode,String id);
+    public String queryAllConcernUsers(String appCode,String id);
 
     /**
      * 获取所有点赞的用户
      */
-    public List<PraiseUser> queryAllPraiseUsers(String appCode,String id);
+    public String queryAllPraiseUsers(String appCode,String id);
 
     /**
      * 获取所有回帖信息列表
      */
-    public List<ReplyPostInfo> queryAllReplyPostInfos(String appCode,String id);
+    public String queryAllReplyPostInfos(String appCode,String id);
 
     /**
      * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      */
-    public List<ConcernUser> queryConcernUsersByPage(String appCode,String id,Integer pageNum);
+    public String queryConcernUsersByPage(String appCode,String id,Integer pageNum);
 
     /**
      * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      */
-    public List<PraiseUser> queryPraiseUsersByPage(String appCode,String id,Integer pageNum);
+    public String queryPraiseUsersByPage(String appCode,String id,Integer pageNum);
 
     /**
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      */
-    public List<ReplyPostInfo> queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
+    public String queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
 
 }
