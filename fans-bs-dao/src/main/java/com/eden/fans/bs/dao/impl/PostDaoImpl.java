@@ -39,6 +39,33 @@ public class PostDaoImpl implements IPostDao {
 
 
     /**
+     * 统计帖子的数目
+     *
+     * @param appCode
+     * @return
+     */
+    @Override
+    public Long countPost(String appCode) {
+        DBObject query = new BasicDBObject("status","正常");
+        return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
+    }
+
+    /**
+     * 根据用户标识统计帖子的数目
+     *
+     * @param appCode
+     * @param userCode
+     * @return
+     */
+    @Override
+    public Long countPostByUserCode(String appCode, Long userCode) {
+        DBObject query = new BasicDBObject();
+        query.put("userCode",userCode);
+        query.put("status","正常");
+        return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
+    }
+
+    /**
      * 分页获取帖子
      *
      * @param appCode

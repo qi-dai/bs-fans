@@ -1,6 +1,5 @@
 package com.eden.fans.bs.domain;
 
-import com.eden.fans.bs.domain.enu.PostLevel;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
