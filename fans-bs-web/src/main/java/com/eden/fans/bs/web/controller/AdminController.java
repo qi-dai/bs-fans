@@ -1,8 +1,7 @@
 package com.eden.fans.bs.web.controller;
 
-import com.eden.fans.bs.domain.user.UserVo;
+import com.eden.fans.bs.common.util.UserGsonUtil;
 import com.eden.fans.bs.service.IUserService;
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +21,9 @@ public class AdminController {
     @Autowired
     private IUserService userService;
 
-    private static Gson gson = new Gson();
-
     @RequestMapping(value = "/setAdmin", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String setAdmin(String adminUserCode,String userCode) throws Exception {
-        return gson.toJson(userService.setAdminRole(adminUserCode, userCode));
+        return UserGsonUtil.getGson().toJson(userService.setAdminRole(adminUserCode, userCode));
     }
 }
