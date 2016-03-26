@@ -64,7 +64,7 @@ public class ControllerAop {
                     }
                     ServiceResponse<Void> checkResult = verifyNotNullParams(joinPoint.getArgs()[i]);
                     if (checkResult != requestSuccess) {
-                        logger.error("必填参数校验不通过：入参{}", gson.toJson(joinPoint.getArgs()[i]));
+                        logger.error("必填参数校验不通过：路径{},入参{}", executeMethod,gson.toJson(joinPoint.getArgs()[i]));
                         return gson.toJson(checkResult);
                     }
                 }

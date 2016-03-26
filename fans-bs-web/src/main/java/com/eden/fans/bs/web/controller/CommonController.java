@@ -75,7 +75,7 @@ public class CommonController {
 		codeY = height - 2;
 	}
 
-	@RequestMapping(value = "/getValidCode", method = RequestMethod.GET)
+	@RequestMapping(value = "/getValidCode", method = {RequestMethod.GET, RequestMethod.POST})
 	public void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, java.io.IOException {
 		String timestamp = req.getParameter("timestamp");
