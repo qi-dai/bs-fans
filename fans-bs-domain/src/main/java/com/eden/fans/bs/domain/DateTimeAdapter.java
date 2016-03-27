@@ -16,6 +16,7 @@ public class DateTimeAdapter implements JsonDeserializer<Date>,JsonSerializer<Da
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         try {
+
             date = formatter.parse(jsonElement.getAsString());
         } catch (ParseException e) {
             date = new Date();

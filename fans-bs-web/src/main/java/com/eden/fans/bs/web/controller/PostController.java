@@ -5,6 +5,10 @@ import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.domain.svo.ConcernPost;
+import com.eden.fans.bs.domain.svo.ConcernUser;
+import com.eden.fans.bs.domain.svo.PraiseUser;
+import com.eden.fans.bs.domain.svo.ReplyPostInfo;
 import com.eden.fans.bs.service.IPostService;
 import com.eden.fans.bs.service.IUserPostService;
 import com.google.gson.Gson;
@@ -37,6 +41,13 @@ public class PostController {
 
     private static Gson gson = GsonUtil.getGson();
 
+    /**
+     * 创建帖子
+     * @param appCode
+     * @param postInfo
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/createPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String createPost(@RequestParam(value="appCode",required=true) String appCode,PostInfo postInfo) throws Exception {
@@ -45,12 +56,19 @@ public class PostController {
         if(result){
             response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_SUCCESS);
         } else {
-            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_FAILD);
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_FAILED);
         }
         response.setResult(result);
         return gson.toJson(response);
     }
 
+    /**
+     * 分页获取帖子（所有）
+     * @param appCode
+     * @param pageNum
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/obtainPostByPage", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String obtainPostByPage(@RequestParam(value="appCode",required=true) String appCode,Integer pageNum) throws Exception {
@@ -60,6 +78,14 @@ public class PostController {
         return gson.toJson(response);
     }
 
+    /**
+     * 根据帖子的创建人获取帖子
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/obtainPostByUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String obtainPostByUser(@RequestParam(value="appCode",required=true) String appCode,
@@ -70,6 +96,13 @@ public class PostController {
         return gson.toJson(response);
     }
 
+    /**
+     * 根据帖子的id获取帖子的基本信息
+     * @param appCode
+     * @param id
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/obtainPostById", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String obtainPostById(@RequestParam(value="appCode",required=true) String appCode,String id) throws Exception {
@@ -79,4 +112,183 @@ public class PostController {
         return gson.toJson(response);
     }
 
+    /**
+     * 点赞、取消点赞帖子
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/praisePost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String praisePost(@RequestParam(value="appCode",required=true) String appCode,
+                             @RequestParam(value="postId",required=true) String postId,PraiseUser praiseUser) throws Exception {
+        logger.error("帖子点赞信息，appCode:{},postId:{},praiseUser:{}",new Object[]{appCode,postId,gson.toJson(praiseUser)});
+        ServiceResponse<Boolean> response = null;
+        boolean result = postService.updatePraiseUsers(appCode, postId, praiseUser);
+        if(result){
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.PRAISE_POST_SUCCESS);
+        } else {
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.PRAISE_POST_FAILED);
+            logger.error("帖子点赞失败，appCode:{},postId:{},praiseUser:{}",new Object[]{appCode,postId,gson.toJson(praiseUser)});
+        }
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 关注、取消关注帖子
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/concernPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String concernPost(@RequestParam(value="appCode",required=true) String appCode,
+                              @RequestParam(value="postId",required=true) String postId, ConcernUser concernUser) throws Exception {
+        logger.error("关注帖子信息，appCode:{},postId:{},concernUser:{}",new Object[]{appCode,postId,gson.toJson(concernUser)});
+        ServiceResponse<Boolean> response = null;
+        boolean result = postService.updateConcernUsers(appCode, postId, concernUser);
+        if(result){
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CONCERN_POST_SUCCESS);
+        } else {
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CONCERN_POST_FAILED);
+            logger.error("关注帖子失败，appCode:{},postId:{},concernUser:{}",new Object[]{appCode,postId,gson.toJson(concernUser)});
+        }
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 回帖
+     * @param appCode
+     * @param postId
+     * @param replyPostInfo
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/replyPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String replyPost(@RequestParam(value="appCode",required=true) String appCode,
+                            @RequestParam(value="postId",required=true) String postId, ReplyPostInfo replyPostInfo) throws Exception {
+        logger.info("回帖信息，appCode:{},postId:{},replyPostInfo:{}",new Object[]{appCode,postId,gson.toJson(replyPostInfo)});
+        boolean result = postService.updateReplyInfos(appCode,postId,replyPostInfo);
+        ServiceResponse<Boolean> response = null;
+        if(result){
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.REPLY_POST_SUCCESS);
+        } else {
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.REPLY_POST_FAILED);
+            logger.error("回帖失败，appCode:{},postId:{},replyPostInfo:{}",new Object[]{appCode,postId,gson.toJson(replyPostInfo)});
+        }
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+    /**
+     * 根获取所有关注的用户
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/allConcernUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String allConcernUser(@RequestParam(value="appCode",required=true) String appCode,
+                                 @RequestParam(value="postId",required=true) String postId) throws Exception {
+        logger.info("获取所有关注的用户，appCode:{},postId:{}",appCode,postId);
+        String result = postService.queryAllConcernUsers(appCode,postId);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 获取所有点赞的用户
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/allPraiseUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String allPraiseUser(@RequestParam(value="appCode",required=true) String appCode,
+                                @RequestParam(value="postId",required=true) String postId) throws Exception {
+        logger.info("获取所有点赞的用户，appCode:{},postId:{}",appCode,postId);
+        String result = postService.queryAllPraiseUsers(appCode,postId);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 获取所有回帖信息列表
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/allReplyPostInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String allReplyPostInfo(@RequestParam(value="appCode",required=true) String appCode,
+                                   @RequestParam(value="postId",required=true) String postId) throws Exception {
+        logger.info("获取所有回帖信息，appCode:{},postId:{}",appCode,postId);
+        String result = postService.queryAllReplyPostInfos(appCode,postId);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 根据帖子的标志获取帖子下关注的用户列表
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/concernUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String concernUser(@RequestParam(value="appCode",required=true) String appCode,
+                              @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
+        logger.info("根据帖子的标志获取帖子下关注的用户，appCode:{},postId:{},pageNum:{}",new Object[]{appCode,postId,pageNum});
+        String result = postService.queryConcernUsersByPage(appCode, postId, pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 获根据帖子的标志获取帖子下点赞的用户列表
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/praiseUser", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String praiseUser(@RequestParam(value="appCode",required=true) String appCode,
+                             @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
+        logger.info("获根据帖子的标志获取帖子下点赞的用户，appCode:{},postId:{},pageNum:{}",new Object[]{appCode,postId,pageNum});
+        String result = postService.queryPraiseUsersByPage(appCode, postId, pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    /**
+     * 根据帖子的标志获取回帖信息列表
+     * @param appCode
+     * @param postId
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/replyPostInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String replyPostInfo(@RequestParam(value="appCode",required=true) String appCode,
+                                @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
+        logger.info("根据帖子的标志获取回帖信息，appCode:{},postId:{},pageNum",new Object[]{appCode,postId,pageNum});
+        String result = postService.queryReplyPostInfosByPage(appCode, postId, pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
 }
