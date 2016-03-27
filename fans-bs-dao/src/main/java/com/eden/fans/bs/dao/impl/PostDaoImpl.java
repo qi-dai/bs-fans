@@ -344,6 +344,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject object = new BasicDBObject();
         object.put("_id",new ObjectId(postId));
         object.put("concernUsers.concern",1);
+
         DBObject keys = new BasicDBObject();
         keys.put("concernUsers.userCode", 1);
         keys.put("concernUsers.userName", 1);
@@ -400,7 +401,7 @@ public class PostDaoImpl implements IPostDao {
     }
 
     /**
-     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      *
      * @param appCode
      * @param postId
@@ -433,7 +434,7 @@ public class PostDaoImpl implements IPostDao {
     }
 
     /**
-     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      *
      * @param appCode
      * @param postId

@@ -334,7 +334,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     /**
-     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      *
      * @param appCode
      * @param id
@@ -343,20 +343,21 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String queryConcernUsersByPage(String appCode, String id, Integer pageNum) {
         Long count = 0L;
-        boolean postCountExists = redisCache.exists(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
-        if(postCountExists){
+        String postCount = redisCache.get(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
+        if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
             count = postDao.countConcernUsers(appCode,id);
+            postCount = count+"";
             redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryConcernUsersByPage(appCode, id, pageNum);
+        return postDao.queryConcernUsersByPage(appCode, id, pageNum) + ",\"total\":"+postCount;
     }
 
     /**
-     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      *
      * @param appCode
      * @param id
@@ -365,16 +366,17 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String queryPraiseUsersByPage(String appCode, String id, Integer pageNum) {
         Long count = 0L;
-        boolean postCountExists = redisCache.exists(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
-        if(postCountExists){
+        String postCount = redisCache.get(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
+        if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
             count = postDao.countPraiseUsers(appCode,id);
+            postCount = count + "";
             redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryPraiseUsersByPage(appCode, id,pageNum);
+        return postDao.queryPraiseUsersByPage(appCode, id,pageNum) + ",\"total\":" + postCount;
     }
 
     /**
@@ -387,18 +389,17 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String queryReplyPostInfosByPage(String appCode, String id, Integer pageNum) {
         Long count = 0L;
-        boolean postCountExists = redisCache.exists(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode);
-        if(postCountExists){
+        String postCount = redisCache.get(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode);
+        if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
             count = postDao.countReplyPostInfos(appCode,id);
+            postCount = count + "";
             redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-
-
-        return postDao.queryReplyPostInfosByPage(appCode, id, pageNum);
+        return postDao.queryReplyPostInfosByPage(appCode, id, pageNum) + ",\"total\":" + postCount;
     }
 
     /**

@@ -117,12 +117,12 @@ public interface IPostDao {
     public String queryAllReplyPostInfos(String appCode,String id);
 
     /**
-     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      */
     public String queryConcernUsersByPage(String appCode,String id,Integer pageNum);
 
     /**
-     * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
+     * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      */
     public String queryPraiseUsersByPage(String appCode,String id,Integer pageNum);
 
