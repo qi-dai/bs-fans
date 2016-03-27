@@ -65,6 +65,8 @@
             <mvc:mapping path="/" />
             <mvc:mapping path="/post/**" />
             <mvc:mapping path="/user/**" />
+            <mvc:exclude-mapping path="/"/>
+            <mvc:exclude-mapping path="/user/resetPwd"/>
             <bean id="securityInterceptor" class="com.eden.fans.bs.web.interceptor.SecurityInterceptor"></bean>
         </mvc:interceptor>
         <mvc:interceptor>

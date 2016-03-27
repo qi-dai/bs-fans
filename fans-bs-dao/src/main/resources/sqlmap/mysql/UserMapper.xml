@@ -96,6 +96,6 @@
     <!-- 设置管理员 -->
     <update id="resetPwd" parameterType="com.eden.fans.bs.domain.user.UserVo">
         update user_info set password = #{password,jdbcType=VARCHAR},update_time = now()
-        where user_code = #{userCode,jdbcType=BIGINT}
+        where phone = #{phone,jdbcType=VARCHAR}
     </update>
 </mapper>

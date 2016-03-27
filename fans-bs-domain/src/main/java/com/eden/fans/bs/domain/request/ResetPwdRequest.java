@@ -1,5 +1,7 @@
 package com.eden.fans.bs.domain.request;
 
+import com.eden.fans.bs.domain.annotation.ActionInput;
+
 import java.io.Serializable;
 
 /**
@@ -22,7 +24,7 @@ public class ResetPwdRequest implements Serializable{
     public void setToken(String token) {
         this.token = token;
     }
-
+    @ActionInput(notNull = true)
     public String getPhone() {
         return phone;
     }
@@ -39,6 +41,7 @@ public class ResetPwdRequest implements Serializable{
         this.userCode = userCode;
     }
 
+    @ActionInput(notNull = true)
     public String getOldPwd() {
         return oldPwd;
     }
@@ -47,6 +50,7 @@ public class ResetPwdRequest implements Serializable{
         this.oldPwd = oldPwd;
     }
 
+    @ActionInput(notNull = true)
     public String getNewPwd() {
         return newPwd;
     }
@@ -55,6 +59,7 @@ public class ResetPwdRequest implements Serializable{
         this.newPwd = newPwd;
     }
 
+    @ActionInput(notNull = true)
     public String getTimestamp() {
         return timestamp;
     }
@@ -63,6 +68,7 @@ public class ResetPwdRequest implements Serializable{
         this.timestamp = timestamp;
     }
 
+    @ActionInput(notNull = true)
     public String getValidCode() {
         return validCode;
     }

@@ -236,7 +236,7 @@ public class UserServiceImpl implements IUserService {
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_ERROR);
                 return updateUserResponse;
             }
-            redisCache.set(userVo.getPhone(),userDao.qryUserVoByUserCode(resetPwdRequest.getUserCode()));
+            redisCache.set(userVo.getPhone(),userDao.qryUserVoByPhone(resetPwdRequest.getPhone()));
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("设置密码成功");
