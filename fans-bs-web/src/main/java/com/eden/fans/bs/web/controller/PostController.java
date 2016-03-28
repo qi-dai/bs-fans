@@ -99,14 +99,14 @@ public class PostController {
     /**
      * 根据帖子的id获取帖子的基本信息
      * @param appCode
-     * @param id
+     * @param postId
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/obtainPostById", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String obtainPostById(@RequestParam(value="appCode",required=true) String appCode,String id) throws Exception {
-        String result = postService.obtainPostById(appCode,id);
+    public String obtainPostById(@RequestParam(value="appCode",required=true) String appCode,String postId) throws Exception {
+        String result = postService.obtainPostById(appCode,postId);
         ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
         response.setResult(result);
         return gson.toJson(response);
