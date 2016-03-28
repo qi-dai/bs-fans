@@ -107,15 +107,18 @@ public class PostDaoImpl implements IPostDao {
      * @return
      */
     @Override
-    public List<DBObject> obtainPostByUserCode(String appCode, Integer userCode, Integer pageNum) {
+    public List<DBObject> obtainPostByUserCode(String appCode, Long userCode, Integer pageNum) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
         DBObject sort = new BasicDBObject();
         sort.put("createDate",-1);
+
         DBObject query = new BasicDBObject("userCode",userCode);
+
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
         keys.put("createDate", 1);
+
         DBCursor cursor = null;
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).sort(sort).skip(pageNum*10).limit(10);

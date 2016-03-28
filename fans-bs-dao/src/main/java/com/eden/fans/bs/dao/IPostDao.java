@@ -47,7 +47,7 @@ public interface IPostDao {
      * @param pageNum
      * @return
      */
-    public List<DBObject> obtainPostByUserCode(String appCode,Integer userCode,Integer pageNum);
+    public List<DBObject> obtainPostByUserCode(String appCode,Long userCode,Integer pageNum);
 
     /**
      * 根据帖子标识获取帖子
