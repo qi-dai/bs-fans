@@ -180,14 +180,18 @@ public class UserPostDaoImpl implements IUserPostDao {
         queryObject.put("userCode",userCode);
         queryObject.put("concerns.status",1);
 
+        DBObject sortObject = new BasicDBObject();
+        sortObject.put("time",-1);
+
         DBObject keys = new BasicDBObject();
         keys.put("concerns", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
         DBCursor cursor = null;
         String concernPostString = null;
         try{
-            cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
+            cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
+
                 concernPostString = JSON.serialize(dbObject.get("concerns"));
             }
         } catch (Exception e){
@@ -213,12 +217,15 @@ public class UserPostDaoImpl implements IUserPostDao {
         queryObject.put("userCode",userCode);
         queryObject.put("praises.status",1);
 
+        DBObject sortObject = new BasicDBObject();
+        sortObject.put("time",-1);
+
         DBObject keys = new BasicDBObject();
         keys.put("praises", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
         DBCursor cursor = null;
         String praisePostString = null;
         try{
-            cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
+            cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 praisePostString = JSON.serialize(dbObject.get("praises"));

@@ -2,7 +2,10 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.domain.mvo.PostInfo;
+import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
+import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.IPostService;
+import com.eden.fans.bs.service.IUserPostService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -26,20 +30,48 @@ public class UserPostController {
 
     private static Logger logger = LoggerFactory.getLogger(UserPostController.class);
     @Autowired
-    private IPostService PostService;
+    private IUserPostService userPostService;
 
     private static Gson gson = GsonUtil.getGson();
 
-    @RequestMapping(value = "/createPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/queryPraisePost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String createPost(PostInfo postInfo) throws Exception {
-        return null;
+    public String queryPraisePost(@RequestParam(value="appCode",required=true) String appCode,
+                                  @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        String result = userPostService.queryPraisePostByPage(appCode, userCode, pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
     }
 
-    @RequestMapping(value = "/obtainPostByPage", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/queryConcernPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String obtainPostByPage(String appCode,Integer pageNum) throws Exception {
-       return null;
+    public String queryConcernPost(@RequestParam(value="appCode",required=true) String appCode,
+                   @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        String result = userPostService.queryConcernPostByPage(appCode, userCode, pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    @RequestMapping(value = "/queryAllPraisePost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String queryAllPraisePost(@RequestParam(value="appCode",required=true) String appCode,
+                                     @RequestParam(value="userCode",required=true) Long userCode) throws Exception {
+        String result = userPostService.queryAllPraisePost(appCode, userCode);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    @RequestMapping(value = "/queryAllConcernPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String queryAllConcernPost(@RequestParam(value="appCode",required=true) String appCode,
+                                      @RequestParam(value="userCode",required=true) Long userCode) throws Exception {
+        String result = userPostService.queryAllConcernPost(appCode, userCode);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
     }
 
 }

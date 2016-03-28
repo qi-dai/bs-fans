@@ -50,12 +50,13 @@ public class PostServiceImpl implements IPostService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
-        Long count = 0L;
-        boolean postCountExists = redisCache.exists(Constant.REDIS.POST_COUNT_PREFIX + appCode);
-        if(postCountExists){
+        stringBuilder.append("[");
+        String postCount = redisCache.get(Constant.REDIS.POST_COUNT_PREFIX + appCode);
+        if(null == postCount){
             logger.warn("帖子的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countPost(appCode);
-            redisCache.set(Constant.REDIS.POST_COUNT_PREFIX+appCode,count + "");
+            Long count = postDao.countPost(appCode);
+            postCount = count + "";
+            redisCache.set(Constant.REDIS.POST_COUNT_PREFIX+appCode,postCount);
         }
 
         if(null == pageNum || pageNum < 0)
@@ -64,7 +65,7 @@ public class PostServiceImpl implements IPostService {
         List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
         logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
         dbObject2PostString(dbObjectList,stringBuilder,format);
-        stringBuilder.append(",\"total\":" + count);
+        stringBuilder.append("],\"total\":" + postCount);
         stringBuilder.append("}");
         return stringBuilder.toString();
     }
@@ -82,12 +83,12 @@ public class PostServiceImpl implements IPostService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("{");
-        Long count = 0L;
-        boolean postCountExists = redisCache.exists(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode);
-        if(postCountExists){
+        String postCount = redisCache.get(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode);
+        if(null == postCount){
             logger.warn("用户的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countPostByUserCode(appCode,userCode);
-            redisCache.set(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode,count + "");
+            Long count = postDao.countPostByUserCode(appCode,userCode);
+            postCount = count + "";
+            redisCache.set(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode,postCount);
         }
 
         if(null == pageNum || pageNum < 0)
@@ -96,7 +97,7 @@ public class PostServiceImpl implements IPostService {
         List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
         logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
         dbObject2PostString(dbObjectList,stringBuilder,format);
-        stringBuilder.append(",\"total\":" + count);
+        stringBuilder.append("],\"total\":" + postCount);
         stringBuilder.append("}");
         return stringBuilder.toString();
     }
