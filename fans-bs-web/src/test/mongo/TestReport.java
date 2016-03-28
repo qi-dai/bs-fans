@@ -35,6 +35,7 @@ import java.util.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/spring-config-mongo.xml"})
 public class TestReport {
+
     private static final Logger logger = LoggerFactory.getLogger(TestReport.class);
     public static final String POST_COLLECTION = "post";
     private static Gson PARSER = GsonUtil.getGson();
