@@ -27,10 +27,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shengyanpeng on 2016/3/21.
@@ -90,8 +87,27 @@ public class TestReport {
         long startTime = System.currentTimeMillis();
         PostInfo postInfo = new PostInfo();
         createPost(postInfo);
+        /*for(int i=0;i<10;i++){
+            DBObject dbObject = new BasicDBObject();
+            Map<String,Object> params = new HashMap<String, Object>(20);
+            PostInfo.class
+            //DBObject dbObject = (DBObject) JSON.parse(PARSER.toJson(postInfo));
+            dbObject.putAll();
+            int result = this.mongoTemplate.getCollection(POST_COLLECTION).insert(dbObject).getN();
+            System.out.println(result);
+        }*/
+        System.out.println("cost:" + (System.currentTimeMillis() - startTime));
+    }
+
+    @Test
+    public void createPostByMap(){
+        long startTime = System.currentTimeMillis();
+        PostInfo postInfo = new PostInfo();
+        createPost(postInfo);
         for(int i=0;i<10;i++){
-            DBObject dbObject = (DBObject) JSON.parse(PARSER.toJson(postInfo));
+            DBObject dbObject = new BasicDBObject();
+            Map<String,Object> params = new HashMap<String, Object>(20);
+            params.put("userCode",123456101);
             int result = this.mongoTemplate.getCollection(POST_COLLECTION).insert(dbObject).getN();
             System.out.println(result);
         }
@@ -99,15 +115,27 @@ public class TestReport {
     }
 
     @Test
+    public void updatePost(){
+        String posdId = "56f268bf28459a384d1db612";
+        Query query = Query.query(Criteria.where("_id").is(posdId));
+        Update update = new Update();
+        update.set("publishDate", new Date());
+
+        System.out.println(this.mongoTemplate.upsert(query, update, POST_COLLECTION).getN());
+    }
+
+    @Test
     public void queryPost(){
-        String posdId = "56f268bf28459a384d1db60c";
+        String posdId = "56f268bf28459a384d1db612";
         DBObject id = new BasicDBObject("_id",new ObjectId(posdId));
         DBObject keys = new BasicDBObject();
         setPostKeys(keys);
         DBObject dbObject = this.mongoTemplate.getCollection(POST_COLLECTION).findOne(id, keys);
         String dbString = JSON.serialize(dbObject);
-        PostInfo postInfo = PARSER.fromJson(dbString, PostInfo.class);
-        System.out.println(dbString);
+        Date date = new Date();
+        //date.dbObject.get("publishDate");
+        //PostInfo postInfo = PARSER.fromJson(dbString, PostInfo.class);
+        System.out.println(dbObject.get("publishDate"));
     }
 
     @Test
@@ -215,8 +243,8 @@ public class TestReport {
         keys.put("videos",1);
         keys.put("musics",1);
         keys.put("others",1);
-        //keys.put("createDate",1);
-        //keys.put("publishDate",1);
+        keys.put("createDate",1);
+        keys.put("publishDate",1);
         keys.put("status",1);
         keys.put("level", 1);
     }
@@ -237,7 +265,7 @@ public class TestReport {
         postInfo.setTitle("测试帖子");
         postInfo.setType(PostType.TEXT_MESSAGE);
         postInfo.setContent("测试帖子的内容");
-        postInfo.setUserCode(12345610L);
+        postInfo.setUserCode(123456101L);
         PostImg img1 = new PostImg();
         img1.setIndex(1);
         img1.setImgUrl("http://y1.ifengimg.com/a/2016_13/d653ddbb945c9b0.jpg");
