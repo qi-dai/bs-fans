@@ -135,11 +135,11 @@
 				<fans.bs.datasource.maxIdle>10</fans.bs.datasource.maxIdle>
 				<fans.bs.datasource.minIdle>5</fans.bs.datasource.minIdle>
 				<!-- Mongo -->
-				<fans.bs.mongo.host>192.168.166.30</fans.bs.mongo.host>
-				<fans.bs.mongo.port>20011</fans.bs.mongo.port>
-				<fans.bs.mongo.username>salesanalysis_rw</fans.bs.mongo.username>
-				<fans.bs.mongo.password>salesanalysis_pwd</fans.bs.mongo.password>
-				<fans.bs.mongo.db>salesanalysis</fans.bs.mongo.db>
+				<fans.bs.mongo.host>127.0.0.1</fans.bs.mongo.host>
+				<fans.bs.mongo.port>27017</fans.bs.mongo.port>
+				<fans.bs.mongo.username>admin</fans.bs.mongo.username>
+				<fans.bs.mongo.password>admin</fans.bs.mongo.password>
+				<fans.bs.mongo.db>admin</fans.bs.mongo.db>
 				<fans.bs.mongo.connectionsPerHost>8</fans.bs.mongo.connectionsPerHost>
 				<fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>5</fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>
 				<fans.bs.mongo.maxWaitTime>1500</fans.bs.mongo.maxWaitTime>

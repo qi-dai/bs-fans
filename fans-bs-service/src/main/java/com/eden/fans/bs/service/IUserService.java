@@ -2,6 +2,8 @@ package com.eden.fans.bs.service;
 
 import com.eden.fans.bs.domain.request.RegisterRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
+import com.eden.fans.bs.domain.request.SetAdminRequest;
+import com.eden.fans.bs.domain.request.StatusUpdateRequest;
 import com.eden.fans.bs.domain.response.RegisterReponse;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserVo;
@@ -34,10 +36,20 @@ public interface IUserService {
      * 设置管理员
      * 记录管理员操作记录
      * */
-    public ServiceResponse<Boolean> setAdminRole(String adminUserCode,String targetUserCode);
+    public ServiceResponse<Boolean> setAdminRole(SetAdminRequest setAdminRequest);
 
     /**
      * 重设密码
      * */
     public ServiceResponse<Boolean> resetPwd(ResetPwdRequest resetPwdRequest);
+
+    /**
+     * 设置用户状态-需管理员权限才可操作
+     * */
+    public ServiceResponse<Boolean> updateUserStatus(StatusUpdateRequest StatusUpdateRequest);
+
+    /**
+     * 刷新用户缓存信息
+     * */
+    public ServiceResponse<Boolean> freshUserInfo(String phone);
 }

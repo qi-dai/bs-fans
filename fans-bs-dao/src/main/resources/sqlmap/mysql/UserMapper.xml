@@ -98,4 +98,9 @@
         update user_info set password = #{password,jdbcType=VARCHAR},update_time = now()
         where phone = #{phone,jdbcType=VARCHAR}
     </update>
+    <!-- 设置管理员 -->
+    <update id="updateUserStatus" parameterType="com.eden.fans.bs.domain.user.UserVo">
+        update user_info set user_status = #{userStatus,jdbcType=TINYINT},update_time = now()
+        where user_code = #{userCode,jdbcType=VARCHAR}
+    </update>
 </mapper>

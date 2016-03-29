@@ -47,4 +47,10 @@ public class LoginController {
     public String checkUser(@ReqCheckParam LoginRequest loginRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(commonService.checkUserInfo(loginRequest));
     }
+
+    @RequestMapping(value = "/freshUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String freshUserIno(String phone) throws Exception {
+        return UserGsonUtil.getGson().toJson(userService.freshUserInfo(phone));
+    }
 }

@@ -107,7 +107,7 @@ public class CommonServiceImpl implements ICommonService{
                 serviceResponse.setResult(loginResponse);
                 return serviceResponse;
             }
-            /**4.验证通过，a存放用户信息到redis；b存放登录信息到redis*/
+            /**4.验证通过，a存放用户信息到redis；b存放登录信息到redis,c删除错误密码次数，不用再输入验证码*/
             String token = UUID.randomUUID().toString();
             token = token.replace("-","");
 
@@ -136,6 +136,7 @@ public class CommonServiceImpl implements ICommonService{
             }
             redisCache.set(Constant.REDIS.TOKEN+loginRequest.getPhone(),tokensb.toString());//多个设备上登录，存放token集合，以_作为分隔符
             logger.error("生成唯一token:{},phone:{}", token, loginRequest.getPhone());
+            redisCache.delete(loginRequest.getPhone()+Constant.REDIS.PWD_ERROR_NUM);
             serviceResponse = new ServiceResponse<LoginResponse>();
             loginResponse.setToken(token);
             loginResponse.setIsSuccess(true);

@@ -2,11 +2,14 @@ package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
+import com.eden.fans.bs.common.util.UserUtils;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.request.RegisterRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
+import com.eden.fans.bs.domain.request.SetAdminRequest;
+import com.eden.fans.bs.domain.request.StatusUpdateRequest;
 import com.eden.fans.bs.domain.response.*;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
@@ -159,34 +162,39 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public ServiceResponse<Boolean> setAdminRole(String adminUserCode, String targetUserCode) {
+    public ServiceResponse<Boolean> setAdminRole(SetAdminRequest setAdminRequest) {
         ServiceResponse<Boolean> updateUserResponse = null;
+        Long targetUserCode = setAdminRequest.getUserCode();
         try{
+            //1.获取管理员信息
+            UserVo userVo = redisCache.get(setAdminRequest.getPhone(), UserVo.class);
+            Long adminUserCode = userVo.getUserCode();
+            //2.更新用户角色
             UserVo adminUser = new UserVo();
-            adminUser.setUserCode(Long.valueOf(targetUserCode));
+            adminUser.setUserCode(setAdminRequest.getUserCode());
             adminUser.setUserRole("02");//管理员编码02
             boolean updateFlag = userDao.updateUserRecord(adminUser,"UserMapper.setAdmin");
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.SET_ADMIN_ERROR);
                 return updateUserResponse;
-            }else{
-                //增加操作记录，可降级，增加不成功也算设置成功。
-                try{
-                    UserOperVo userOperVo = new UserOperVo();
-                    userOperVo.setOperCode(Long.valueOf(adminUserCode));
-                    userOperVo.setUserCode(Long.valueOf(targetUserCode));
-                    userOperVo.setOperDesc("设置管理员");
-                    userOperVo.setOperType("05");//设置管理员
-                    boolean flag = operUserDao.addOperUserRecord(userOperVo);
-                    if(!flag){
-                        logger.error("管理员：{},设置{}成管理员失败",adminUserCode,targetUserCode);
-                    }
-                }catch(Exception e){
-                    logger.error("管理员：{},设置{}成管理员失败,操作数据库异常，",adminUserCode,targetUserCode,e);
-                }
             }
-            UserVo userVoAdmin =userDao.qryUserVoByUserCode(Long.valueOf(targetUserCode));
-            redisCache.set(userVoAdmin.getPhone(),userVoAdmin);
+            //3.增加操作记录，可降级，增加不成功也算设置成功。
+            try{
+                UserOperVo userOperVo = new UserOperVo();
+                userOperVo.setOperCode(adminUserCode);
+                userOperVo.setUserCode(targetUserCode);
+                userOperVo.setOperDesc("设置管理员");
+                userOperVo.setOperType("05");//设置管理员
+                boolean flag = operUserDao.addOperUserRecord(userOperVo);
+                if(!flag){
+                    logger.error("管理员：{},设置{}成管理员，添加操作记录失败",adminUserCode,targetUserCode);
+                }
+            }catch(Exception e){
+                logger.error("管理员：{},设置{}成管理员，添加操作记录失败,操作数据库异常，",adminUserCode,targetUserCode,e);
+            }
+            //4.刷新redis缓存用户信息
+            refreshRedisUserInfo(targetUserCode);
+            //5.构建返回报文
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("设置管理员成功");
@@ -201,7 +209,7 @@ public class UserServiceImpl implements IUserService {
     public ServiceResponse<Boolean> resetPwd(ResetPwdRequest resetPwdRequest) {
         ServiceResponse<Boolean> updateUserResponse = null;
         try{
-            //0.校验验证码
+            //1.校验验证码
             boolean validFlag = commonService.checkValidCode(resetPwdRequest.getTimestamp(), resetPwdRequest.getValidCode());
             if(!validFlag){
                 /**验证码错误直接返回*/
@@ -209,7 +217,7 @@ public class UserServiceImpl implements IUserService {
                 updateUserResponse.setResult(false);
                 return updateUserResponse;
             }
-            //1.先校验原密码是否正确
+            //2.先校验原密码是否正确
             UserVo userVo = redisCache.get(resetPwdRequest.getPhone(),UserVo.class );
             if (userVo==null){
                 UserVo qryUserVo = new UserVo();
@@ -225,7 +233,7 @@ public class UserServiceImpl implements IUserService {
                 return updateUserResponse;
             }
 
-            //2.更新密码
+            //3.更新密码
             String  newPwd =MD5Util.md5(resetPwdRequest.getNewPwd(), Constant.MD5_KEY);
             UserVo pwdUser = new UserVo();
             pwdUser.setUserCode(resetPwdRequest.getUserCode());
@@ -236,7 +244,10 @@ public class UserServiceImpl implements IUserService {
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_ERROR);
                 return updateUserResponse;
             }
+            //4.刷新redis用户信息
             redisCache.set(userVo.getPhone(),userDao.qryUserVoByPhone(resetPwdRequest.getPhone()));
+            redisCache.delete(Constant.REDIS.TOKEN+userVo.getPhone());//清空登录信息，所有设备需重新登录
+            //5.构建返回报文
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
             updateUserResponse.setDetail("设置密码成功");
@@ -245,5 +256,64 @@ public class UserServiceImpl implements IUserService {
             updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.RESET_PWD_FAILED);
         }
         return updateUserResponse;
+    }
+
+    @Override
+    public ServiceResponse<Boolean> updateUserStatus(StatusUpdateRequest statusUpdateRequest) {
+        ServiceResponse<Boolean> statusResponse = null;
+        Long targetUserCode = statusUpdateRequest.getUserCode();
+        try {
+            //1.获取管理员信息
+            UserVo userVo = redisCache.get(statusUpdateRequest.getPhone(), UserVo.class);
+            Long adminUserCode = userVo.getUserCode();
+            //2.更新用户状态
+            UserVo statusUser = new UserVo();
+            statusUser.setUserCode(statusUpdateRequest.getUserCode());
+            statusUser.setUserStatus(UserUtils.getUserStatus(statusUpdateRequest.getOperType()));//将操作类型转换为对应用户状态
+            boolean updateFlag = userDao.updateUserRecord(statusUser,"UserMapper.updateUserStatus");
+            if(!updateFlag){
+                statusResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.UPDATE_USER_STATUS_ERROR);
+                return statusResponse;
+            }
+            //3.增加操作记录，可降级，增加不成功也算设置成功。
+            try{
+                UserOperVo userOperVo = new UserOperVo();
+                userOperVo.setOperCode(adminUserCode);
+                userOperVo.setUserCode(targetUserCode);
+                userOperVo.setOperDesc("更新用户状态"+statusUpdateRequest.getOperType());
+                userOperVo.setOperType(statusUpdateRequest.getOperType());//设置管理员
+                boolean flag = operUserDao.addOperUserRecord(userOperVo);
+                if(!flag){
+                    logger.error("管理员：{},设置用户{}失败",adminUserCode,targetUserCode);
+                }
+            }catch(Exception e){
+                logger.error("管理员：{},设置用户{}状态失败,操作数据库异常，",adminUserCode,targetUserCode,e);
+            }
+            //4.更新redis缓存中，用户信息
+            refreshRedisUserInfo(targetUserCode);
+            //5.构建返回值
+            statusResponse = new ServiceResponse<Boolean>();
+            statusResponse.setResult(true);
+            statusResponse.setDetail("设置用户状态成功");
+        }catch (Exception e){
+            logger.error("设置用户{}状态失败",statusUpdateRequest.getUserCode(),e);
+            statusResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.UPDATE_USER_STATUS_FAILED);
+        }
+        return statusResponse;
+    }
+
+    /**
+     * 刷新用户redis缓存
+     * */
+    private void refreshRedisUserInfo(Long userCode){
+        UserVo userInfo =userDao.qryUserVoByUserCode(userCode);
+        redisCache.set(userInfo.getPhone(),userInfo);
+    }
+
+    @Override
+    public ServiceResponse<Boolean> freshUserInfo(String phone){
+        UserVo userInfo =userDao.qryUserVoByPhone(phone);
+        redisCache.set(userInfo.getPhone(),userInfo);
+        return new ServiceResponse<Boolean>();
     }
 }
