@@ -20,7 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,10 +42,10 @@ public class UserPostDaoImpl implements IUserPostDao {
      * @param appCode
      * @param userCode
      * @param userName
-     * @param concernPost
+     * @param concernPostMap
      */
     @Override
-    public boolean concernPost(String appCode, Long userCode, String userName, ConcernPost concernPost) {
+    public boolean concernPost(String appCode, Long userCode, String userName, Map<String,Object> concernPostMap) {
         boolean result = true;
         // 先检查用户是否点赞或者关注过帖子
         Query existsQuery = Query.query(Criteria.where("userCode").is(userCode));
@@ -53,14 +53,14 @@ public class UserPostDaoImpl implements IUserPostDao {
         if(exists){
             // 检查用户是否对当前的帖子有过操作 用户如果有操作过当前的帖子就更新状态，否则插入一个新的关注的帖子。
             Update update = new Update();
-            update.set("concerns.$.status",concernPost.getStatus());
-            update.set("concerns.$.time",concernPost.getTime().getTime());
-            Query updateQuery = Query.query(Criteria.where("userCode").is(userCode).and("concerns.id").is(concernPost.getId()));
+            update.set("concerns.$.status",concernPostMap.get("status"));
+            update.set("concerns.$.time",concernPostMap.get("time"));
+            Query updateQuery = Query.query(Criteria.where("userCode").is(userCode).and("concerns.postId").is(concernPostMap.get("postId")));
             int updateResult = this.mongoTemplate.updateFirst(updateQuery,update,MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).getN();
             if(updateResult<=0){
                 Update insert = new Update();
                 Update.AddToSetBuilder builder = insert.addToSet("concerns");
-                builder.each(JSON.parse(PARSER.toJson(concernPost)));
+                builder.each(concernPostMap);
                 Query  insertQuery = Query.query(Criteria.where("userCode").is(userCode));
                 updateResult = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).getN();
             }
@@ -68,11 +68,13 @@ public class UserPostDaoImpl implements IUserPostDao {
                 result = false;
 
         } else {
-            UserPostInfo userPostInfo = new UserPostInfo();
-            userPostInfo.setUserCode(userCode);
-            userPostInfo.setUserName(userName);
-            userPostInfo.getConcerns().add(concernPost);
-            int insertResult = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).insert((DBObject)JSON.parse(PARSER.toJson(userPostInfo))).getN();
+            List<Map<String,Object>> concerns = new ArrayList<Map<String, Object>>(1);
+            concerns.add(concernPostMap);
+            DBObject dbObject = new BasicDBObject();
+            dbObject.put("userCode",userCode);
+            dbObject.put("userName",userName);
+            dbObject.put("concerns",concerns);
+            int insertResult = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).insert(dbObject).getN();
             if(0 != insertResult)
                 result = false;
         }
@@ -85,10 +87,10 @@ public class UserPostDaoImpl implements IUserPostDao {
      * @param appCode
      * @param userCode
      * @param userName
-     * @param praisePost
+     * @param praisePostMap
      */
     @Override
-    public boolean praisePost(String appCode, Long userCode, String userName, PraisePost praisePost) {
+    public boolean praisePost(String appCode, Long userCode, String userName, Map<String,Object> praisePostMap) {
         boolean result = true;
         // 先检查用户是否点赞或者关注过帖子
         Query existsQuery = Query.query(Criteria.where("userCode").is(userCode));
@@ -96,14 +98,14 @@ public class UserPostDaoImpl implements IUserPostDao {
         if(exists){
             // 检查用户是否对当前的帖子有过操作 用户如果有操作过当前的帖子就更新状态，否则插入一个新的关注的帖子。
             Update update = new Update();
-            update.set("praises.$.status",praisePost.getStatus());
-            update.set("praises.$.time",praisePost.getTime().getTime());
-            Query updateQuery = Query.query(Criteria.where("userCode").is(userCode).and("praises.id").is(praisePost.getId()));
+            update.set("praises.$.status",praisePostMap.get("status"));
+            update.set("praises.$.time",praisePostMap.get("time"));
+            Query updateQuery = Query.query(Criteria.where("userCode").is(userCode).and("praises.postId").is(praisePostMap.get("postId")));
             int updateResult = this.mongoTemplate.updateFirst(updateQuery,update,MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).getN();
             if(updateResult<=0){
                 Update insert = new Update();
                 Update.AddToSetBuilder builder = insert.addToSet("praises");
-                builder.each(JSON.parse(PARSER.toJson(praisePost)));
+                builder.each(praisePostMap);
                 Query  insertQuery = Query.query(Criteria.where("userCode").is(userCode));
                 updateResult = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).getN();
             }
@@ -111,11 +113,13 @@ public class UserPostDaoImpl implements IUserPostDao {
                 result = false;
 
         } else {
-            UserPostInfo userPostInfo = new UserPostInfo();
-            userPostInfo.setUserCode(userCode);
-            userPostInfo.setUserName(userName);
-            userPostInfo.getPraises().add(praisePost);
-            int insertResult = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).insert((DBObject)JSON.parse(PARSER.toJson(userPostInfo))).getN();
+            List<Map<String,Object>> praises = new ArrayList<Map<String, Object>>(1);
+            praises.add(praisePostMap);
+            DBObject dbObject = new BasicDBObject();
+            dbObject.put("userCode",userCode);
+            dbObject.put("userName",userName);
+            dbObject.put("praises",praises);
+            int insertResult = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).insert(dbObject).getN();
             if(0 != insertResult)
                 result = false;
         }
@@ -248,7 +252,7 @@ public class UserPostDaoImpl implements IUserPostDao {
      */
     @Override
     public String queryAllConcernPost(String appCode, Long userCode) {
-        String concernPostString = null;
+        StringBuilder concernPostString = null;
         DBObject object = new BasicDBObject();
         object.put("userCode",appCode);
         object.put("concerns.status",1);
@@ -259,10 +263,11 @@ public class UserPostDaoImpl implements IUserPostDao {
 
         DBObject praisePost = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == praisePost){
-            return concernPostString;
+            return null;
         }
-        concernPostString = JSON.serialize(praisePost.get("concerns"));
-        return concernPostString;
+        concernPostString = new StringBuilder();
+        //concernPostString = JSON.serialize(praisePost.get("concerns"));
+        return concernPostString.toString();
     }
 
     /**
@@ -273,20 +278,21 @@ public class UserPostDaoImpl implements IUserPostDao {
      */
     @Override
     public String queryAllPraisePost(String appCode, Long userCode) {
-        String praisePostString = null;
+        StringBuilder praisePostString = null;
         DBObject object = new BasicDBObject();
         object.put("userCode",appCode);
         object.put("praises.status",1);
 
         DBObject keys = new BasicDBObject();
-        keys.put("praises.id", 1);
+        keys.put("praises.postId", 1);
         keys.put("praises.title", 1);
 
         DBObject praisePost = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == praisePost){
-            return praisePostString;
+            return null;
         }
-        praisePostString = JSON.serialize(praisePost.get("praises"));
-        return praisePostString;
+        praisePostString = new StringBuilder();
+       // praisePostString = JSON.serialize(praisePost.get("praises"));
+        return praisePostString.toString();
     }
 }

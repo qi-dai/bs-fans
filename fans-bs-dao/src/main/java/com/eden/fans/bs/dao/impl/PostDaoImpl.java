@@ -9,6 +9,7 @@ import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
 import com.google.gson.*;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -25,10 +26,7 @@ import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -208,14 +206,19 @@ public class PostDaoImpl implements IPostDao {
         // 先更新内嵌文档
         Update update = new Update();
         update.set("praiseUsers.$.praise",praiseUser.getPraise());
-        update.set("praiseUsers.$.time",praiseUser.getTime().getTime());
+        update.set("praiseUsers.$.time",new Date());
         Query query = Query.query(Criteria.where("_id").is(postId).and("praiseUsers.userCode").is(praiseUser.getUserCode()));
         int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         // 更新失败插入
         if(result<=0){
+            Map<String,Object> praiseUserMap = new LinkedHashMap<String,Object>();
+            praiseUserMap.put("userCode",praiseUser.getUserCode());
+            praiseUserMap.put("userName",praiseUser.getUserName());
+            praiseUserMap.put("praise",praiseUser.getPraise());
+            praiseUserMap.put("time",new Date());
             Update insert = new Update();
             Update.AddToSetBuilder builder = insert.addToSet("praiseUsers");
-            builder.each(JSON.parse(PARSER.toJson(praiseUser)));
+            builder.each(praiseUserMap);
             Query  insertQuery = Query.query(Criteria.where("_id").is(postId));
             result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         }
@@ -234,10 +237,15 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updateReplyInfos(String appCode, String postId, ReplyPostInfo replyPostInfo) {
+        Map<String,Object> replyPostMap = new LinkedHashMap<String, Object>(4);
+        replyPostMap.put("title",replyPostInfo.getTitle());
+        replyPostMap.put("medias",replyPostInfo.getMedias());
+        replyPostMap.put("content",replyPostInfo.getContent());
+        replyPostMap.put("replyTime",replyPostInfo.getReplyTime());
         Query query = Query.query(Criteria.where("_id").is(postId));
         Update update = new Update();
         Update.AddToSetBuilder bulider = update.addToSet("replyPostInfos");
-        bulider.each(JSON.parse(PARSER.toJson(replyPostInfo)));
+        bulider.each(replyPostMap);
         int result = this.mongoTemplate.updateFirst(query, update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         if(result>0)
             return true;
@@ -256,14 +264,19 @@ public class PostDaoImpl implements IPostDao {
         // 先更新内嵌文档
         Update update = new Update();
         update.set("concernUsers.$.concern",concernUser.getConcern());
-        update.set("concernUsers.$.time",concernUser.getTime().getTime());
+        update.set("concernUsers.$.time",new Date());
         Query query = Query.query(Criteria.where("_id").is(postId).and("concernUsers.userCode").is(concernUser.getUserCode()));
         int result = this.mongoTemplate.updateFirst(query,update,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         // 更新失败插入
         if(result<=0){
+            Map<String,Object> concernUserMap = new LinkedHashMap<String, Object>();
+            concernUserMap.put("userCode",concernUser.getUserCode());
+            concernUserMap.put("userName",concernUser.getUserName());
+            concernUserMap.put("concern",concernUser.getConcern());
+            concernUserMap.put("time",new Date());
             Update insert = new Update();
             Update.AddToSetBuilder builder = insert.addToSet("concernUsers");
-            builder.each(JSON.parse(PARSER.toJson(concernUser)));
+            builder.each(concernUserMap);
             Query  insertQuery = Query.query(Criteria.where("_id").is(postId));
             result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         }
@@ -349,6 +362,7 @@ public class PostDaoImpl implements IPostDao {
         object.put("concernUsers.concern",1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
         keys.put("concernUsers.userCode", 1);
         keys.put("concernUsers.userName", 1);
 
@@ -356,8 +370,19 @@ public class PostDaoImpl implements IPostDao {
         if(null == postObject){
             return  "[]";
         }
-        String result = PARSER.toJson(OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject),PostInfo.class).getConcernUsers());
-        return result;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        BasicDBList dbList = (BasicDBList)postObject.get("concernUsers");
+        for(Object obj:dbList){
+            BasicDBObject dbObject = (BasicDBObject)obj;
+            stringBuilder.append("{");
+            stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
+            stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\"");
+            stringBuilder.append("},");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -373,6 +398,7 @@ public class PostDaoImpl implements IPostDao {
         object.put("praiseUsers.praise",1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
         keys.put("praiseUsers.userCode", 1);
         keys.put("praiseUsers.userName", 1);
 
@@ -380,8 +406,19 @@ public class PostDaoImpl implements IPostDao {
         if(null == postObject){
             return "";
         }
-        String result = PARSER.toJson(OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject),PostInfo.class).getPraiseUsers());
-        return result;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        BasicDBList dbList = (BasicDBList)postObject.get("praiseUsers");
+        for(Object obj:dbList){
+            BasicDBObject dbObject = (BasicDBObject)obj;
+            stringBuilder.append("{");
+            stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
+            stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\"");
+            stringBuilder.append("},");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -397,10 +434,39 @@ public class PostDaoImpl implements IPostDao {
         keys.put("replyPostInfos", 1);
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
-            return  "";
+            return  "[]";
         }
-        String result = PARSER.toJson(OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject),PostInfo.class).getReplyPostInfos());
-        return result;
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
+        BasicDBList dbList = (BasicDBList)postObject.get("replyPostInfos");
+        for(Object obj:dbList){
+            BasicDBObject dbObject = (BasicDBObject)obj;
+            stringBuilder.append("{");
+            stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+
+            BasicDBList mediaList = (BasicDBList)dbObject.get("medias");
+            if(null != mediaList && mediaList.size()>0){
+                StringBuilder mediaBuilder = new StringBuilder();
+                mediaBuilder.append("[");
+                for (Object meidaObj:mediaList){
+                    mediaBuilder.append((String)meidaObj + ",");
+                }
+                mediaBuilder.deleteCharAt(mediaBuilder.length());
+                mediaBuilder.append("]");
+                stringBuilder.append("\"medias\":\"" + mediaBuilder + "\",");
+            } else {
+                stringBuilder.append("\"medias\":[],");
+            }
+            stringBuilder.append("\"replyTime\":\"" + format.format((Date)dbObject.get("replyTime")) + "\",");
+            stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\"");
+            stringBuilder.append("},");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -412,19 +478,30 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public String queryConcernUsersByPage(String appCode, String postId,Integer pageNum) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject();
         queryObject.put("_id",new ObjectId(postId));
         queryObject.put("concernUsers.concern",1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
         keys.put("concernUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+
         DBCursor cursor = null;
-        String concernUsers = "";
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                concernUsers = PARSER.toJson(OUTERPARSER.fromJson(OUTERPARSER.toJson(dbObject),PostInfo.class).getConcernUsers());
+                BasicDBList dbList = (BasicDBList)dbObject.get("concernUsers");
+                for(Object obj:dbList){
+                    BasicDBObject object = (BasicDBObject)obj;
+                    stringBuilder.append("{");
+                    stringBuilder.append("\"userCode\":\"" + object.get("userCode") + "\",");
+                    stringBuilder.append("\"userName\":\"" + object.get("userName") + "\"");
+                    stringBuilder.append("},");
+                }
+                stringBuilder.deleteCharAt(stringBuilder.length()-1);
             }
         } catch (Exception e){
             logger.error("根据帖子的标志获取帖子下的点赞用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -433,7 +510,8 @@ public class PostDaoImpl implements IPostDao {
                 cursor.close();
             }
         }
-        return concernUsers;
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**
@@ -445,19 +523,30 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public String queryPraiseUsersByPage(String appCode, String postId,Integer pageNum) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject();
-        queryObject.put("praiseUsers.praise",1);
         queryObject.put("_id",new ObjectId(postId));
+        queryObject.put("praiseUsers.praise",1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
         keys.put("praiseUsers", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+
         DBCursor cursor = null;
-        String praiseUsers = "";
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                praiseUsers = PARSER.toJson(OUTERPARSER.fromJson(OUTERPARSER.toJson(dbObject),PostInfo.class).getPraiseUsers());
+                BasicDBList dbList = (BasicDBList)dbObject.get("praiseUsers");
+                for(Object obj:dbList){
+                    BasicDBObject object = (BasicDBObject)obj;
+                    stringBuilder.append("{");
+                    stringBuilder.append("\"userCode\":\"" + object.get("userCode") + "\",");
+                    stringBuilder.append("\"userName\":\"" + object.get("userName") + "\"");
+                    stringBuilder.append("},");
+                }
+                stringBuilder.deleteCharAt(stringBuilder.length()-1);
             }
         } catch (Exception e){
             logger.error("根据帖子的标志获取帖子下关注的用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -466,7 +555,8 @@ public class PostDaoImpl implements IPostDao {
                 cursor.close();
             }
         }
-        return praiseUsers;
+        stringBuilder.append("]");
+        return stringBuilder.toString();
     }
 
     /**

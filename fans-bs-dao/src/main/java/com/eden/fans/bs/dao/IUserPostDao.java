@@ -3,6 +3,8 @@ package com.eden.fans.bs.dao;
 import com.eden.fans.bs.domain.svo.ConcernPost;
 import com.eden.fans.bs.domain.svo.PraisePost;
 
+import java.util.Map;
+
 /**
  * Created by IntelliJ IDEA.
  * User:ShengYanPeng
@@ -14,12 +16,12 @@ public interface IUserPostDao {
     /**
      * 用户对某一个帖子添加关注（或取消关注）
      */
-    public boolean concernPost(String appCode,Long userCode,String userName,ConcernPost concernPost);
+    public boolean concernPost(String appCode,Long userCode,String userName,Map<String,Object> concernPostMap);
 
     /**
      * 用户对某一个帖子点赞（或取消点赞）
      */
-    public boolean praisePost(String appCode, Long userCode, String userName, PraisePost praisePost);
+    public boolean praisePost(String appCode, Long userCode, String userName,Map<String,Object> praisePostMap);
 
     /**
      * 统计用户关注的帖子数

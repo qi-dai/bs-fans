@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,8 +50,12 @@ public class UserPostServiceImpl implements IUserPostService{
      */
     @Override
     public boolean concernPost(String appCode, Long userCode, String userName, ConcernPost concernPost) {
-        concernPost.setTime(new Date());
-        return userPostDao.concernPost(appCode, userCode, userName, concernPost);
+        Map<String,Object> concernPostMap = new LinkedHashMap<String, Object>();
+        concernPostMap.put("postId",concernPost.getPostId());
+        concernPostMap.put("title",concernPost.getTitle());
+        concernPostMap.put("status",concernPost.getStatus());
+        concernPostMap.put("time",new Date());
+        return userPostDao.concernPost(appCode, userCode, userName, concernPostMap);
     }
 
     /**
@@ -62,8 +68,12 @@ public class UserPostServiceImpl implements IUserPostService{
      */
     @Override
     public boolean praisePost(String appCode, Long userCode, String userName, PraisePost praisePost) {
-        praisePost.setTime(new Date());
-        return userPostDao.praisePost(appCode, userCode, userName, praisePost);
+        Map<String,Object> praisePostMap = new LinkedHashMap<String, Object>();
+        praisePostMap.put("postId",praisePost.getPostId());
+        praisePostMap.put("title",praisePost.getTitle());
+        praisePostMap.put("status",praisePost.getStatus());
+        praisePostMap.put("time",new Date());
+        return userPostDao.praisePost(appCode, userCode, userName, praisePostMap);
     }
 
     /**

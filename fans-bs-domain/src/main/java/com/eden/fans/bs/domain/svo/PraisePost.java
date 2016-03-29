@@ -16,7 +16,7 @@ public class PraisePost implements Serializable{
     /**
      * 帖子id
      */
-    private String id;
+    private String postId;
 
     /**
      *帖子标题
@@ -33,12 +33,12 @@ public class PraisePost implements Serializable{
      */
     private Date time;
 
-    public String getId() {
-        return id;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getTitle() {

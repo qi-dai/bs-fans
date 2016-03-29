@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -102,8 +99,8 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public String obtainPostById(String appCode, String id) {
-        DBObject object = postDao.obtainPostById(appCode,id);
+    public String obtainPostById(String appCode, String postId) {
+        DBObject object = postDao.obtainPostById(appCode,postId);
         if(null != object){
             StringBuilder stringBuilder = new StringBuilder();
             postDbObject2String(object,stringBuilder);
@@ -146,53 +143,48 @@ public class PostServiceImpl implements IPostService {
      * 更新帖子状态（status）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param status
      */
     @Override
-    public boolean updateStatus(String appCode, String id, PostStatus status) {
-        return postDao.updateStatus(appCode, id, status);
+    public boolean updateStatus(String appCode, String postId, PostStatus status) {
+        return postDao.updateStatus(appCode, postId, status);
     }
 
     /**
      * 更新帖子的点赞用户列表（点赞、取消点赞）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param praiseUser
      */
     @Override
-    public boolean updatePraiseUsers(String appCode, String id, PraiseUser praiseUser) {
-        boolean result = postDao.updatePraiseUsers(appCode, id, praiseUser);
+    public boolean updatePraiseUsers(String appCode, String postId, PraiseUser praiseUser) {
+        boolean result = postDao.updatePraiseUsers(appCode, postId, praiseUser);
         if(result){
-            DBObject object = postDao.obtainPostById(appCode,id);
-            PraisePost praisePost = new PraisePost();
-            praisePost.setId(id);
-            praisePost.setTime(new Date());
-            praisePost.setTitle((String)object.get("title"));
+            DBObject object = postDao.obtainPostById(appCode,postId);
+            Map<String,Object> praisePostMap = new LinkedHashMap<String, Object>();
+            praisePostMap.put("postId",postId);
+            praisePostMap.put("title",object.get("title"));
+            praisePostMap.put("status",praiseUser.getPraise());
+            praisePostMap.put("time",new Date());
 
             Long count = 0L;
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
+            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
             if(postCountExists){
                 logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countPraiseUsers(appCode,id);
-                redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode,count + "");
+                count = postDao.countPraiseUsers(appCode,postId);
+                redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode,count + "");
             } else {
                 if(1 == praiseUser.getPraise()){
-                    redisCache.incr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
+                    redisCache.incr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.incr(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + appCode);
                 } else {
-                    redisCache.decr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
+                    redisCache.decr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.decr(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + appCode);
                 }
             }
-
-            if(1 == praiseUser.getPraise()){
-                praisePost.setStatus(1);
-            } else {
-                praisePost.setStatus(0);
-            }
-            userPostDao.praisePost(appCode,praiseUser.getUserCode(),praiseUser.getUserName(),praisePost);
+            userPostDao.praisePost(appCode,praiseUser.getUserCode(),praiseUser.getUserName(),praisePostMap);
         }
 
         return  result;
@@ -202,41 +194,37 @@ public class PostServiceImpl implements IPostService {
      * 更新帖子的关注用户列表（关注、取消关注）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param concernUser
      */
     @Override
-    public boolean updateConcernUsers(String appCode, String id, ConcernUser concernUser) {
-        boolean result = postDao.updateConcernUsers(appCode, id, concernUser);
+    public boolean updateConcernUsers(String appCode, String postId, ConcernUser concernUser) {
+        boolean result = postDao.updateConcernUsers(appCode, postId, concernUser);
 
         if(result){
-            DBObject object = postDao.obtainPostById(appCode,id);
-            ConcernPost concernPost = new ConcernPost();
-            concernPost.setId(id);
-            concernPost.setTime(new Date());
-            concernPost.setTitle((String)object.get("title"));
+            DBObject object = postDao.obtainPostById(appCode,postId);
+            Map<String,Object> concernPostMap = new LinkedHashMap<String, Object>();
+            concernPostMap.put("postId",postId);
+            concernPostMap.put("title",object.get("title"));
+            concernPostMap.put("status",concernUser.getConcern());
+            concernPostMap.put("time",new Date());
 
             Long count = 0L;
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
+            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
             if(postCountExists){
                 logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countConcernUsers(appCode,id);
-                redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode,count + "");
+                count = postDao.countConcernUsers(appCode,postId);
+                redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode,count + "");
             } else {
                 if(1 == concernUser.getConcern()){
-                    redisCache.incr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
+                    redisCache.incr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.incr(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + appCode);
                 } else {
-                    redisCache.decr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
+                    redisCache.decr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.decr(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + appCode);
                 }
             }
-                if(1 == concernUser.getConcern()){
-                    concernPost.setStatus(1);
-                } else {
-                    concernPost.setStatus(0);
-                }
-            userPostDao.concernPost(appCode,concernUser.getUserCode(),concernUser.getUserName(),concernPost);
+            userPostDao.concernPost(appCode,concernUser.getUserCode(),concernUser.getUserName(),concernPostMap);
         }
 
         return  result;
@@ -246,22 +234,23 @@ public class PostServiceImpl implements IPostService {
      * 更新回帖
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param replyPostInfo
      * @return
      */
     @Override
-    public boolean updateReplyInfos(String appCode, String id, ReplyPostInfo replyPostInfo) {
-        boolean result = postDao.updateReplyInfos(appCode, id, replyPostInfo);
+    public boolean updateReplyInfos(String appCode, String postId, ReplyPostInfo replyPostInfo) {
+        replyPostInfo.setReplyTime(new Date());
+        boolean result = postDao.updateReplyInfos(appCode, postId, replyPostInfo);
         if(result){
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode);
+            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
             if(postCountExists){
                 Long count = 0L;
                 logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countReplyPostInfos(appCode,id);
-                redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode,count + "");
+                count = postDao.countReplyPostInfos(appCode,postId);
+                redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode,count + "");
             } else {
-                redisCache.incr(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode);
+                redisCache.incr(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
             }
         }
         return result;
@@ -301,102 +290,102 @@ public class PostServiceImpl implements IPostService {
      * 获取所有关注的用户
      *
      * @param appCode
-     * @param id
+     * @param postId
      */
     @Override
-    public String queryAllConcernUsers(String appCode, String id) {
-        return postDao.queryAllConcernUsers(appCode, id);
+    public String queryAllConcernUsers(String appCode, String postId) {
+        return postDao.queryAllConcernUsers(appCode, postId);
     }
 
     /**
      * 获取所有点赞的用户
      *
      * @param appCode
-     * @param id
+     * @param postId
      */
     @Override
-    public String queryAllPraiseUsers(String appCode, String id) {
-        return  postDao.queryAllPraiseUsers(appCode, id);
+    public String queryAllPraiseUsers(String appCode, String postId) {
+        return  postDao.queryAllPraiseUsers(appCode, postId);
     }
 
     /**
      * 获取所有回帖信息列表
      *
      * @param appCode
-     * @param id
+     * @param postId
      */
     @Override
-    public String queryAllReplyPostInfos(String appCode, String id) {
-        return postDao.queryAllReplyPostInfos(appCode, id);
+    public String queryAllReplyPostInfos(String appCode, String postId) {
+        return postDao.queryAllReplyPostInfos(appCode, postId);
     }
 
     /**
      * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param pageNum
      */
     @Override
-    public String queryConcernUsersByPage(String appCode, String id, Integer pageNum) {
+    public String queryConcernUsersByPage(String appCode, String postId, Integer pageNum) {
         Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode);
+        String postCount = redisCache.get(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
         if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countConcernUsers(appCode,id);
+            count = postDao.countConcernUsers(appCode,postId);
             postCount = count+"";
-            redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX + id + "_" + appCode,count + "");
+            redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryConcernUsersByPage(appCode, id, pageNum) + ",\"total\":"+postCount;
+        return postDao.queryConcernUsersByPage(appCode, postId, pageNum) + ",\"total\":"+postCount;
     }
 
     /**
      * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param pageNum
      */
     @Override
-    public String queryPraiseUsersByPage(String appCode, String id, Integer pageNum) {
+    public String queryPraiseUsersByPage(String appCode, String postId, Integer pageNum) {
         Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode);
+        String postCount = redisCache.get(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
         if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countPraiseUsers(appCode,id);
+            count = postDao.countPraiseUsers(appCode,postId);
             postCount = count + "";
-            redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX + id + "_" + appCode,count + "");
+            redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryPraiseUsersByPage(appCode, id,pageNum) + ",\"total\":" + postCount;
+        return postDao.queryPraiseUsersByPage(appCode, postId,pageNum) + ",\"total\":" + postCount;
     }
 
     /**
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      *
      * @param appCode
-     * @param id
+     * @param postId
      * @param pageNum
      */
     @Override
-    public String queryReplyPostInfosByPage(String appCode, String id, Integer pageNum) {
+    public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum) {
         Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode);
+        String postCount = redisCache.get(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
         if(null == postCount){
             logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countReplyPostInfos(appCode,id);
+            count = postDao.countReplyPostInfos(appCode,postId);
             postCount = count + "";
-            redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX + id + "_" + appCode,count + "");
+            redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode,count + "");
         }
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryReplyPostInfosByPage(appCode, id, pageNum) + ",\"total\":" + postCount;
+        return postDao.queryReplyPostInfosByPage(appCode, postId, pageNum) + ",\"total\":" + postCount;
     }
 
 
