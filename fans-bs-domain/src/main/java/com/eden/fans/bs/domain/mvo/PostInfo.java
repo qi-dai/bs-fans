@@ -68,12 +68,12 @@ public class PostInfo implements Serializable {
     /**
      *帖子的创建时间（该字段需要建索引）
      */
-    private Date createDate = new Date();
+    private Date createDate;
 
     /**
      *帖子的发布时间（该字段需要建索引）
      */
-    private Date publishDate = new Date();
+    private Date publishDate;
 
     /**
      *帖子的状态
@@ -92,8 +92,8 @@ public class PostInfo implements Serializable {
     /**
      * 用户对帖子的两种操作：关注和点赞是相互独立的，并且同一类型操作状态是互斥的
      */
-    private List<ConcernUser> concernUsers = new ArrayList<ConcernUser>();//该属性的time字段需要建索引
-    private List<PraiseUser> praiseUsers = new ArrayList<PraiseUser>();// 该属性的time字段需要建索引
+    private List<ConcernUser> concernUsers;//该属性的time字段需要建索引
+    private List<PraiseUser> praiseUsers;// 该属性的time字段需要建索引
 
     /**
      * 回帖信息列表

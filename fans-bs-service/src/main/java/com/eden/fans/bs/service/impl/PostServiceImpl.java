@@ -5,11 +5,15 @@ import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.dao.IUserPostDao;
 import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.enu.PostLevel;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.*;
 import com.eden.fans.bs.service.IPostService;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedHashTreeMap;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,10 +68,8 @@ public class PostServiceImpl implements IPostService {
             pageNum = 0;
 
         List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
-        logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
-        dbObject2PostString(dbObjectList,stringBuilder,format);
-        stringBuilder.append("],\"total\":" + postCount);
-        stringBuilder.append("}");
+        postHead2String(stringBuilder,dbObjectList,postCount);
+        logger.info("分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
 
@@ -80,9 +83,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String obtainPostByUserCode(String appCode, Long userCode, Integer pageNum) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("{");
         String postCount = redisCache.get(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode);
         if(null == postCount){
             logger.warn("用户的数量在缓存中不存在 请检查缓存设置~");
@@ -94,29 +95,22 @@ public class PostServiceImpl implements IPostService {
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
 
-        List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
-        logger.info("分页获取帖子列表:{}",PARSER.toJson(dbObjectList));
-        dbObject2PostString(dbObjectList,stringBuilder,format);
-        stringBuilder.append("],\"total\":" + postCount);
-        stringBuilder.append("}");
+        List<DBObject> dbObjectList = postDao.obtainPostByUserCode(appCode, userCode, pageNum);
+        postHead2String(stringBuilder,dbObjectList,postCount);
+        logger.info("根据用户分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
 
     @Override
     public String obtainPostById(String appCode, String id) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("{");
         DBObject object = postDao.obtainPostById(appCode,id);
         if(null != object){
-            Set<String> keys = object.keySet();
-            keys.remove("_id");
-            for(String key:keys){
-                stringBuilder.append("\""+key+"\":\"" + object.get(key) + "\",");
-            }
-            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+            StringBuilder stringBuilder = new StringBuilder();
+            postDbObject2String(object,stringBuilder);
+            return stringBuilder.toString();
+        } else {
+            return null;
         }
-        stringBuilder.append("}");
-        return stringBuilder.toString();
     }
 
 
@@ -128,8 +122,10 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean createPost(String appCode, PostInfo postInfo) {
-        String postString = PARSER.toJson(postInfo);
-        DBObject dbObject = (DBObject)JSON.parse(postString);
+        Map<String,Object> map = new LinkedHashTreeMap<String, Object>();
+        post2Map(postInfo,map);
+        DBObject dbObject = new BasicDBObject();
+        dbObject.putAll(map);
         boolean result =  postDao.createPost(appCode, dbObject);
         if(result){
             Long count = 0L;
@@ -403,26 +399,147 @@ public class PostServiceImpl implements IPostService {
         return postDao.queryReplyPostInfosByPage(appCode, id, pageNum) + ",\"total\":" + postCount;
     }
 
+
     /**
-     * 将帖子的对象map转成字符串
-     * @param dbObjectList
-     * @param stringBuilder
-     * @param format
+     * 将帖子转成map（减少序列号和反序列化的操作）
+     * @param postInfo
+     * @param map
      */
-    private void dbObject2PostString(List<DBObject> dbObjectList,StringBuilder stringBuilder,SimpleDateFormat format){
-        stringBuilder.append("[");
+    private void post2Map(PostInfo postInfo,Map<String,Object> map){
+        map.put("title",postInfo.getTitle());
+        map.put("type",postInfo.getType().getValue());
+        map.put("content",postInfo.getContent());
+        map.put("userCode",postInfo.getUserCode());
+        map.put("imgs",postInfo.getImgs());
+        map.put("videos",postInfo.getVideos());
+        map.put("musics",postInfo.getMusics());
+        map.put("others",postInfo.getOthers());
+        map.put("createDate",new Date());
+        map.put("publishDate",new Date());
+        map.put("status",postInfo.getStatus().getValue());
+        map.put("level",postInfo.getLevel());
+        map.put("operatorList",postInfo.getOperatorList());
+        map.put("concernUsers",postInfo.getConcernUsers());
+        map.put("praiseUsers",postInfo.getPraiseUsers());
+    }
+
+    /**
+     * 将帖子基本列表显示字段信息转成String
+     * @param stringBuilder
+     * @param dbObjectList
+     * @param postCount
+     */
+    private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,String postCount){
         if(null != dbObjectList && dbObjectList.size()>0){
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            stringBuilder.append("{[");
             for(DBObject dbObject:dbObjectList){
-                Date createTime = new Date((Long)dbObject.get("createTime"));
                 stringBuilder.append("{");
-                stringBuilder.append("\"id\":\"" + ((ObjectId)dbObject.get("_id")).toString() + "\",");
-                stringBuilder.append("\"title\":\"" + (String)dbObject.get("title") + "\",");
-                stringBuilder.append("\"createTime\":\"" + format.format(createTime) + "\"");
+                stringBuilder.append("\"postId\":\"" + dbObject.get("_id") + "\",");
+                stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+                stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\"");
                 stringBuilder.append("},");
             }
+            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
+            stringBuilder.append("],\"total\":" + postCount);
+            stringBuilder.append("}");
         }
-        stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
-        stringBuilder.append("]");
+    }
+
+    /**
+     * 将帖子的基本信息对象转成String
+     * @param dbObject
+     * @param stringBuilder
+     */
+    private void postDbObject2String(DBObject dbObject,StringBuilder stringBuilder){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        stringBuilder.append("{");
+        stringBuilder.append("\"postId\":\"" + dbObject.get("_id") + "\",");
+        stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+        stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
+        stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
+        stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
+        stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
+        // 构建图片地址列表
+        BasicDBList imgList = (BasicDBList)dbObject.get("imgs");
+        if(null != imgList && imgList.size()>0){
+            StringBuilder imgBuilder = new StringBuilder();
+            imgBuilder.append("[");
+            for(Object object:imgList){
+                BasicDBObject basicDBObject = (BasicDBObject)object;
+                imgBuilder.append("{");
+                imgBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
+                imgBuilder.append("\"imgUrl\":\"" + basicDBObject.get("imgUrl") + "\"");
+                imgBuilder.append("},");
+            }
+            imgBuilder.delete(imgBuilder.length()-1,imgBuilder.length());
+            imgBuilder.append("]");
+            stringBuilder.append("\"imgs\":\"" + imgBuilder + "\",");
+        } else {
+            stringBuilder.append("\"imgs\":[],");
+        }
+        // 构建视频地址列表
+        BasicDBList videoList = (BasicDBList)dbObject.get("videos");
+        if(null != videoList && videoList.size()>0){
+            StringBuilder videoBuilder = new StringBuilder();
+            videoBuilder.append("[");
+            for(Object object:videoList){
+                BasicDBObject basicDBObject = (BasicDBObject)object;
+                videoBuilder.append("{");
+                videoBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
+                videoBuilder.append("\"videoUrl\":\"" + basicDBObject.get("videoUrl") + "\"");
+                videoBuilder.append("},");
+            }
+            videoBuilder.delete(videoBuilder.length()-1,videoBuilder.length());
+            videoBuilder.append("]");
+            stringBuilder.append("\"videos\":\"" + videoBuilder + "\",");
+        } else {
+            stringBuilder.append("\"videos\":[],");
+        }
+
+        // 构建音乐地址列表
+        BasicDBList musicList = (BasicDBList)dbObject.get("musics");
+        if(null != musicList && musicList.size()>0){
+            StringBuilder musicBuilder = new StringBuilder();
+            musicBuilder.append("[");
+            for(Object object:musicList){
+                BasicDBObject basicDBObject = (BasicDBObject)object;
+                musicBuilder.append("{");
+                musicBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
+                musicBuilder.append("\"musicUrl\":\"" + basicDBObject.get("musicUrl") + "\"");
+                musicBuilder.append("},");
+            }
+            musicBuilder.delete(musicBuilder.length()-1,musicBuilder.length());
+            musicBuilder.append("]");
+            stringBuilder.append("\"musics\":\"" + musicBuilder + "\",");
+        } else {
+            stringBuilder.append("\"musics\":[],");
+        }
+
+        // 构建其他媒体列表
+        BasicDBList otherList = (BasicDBList)dbObject.get("others");
+        if(null != otherList && otherList.size()>0){
+            StringBuilder otherBuilder = new StringBuilder();
+            otherBuilder.append("[");
+            for(Object object:otherList){
+                BasicDBObject basicDBObject = (BasicDBObject)object;
+                otherBuilder.append("{");
+                otherBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
+                otherBuilder.append("\"otherUrl\":\"" + basicDBObject.get("otherUrl") + "\"");
+                otherBuilder.append("},");
+            }
+            otherBuilder.delete(otherBuilder.length()-1,otherBuilder.length());
+            otherBuilder.append("]");
+            stringBuilder.append("\"others\":\"" + otherBuilder + "\",");
+        } else {
+            stringBuilder.append("\"others\":[],");
+        }
+
+        stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
+        stringBuilder.append("\"publishDate\":\"" + format.format((Date)dbObject.get("publishDate")) + "\",");
+        stringBuilder.append("\"status\":\"" + PostStatus.getName((Integer)dbObject.get("status")) + "\",");
+        stringBuilder.append("\"level\":\"" + PostLevel.getName((Integer)dbObject.get("level")) + "\"");
+        stringBuilder.append("}");
     }
 
 }
