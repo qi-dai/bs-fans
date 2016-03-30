@@ -166,7 +166,7 @@ public class PostServiceImpl implements IPostService {
             Map<String,Object> praisePostMap = new LinkedHashMap<String, Object>();
             praisePostMap.put("postId",postId);
             praisePostMap.put("title",object.get("title"));
-            praisePostMap.put("status",praiseUser.getPraise());
+            praisePostMap.put("status",praiseUser.getPraise().getValue());
             praisePostMap.put("time",new Date());
 
             Long count = 0L;
@@ -176,7 +176,7 @@ public class PostServiceImpl implements IPostService {
                 count = postDao.countPraiseUsers(appCode,postId);
                 redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode,count + "");
             } else {
-                if(1 == praiseUser.getPraise()){
+                if(1 == praiseUser.getPraise().getValue()){
                     redisCache.incr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.incr(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + appCode);
                 } else {
@@ -206,7 +206,7 @@ public class PostServiceImpl implements IPostService {
             Map<String,Object> concernPostMap = new LinkedHashMap<String, Object>();
             concernPostMap.put("postId",postId);
             concernPostMap.put("title",object.get("title"));
-            concernPostMap.put("status",concernUser.getConcern());
+            concernPostMap.put("status",concernUser.getConcern().getValue());
             concernPostMap.put("time",new Date());
 
             Long count = 0L;
@@ -216,7 +216,7 @@ public class PostServiceImpl implements IPostService {
                 count = postDao.countConcernUsers(appCode,postId);
                 redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode,count + "");
             } else {
-                if(1 == concernUser.getConcern()){
+                if(1 == concernUser.getConcern().getValue()){
                     redisCache.incr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
                     redisCache.incr(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + appCode);
                 } else {

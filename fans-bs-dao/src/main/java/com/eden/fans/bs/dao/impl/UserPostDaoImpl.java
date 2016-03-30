@@ -7,6 +7,7 @@ import com.eden.fans.bs.domain.mvo.UserPostInfo;
 import com.eden.fans.bs.domain.svo.ConcernPost;
 import com.eden.fans.bs.domain.svo.PraisePost;
 import com.google.gson.Gson;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -20,6 +21,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -139,7 +141,7 @@ public class UserPostDaoImpl implements IUserPostDao {
         object.put("concerns.status",1);
 
         DBObject keys = new BasicDBObject();
-        keys.put("concerns.time",1);
+        keys.put("concerns.status",1);
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
@@ -160,8 +162,9 @@ public class UserPostDaoImpl implements IUserPostDao {
         DBObject object = new BasicDBObject();
         object.put("userCode",userCode);
         object.put("praises.status",1);
+
         DBObject keys = new BasicDBObject();
-        keys.put("praises.time",1);
+        keys.put("praises.status",1);
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
@@ -188,15 +191,18 @@ public class UserPostDaoImpl implements IUserPostDao {
         sortObject.put("time",-1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id",1);
         keys.put("concerns", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+
         DBCursor cursor = null;
-        String concernPostString = null;
+        StringBuilder concernPostString = new StringBuilder();
+        concernPostString.append("[");
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-
-                concernPostString = JSON.serialize(dbObject.get("concerns"));
+                BasicDBList dbList = (BasicDBList)dbObject.get("concerns");
+                concernOrPraise2String(concernPostString,dbList);
             }
         } catch (Exception e){
             logger.error("分页获取用户关注的帖子列表异常 MSG:{},ERROR:{}",e.getMessage(), Arrays.deepToString(e.getStackTrace()));
@@ -205,7 +211,7 @@ public class UserPostDaoImpl implements IUserPostDao {
                 cursor.close();
             }
         }
-        return concernPostString;
+        return concernPostString.toString();
     }
 
     /**
@@ -225,14 +231,18 @@ public class UserPostDaoImpl implements IUserPostDao {
         sortObject.put("time",-1);
 
         DBObject keys = new BasicDBObject();
+        keys.put("_id",1);
         keys.put("praises", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));
+
         DBCursor cursor = null;
-        String praisePostString = null;
+        StringBuilder praisePostString = new StringBuilder();
+        praisePostString.append("[");
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                praisePostString = JSON.serialize(dbObject.get("praises"));
+                BasicDBList dbList = (BasicDBList)dbObject.get("praises");
+                concernOrPraise2String(praisePostString,dbList);
             }
         } catch (Exception e){
             logger.error("分页获取用户关注的帖子列表异常 MSG:{},ERROR:{}",e.getMessage(), Arrays.deepToString(e.getStackTrace()));
@@ -241,7 +251,8 @@ public class UserPostDaoImpl implements IUserPostDao {
                 cursor.close();
             }
         }
-        return praisePostString;
+        praisePostString.append("]");
+        return praisePostString.toString();
     }
 
     /**
@@ -258,15 +269,17 @@ public class UserPostDaoImpl implements IUserPostDao {
         object.put("concerns.status",1);
 
         DBObject keys = new BasicDBObject();
-        keys.put("concerns.id", 1);
-        keys.put("concerns.title", 1);
+        keys.put("_id", 1);
+        keys.put("concerns", 1);
 
         DBObject praisePost = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == praisePost){
-            return null;
+            return "";
         }
         concernPostString = new StringBuilder();
-        //concernPostString = JSON.serialize(praisePost.get("concerns"));
+        concernPostString.append("[");
+        concernOrPraise2String(concernPostString,(BasicDBList) praisePost.get("praises"));
+        concernPostString.append("]");
         return concernPostString.toString();
     }
 
@@ -284,15 +297,37 @@ public class UserPostDaoImpl implements IUserPostDao {
         object.put("praises.status",1);
 
         DBObject keys = new BasicDBObject();
-        keys.put("praises.postId", 1);
-        keys.put("praises.title", 1);
+        keys.put("_id", 1);
+        keys.put("praises", 1);
 
         DBObject praisePost = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == praisePost){
-            return null;
+            return "";
         }
         praisePostString = new StringBuilder();
-       // praisePostString = JSON.serialize(praisePost.get("praises"));
+        praisePostString.append("[");
+        concernOrPraise2String(praisePostString,(BasicDBList) praisePost.get("praises"));
+        praisePostString.append("]");
         return praisePostString.toString();
+    }
+
+    /**
+     * 将关注或者点赞的信息转成字符串
+     * @param stringBuilder
+     * @param dbList
+     */
+    private void concernOrPraise2String(StringBuilder stringBuilder,BasicDBList dbList){
+        if(null != dbList && dbList.size()>0){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            for(Object object:dbList){
+                BasicDBObject dbObject = (BasicDBObject)object;
+                stringBuilder.append("{");
+                stringBuilder.append("\"postId:\":\"" + dbObject.get("postId") +"\",");
+                stringBuilder.append("\"title:\":\"" + dbObject.get("title") +"\",");
+                stringBuilder.append("\"time:\":\"" + formatter.format((Date)dbObject.get("time")) +"\"");
+                stringBuilder.append("},");
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        }
     }
 }

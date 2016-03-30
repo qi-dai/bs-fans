@@ -1,5 +1,7 @@
 package com.eden.fans.bs.domain.svo;
 
+import com.eden.fans.bs.domain.enu.PostPraise;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,7 +28,7 @@ public class PraisePost implements Serializable{
     /**
      *帖子状态（1:点赞，0：取消点赞）
      */
-    private Integer status;
+    private PostPraise status;
 
     /**
      *操作时间
@@ -49,11 +51,11 @@ public class PraisePost implements Serializable{
         this.title = title;
     }
 
-    public Integer getStatus() {
+    public PostPraise getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(PostPraise status) {
         this.status = status;
     }
 

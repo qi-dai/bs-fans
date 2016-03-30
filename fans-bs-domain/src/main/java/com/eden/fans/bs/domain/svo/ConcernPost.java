@@ -1,5 +1,7 @@
 package com.eden.fans.bs.domain.svo;
 
+import com.eden.fans.bs.domain.enu.PostConcern;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -30,7 +32,7 @@ public class ConcernPost implements Serializable{
     /**
      *帖子状态（1：关注，2取消关注）
      */
-    private Integer status;
+    private PostConcern status;
 
     /**
      *操作时间
@@ -53,11 +55,11 @@ public class ConcernPost implements Serializable{
         this.title = title;
     }
 
-    public Integer getStatus() {
+    public PostConcern getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(PostConcern status) {
         this.status = status;
     }
 

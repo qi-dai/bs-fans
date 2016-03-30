@@ -24,7 +24,7 @@ public class ConcernUser implements Serializable {
     /**
      *1：关注，0：取消关注
      */
-    private int concern;
+    private PostConcern concern;
 
     /**
      * 点赞的时间
@@ -47,11 +47,11 @@ public class ConcernUser implements Serializable {
         this.userName = userName;
     }
 
-    public int getConcern() {
+    public PostConcern getConcern() {
         return concern;
     }
 
-    public void setConcern(int concern) {
+    public void setConcern(PostConcern concern) {
         this.concern = concern;
     }
 

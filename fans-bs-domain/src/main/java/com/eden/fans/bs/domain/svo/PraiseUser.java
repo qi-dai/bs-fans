@@ -23,7 +23,7 @@ public class PraiseUser implements Serializable {
     /**
      *1：点赞，0取消点赞
      */
-    private int praise;
+    private PostPraise praise;
 
     /**
      * 点赞的时间
@@ -46,11 +46,11 @@ public class PraiseUser implements Serializable {
         this.userName = userName;
     }
 
-    public int getPraise() {
+    public PostPraise getPraise() {
         return praise;
     }
 
-    public void setPraise(int praise) {
+    public void setPraise(PostPraise praise) {
         this.praise = praise;
     }
 

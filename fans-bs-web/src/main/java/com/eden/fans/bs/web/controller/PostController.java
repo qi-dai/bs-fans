@@ -1,11 +1,9 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
-import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
-import com.eden.fans.bs.domain.svo.ConcernPost;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
