@@ -1,11 +1,13 @@
 package com.eden.fans.bs.domain.enu;
 
+import com.eden.fans.bs.domain.IPostEnum;
+
 /**
  *帖子级别描述
  *
  * Created by Administrator on 2016/3/13.
  */
-public enum PostLevel{
+public enum PostLevel implements IPostEnum {
     COMMON("普通",1) ,
     BOUTIQUE("精品",2),
     HIGH_GREEN("高亮绿",3),
@@ -14,40 +16,24 @@ public enum PostLevel{
     private String name;
     private int value;
 
-
     private PostLevel(String name, int value){
         this.value = value;
         this.name = name;
     }
 
-    public static String getName(int value) {
-        for (PostLevel postLevel : PostLevel.values()) {
-            if (postLevel.getValue() == value) {
-                return postLevel.name;
+    public static String getName(int value){
+        for(PostLevel level:PostLevel.values()){
+            if(value == level.getValue()){
+                return level.getName();
             }
         }
-        return null;
+        return "";
     }
 
-    public static PostLevel getPostLevel(String name) {
-        PostLevel tmpLevel = PostLevel.COMMON;
-        for (PostLevel postLevel : PostLevel.values()) {
-            if (postLevel.getName().equals(name)) {
-                return postLevel;
-            }
-        }
-        return tmpLevel;
+    @Override
+    public String returnName() {
+        return name;
     }
-
-    public static int getValue(String name) {
-        for (PostLevel postLevel : PostLevel.values()){
-            if (postLevel.getName().equals(name)) {
-                return postLevel.value;
-            }
-        }
-        return 0;
-    }
-
     public String getName() {
         return name;
     }

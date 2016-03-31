@@ -1,11 +1,13 @@
 package com.eden.fans.bs.domain.enu;
 
+import com.eden.fans.bs.domain.IPostEnum;
+
 /**
  *帖子类型描述
  *
  * Created by Administrator on 2016/3/13.
  */
-public enum PostType {
+public enum PostType implements IPostEnum {
     TEXT_MESSAGE("消息",1),
     VIDEO("视频",2),
     MV("MV",3),
@@ -26,32 +28,9 @@ public enum PostType {
         this.name = name;
     }
 
-    public static String getName(int value) {
-        for (PostType postType : PostType.values()) {
-            if (postType.getValue() == value) {
-                return postType.name;
-            }
-        }
-        return null;
-    }
-
-    public static PostType getPostType(String name) {
-        PostType tmpType = PostType.TEXT_MESSAGE;
-        for (PostType postType : PostType.values()) {
-            if (postType.getName().equals(name)) {
-                return postType;
-            }
-        }
-        return tmpType;
-    }
-
-    public static int getValue(String name) {
-        for (PostType postType : PostType.values()){
-            if (postType.getName().equals(name)) {
-                return postType.value;
-            }
-        }
-        return 0;
+    @Override
+    public String returnName() {
+        return name;
     }
 
     public String getName() {

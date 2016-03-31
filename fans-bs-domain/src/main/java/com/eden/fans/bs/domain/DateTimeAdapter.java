@@ -10,19 +10,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2016/3/26.
  */
-public class DateTimeAdapter implements JsonDeserializer<Date>,JsonSerializer<Date> {
-    @Override
-    public Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = null;
-        try {
-
-            date = formatter.parse(jsonElement.getAsString());
-        } catch (ParseException e) {
-            date = new Date();
-        }
-        return date;
-    }
+public class DateTimeAdapter implements JsonSerializer<Date> {
 
     @Override
     public JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {

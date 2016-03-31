@@ -32,8 +32,6 @@ import java.util.*;
 public class PostServiceImpl implements IPostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
-    private static Gson PARSER = GsonUtil.getGson();
-
     @Autowired
     private IUserPostDao userPostDao;
     @Autowired

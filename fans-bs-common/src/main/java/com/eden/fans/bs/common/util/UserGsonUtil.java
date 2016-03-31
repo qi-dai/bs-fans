@@ -1,10 +1,7 @@
 package com.eden.fans.bs.common.util;
 
-import com.eden.fans.bs.domain.DateAdapter;
 import com.eden.fans.bs.domain.DateTimeAdapter;
 import com.eden.fans.bs.domain.TimestampAdapter;
-import com.eden.fans.bs.domain.enu.*;
-import com.eden.fans.bs.domain.enu.adapter.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

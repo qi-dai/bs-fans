@@ -1,10 +1,12 @@
 package com.eden.fans.bs.domain.enu;
 
+import com.eden.fans.bs.domain.IPostEnum;
+
 /**
  * 关注
  * Created by Administrator on 2016/3/14.
  */
-public enum PostConcern {
+public enum PostConcern implements IPostEnum {
     COMMIT("关注",1),
     CANCEL("取消关注",0);
     private String name;
@@ -13,32 +15,9 @@ public enum PostConcern {
         this.value = value;
         this.name = name;
     }
-    public static String getName(int value) {
-        for (PostConcern postConcern : PostConcern.values()) {
-            if (postConcern.getValue() == value) {
-                return postConcern.name;
-            }
-        }
-        return null;
-    }
-
-    public static PostConcern getPostConcern(int value) {
-        PostConcern tmpConcern = PostConcern.COMMIT;
-        for (PostConcern postConcern : PostConcern.values()) {
-            if (postConcern.getValue() == value) {
-                return tmpConcern;
-            }
-        }
-        return tmpConcern;
-    }
-
-    public static int getValue(String name) {
-        for (PostConcern postConcern : PostConcern.values()){
-            if (postConcern.getName() == name) {
-                return postConcern.value;
-            }
-        }
-        return 0;
+    @Override
+    public String returnName() {
+        return name;
     }
 
     public String getName() {

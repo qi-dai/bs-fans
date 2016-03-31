@@ -34,6 +34,7 @@ import java.util.*;
 @Repository
 public class PostDaoImpl implements IPostDao {
     private static Logger logger = LoggerFactory.getLogger(PostDaoImpl.class);
+    private static Gson PARSER = GsonUtil.getGson();
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -304,7 +305,7 @@ public class PostDaoImpl implements IPostDao {
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject), PostInfo.class);
+        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject), PostInfo.class);
         return Long.valueOf(postInfo.getPraiseUsers().size());
     }
 
@@ -326,7 +327,7 @@ public class PostDaoImpl implements IPostDao {
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject),PostInfo.class);
+        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject),PostInfo.class);
         return Long.valueOf(postInfo.getConcernUsers().size());
     }
 
@@ -345,7 +346,7 @@ public class PostDaoImpl implements IPostDao {
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = OUTERPARSER.fromJson(OUTERPARSER.toJson(postObject), PostInfo.class);
+        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject), PostInfo.class);
         return Long.valueOf(postInfo.getConcernUsers().size());
     }
 
@@ -600,27 +601,4 @@ public class PostDaoImpl implements IPostDao {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
     }
 
-
-    /************************内部工具类****************/
-    private static Gson OUTERPARSER = GsonUtil.getGson();
-    private static Gson PARSER = null;
-    static{
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(Date.class,new DateTimeAdapter());
-        PARSER = builder.create();
-    }
-    private static class DateTimeAdapter implements JsonDeserializer<Date>,JsonSerializer<Date>{
-
-        @Override
-        public Date deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return new Date(jsonElement.getAsLong());
-        }
-
-        @Override
-        public JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String dateString = formatter.format(date);
-            return new JsonPrimitive(dateString);
-        }
-    }
 }

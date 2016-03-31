@@ -8,12 +8,7 @@ import java.lang.reflect.Type;
 /**
  * Created by Administrator on 2016/3/22.
  */
-public class ObjectIdAdapter implements JsonDeserializer<ObjectId>,JsonSerializer<ObjectId> {
-    @Override
-    public ObjectId deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        return new ObjectId(jsonElement.getAsString());
-    }
-
+public class ObjectIdAdapter implements JsonSerializer<ObjectId> {
     @Override
     public JsonElement serialize(ObjectId objectId, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(objectId.toString());

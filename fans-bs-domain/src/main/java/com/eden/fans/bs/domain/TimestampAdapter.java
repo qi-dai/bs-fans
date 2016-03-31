@@ -11,12 +11,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2016/3/26.
  */
-public class TimestampAdapter implements JsonDeserializer<Timestamp>,JsonSerializer<Timestamp> {
-
-    @Override
-    public Timestamp deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        return Timestamp.valueOf(jsonElement.getAsString());
-    }
+public class TimestampAdapter implements JsonSerializer<Timestamp> {
 
     @Override
     public JsonElement serialize(Timestamp timestamp, Type type, JsonSerializationContext jsonSerializationContext) {
