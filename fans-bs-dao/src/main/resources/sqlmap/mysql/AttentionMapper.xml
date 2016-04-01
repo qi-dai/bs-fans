@@ -14,30 +14,8 @@
         select id,att_type,from_user_code,to_user_code,create_time,update_time
         from user_attention
     </sql>
-    <!-- 查询用户关注列表 -->
-    <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
-        <include refid="allColumn"/>
-        where 1=1
-        <if test="attType != null">
-            and att_type = #{attType,jdbcType=VARCHAR}
-        </if>
-        <if test="fromUserCode != null">
-            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
-        </if>
-    </select>
-    <!-- 根据用户粉丝列表 -->
-    <select id="qryToAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
-        <include refid="allColumn"/>
-        where 1=1
-        <if test="attType != null">
-            and att_type = #{attType,jdbcType=VARCHAR}
-        </if>
-        <if test="toUserCode != null">
-            and to_user_code = #{toUserCode,jdbcType=BIGINT}
-        </if>
-    </select>
 
-    <!-- 注册用户，插入新用户数据-->
+    <!-- 插入用户关注记录-->
     <insert id="addAttention"
             parameterType="com.eden.fans.bs.domain.user.AttentionVo">
         INSERT INTO user_attention(
@@ -47,18 +25,43 @@
         #{attType,jdbcType=VARCHAR},#{fromUserCode,jdbcType=VARCHAR},#{toUserCode,jdbcType=VARCHAR}
         )
     </insert>
-    <!-- 根据用户粉丝列表 -->
-    <select id="qryAttentionVo" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+
+    <!-- 统计用户关注好友总数 -->
+    <select id="countFromAtt"  parameterType="java.lang.Long" resultType="int">
+        select count(0) from user_atttion
+        where att_type = '0'
+        and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
+    </select>
+    <!-- 分页查询用户关注列表 -->
+    <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="java.util.Map">
         <include refid="allColumn"/>
-        where 1=1
-        <if test="fromUserCode != null">
-            and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
-        </if>
-        <if test="toUserCode != null">
-            and to_user_code = #{toUserCode,jdbcType=BIGINT}
-        </if>
+        where att_type = '1'
+            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
+            order by ID limit #{page.dbIndex},#{page.dbNumber}
     </select>
 
+    <!-- 统计用户粉丝总数 -->
+    <select id="countToAtt"  parameterType="java.lang.Long" resultType="int">
+        select count(0) from user_atttion
+        where att_type = '0'
+        and to_user_code = #{toUserCode,jdbcType=BIGINT}
+    </select>
+    <!-- 分页查询用户粉丝列表 -->
+    <select id="qryToAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        <include refid="allColumn"/>
+        where att_type = '0'
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+            order by ID limit #{page.dbIndex},#{page.dbNumber}
+    </select>
+
+    <!-- 根据用户之间关注关系列表 -->
+    <select id="qryAttentionVo" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        <include refid="allColumn"/>
+        where  from_user_code = #{fromUserCode,jdbcType=BIGINT}
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+    </select>
+
+    <!-- 更新用户间关注信息 -->
     <update id="updateAttention" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
         update user_attention set
         att_type = #{attType,jdbcType=VARCHAR},

@@ -5,9 +5,10 @@ package com.eden.fans.bs.domain.response;
  */
 public enum AttentionErrorCodeEnum implements BaseCodeEnum {
 
-    ADD_ATTENTION_ERROR("1021", "关注失败!", "插入关注记录到数据库失败！"),//第一次关注
-    UPDATE_ATTENTION_ERROR("1022", "关注失败!", "关注记录不存在！"),//关注后取消关注，再关注
-    UPDATE_ATTENTION_FAILED("1023", "取消关注失败!", "操作数据库发生异常！");
+    UPDATE_ATTENTION_ERROR("1022", "关注失败!", "操作数据库发生异常！"),//关注后取消关注，再关注
+    UPDATE_ATTENTION_FAILED("1023", "取消关注失败!", "操作数据库发生异常！"),
+    QRYFROM_ATTENTION_FAILED("1024", "查询我的关注失败!", "操作数据库发生异常！"),
+    QRYTO_ATTENTION_FAILED("1025", "查询粉丝列表失败!", "操作数据库发生异常！");
 
     public String code;
     public String msg;

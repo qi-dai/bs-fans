@@ -6,6 +6,7 @@ import com.eden.fans.bs.domain.user.AttentionVo;
 import com.eden.fans.bs.domain.user.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lirong5 on 2016/4/1.
@@ -23,8 +24,12 @@ public class AttentionDaoImpl extends BaseDao<AttentionVo> implements IAttention
     }
 
     @Override
-    public List<AttentionVo> qryAttentions(String sqlId,AttentionVo attentionVo) {
-        return super.queryForList(sqlId,attentionVo);
+    public List<AttentionVo> qryAttentions(String sqlId,Map<String,Object> params) {
+        return super.queryForList(sqlId,params);
+    }
+
+    public int countAttentions(String sqlId,Long qryUserCode){
+        return super.queryCountForObject(sqlId,qryUserCode);
     }
 
     @Override

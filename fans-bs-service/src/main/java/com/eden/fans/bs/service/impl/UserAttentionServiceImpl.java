@@ -1,7 +1,10 @@
 package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.dao.IAttentionDao;
+import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.AttentionRequest;
+import com.eden.fans.bs.domain.request.QryFromAttRequest;
+import com.eden.fans.bs.domain.request.QryToAttRequest;
 import com.eden.fans.bs.domain.response.AttentionErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.domain.user.AttentionVo;
@@ -10,6 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lirong5 on 2016/4/1.
@@ -57,8 +64,54 @@ public class UserAttentionServiceImpl implements IUserAttentionService{
             logger.error("设置关注出错,{}，操作数据库异常",attentionRequest,e);
             if(attentionRequest.getAttentionFlag()){//设置关注
                 setAttentionResponse = new ServiceResponse<Boolean>(AttentionErrorCodeEnum.UPDATE_ATTENTION_ERROR);
+            }else{
+                setAttentionResponse = new ServiceResponse<Boolean>(AttentionErrorCodeEnum.UPDATE_ATTENTION_FAILED);
             }
         }
         return setAttentionResponse;
+    }
+
+    @Override
+    public ServiceResponse<List<AttentionVo>> getFromAttentions(QryFromAttRequest qryFromAttRequest) {
+        ServiceResponse<List<AttentionVo>> qryFromAttResponse = null;
+        try{
+            int totalNumber = attentionDao.countAttentions("AttentionMapper.countFromAtt", qryFromAttRequest.getFromUserCode());
+            if (totalNumber==0){
+                qryFromAttResponse = new ServiceResponse<List<AttentionVo>>();
+                return qryFromAttResponse;
+            }
+            Map<String,Object> params = new HashMap<String, Object>();
+            params.put("page", new Page(qryFromAttRequest.getPageNumber()));
+            params.put("fromUserCode", qryFromAttRequest.getFromUserCode());
+            List<AttentionVo> results = attentionDao.qryAttentions("AttentionMapper.qryFromAttentionVos", params);
+            qryFromAttResponse = new ServiceResponse<List<AttentionVo>>();
+            qryFromAttResponse.setResult(results);
+        }catch (Exception e){
+            logger.error("查询关注好友列表出错,{}，操作数据库异常",qryFromAttRequest,e);
+            qryFromAttResponse = new ServiceResponse<List<AttentionVo>>(AttentionErrorCodeEnum.QRYFROM_ATTENTION_FAILED);
+        }
+        return qryFromAttResponse;
+    }
+
+    @Override
+    public ServiceResponse<List<AttentionVo>> getToAttentions(QryToAttRequest qryToAttRequest) {
+        ServiceResponse<List<AttentionVo>> qryToAttResponse = null;
+        try{
+            int totalNumber = attentionDao.countAttentions("AttentionMapper.countToAtt", qryToAttRequest.getToUserCode());
+            if(totalNumber==0){
+                qryToAttResponse = new ServiceResponse<List<AttentionVo>>();
+                return qryToAttResponse;
+            }
+            Map<String,Object> params = new HashMap<String, Object>();
+            params.put("page", new Page(qryToAttRequest.getPageNumber()));
+            params.put("toUserCode",qryToAttRequest.getToUserCode());
+            List<AttentionVo> results = attentionDao.qryAttentions("AttentionMapper.qryFromAttentionVos", params);
+            qryToAttResponse = new ServiceResponse<List<AttentionVo>>();
+            qryToAttResponse.setResult(results);
+        }catch (Exception e){
+            logger.error("查询关注好友列表出错,{}，操作数据库异常",qryToAttRequest,e);
+            qryToAttResponse = new ServiceResponse<List<AttentionVo>>(AttentionErrorCodeEnum.QRYTO_ATTENTION_FAILED);
+        }
+        return qryToAttResponse;
     }
 }

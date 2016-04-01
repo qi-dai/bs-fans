@@ -18,6 +18,10 @@ public class RedisCache {
 
     private static Gson gson = new Gson();
 
+    private RedisCache(){
+        //私有化对象，不允许在其他任何地方创建
+    }
+
     /**
      * 设置key:value,永久存在
      * @param key
