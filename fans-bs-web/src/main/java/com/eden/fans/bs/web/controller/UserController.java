@@ -1,8 +1,10 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.UserGsonUtil;
+import com.eden.fans.bs.domain.request.AttentionRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
 import com.eden.fans.bs.domain.user.UserVo;
+import com.eden.fans.bs.service.IUserAttentionService;
 import com.eden.fans.bs.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,8 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IUserAttentionService userAttentionService;
 
 
     @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
@@ -40,6 +44,12 @@ public class UserController {
     @ResponseBody
     public String resetPwd(ResetPwdRequest resetPwdRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userService.resetPwd(resetPwdRequest));
+    }
+
+    @RequestMapping(value = "/attention", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String attention(AttentionRequest attentionRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(userAttentionService.setAttention(attentionRequest));
     }
 
 }

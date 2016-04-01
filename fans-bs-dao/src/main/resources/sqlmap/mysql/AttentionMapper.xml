@@ -14,7 +14,7 @@
         select id,att_type,from_user_code,to_user_code,create_time,update_time
         from user_attention
     </sql>
-    <!-- 根据用户关注其他用户刘表 -->
+    <!-- 查询用户关注列表 -->
     <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
         <include refid="allColumn"/>
         where 1=1
@@ -25,7 +25,7 @@
             and from_user_code = #{fromUserCode,jdbcType=BIGINT}
         </if>
     </select>
-    <!-- 根据用户关注其他用户刘表 -->
+    <!-- 根据用户粉丝列表 -->
     <select id="qryToAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
         <include refid="allColumn"/>
         where 1=1
@@ -38,64 +38,33 @@
     </select>
 
     <!-- 注册用户，插入新用户数据-->
-    <insert id="addUserInfo"
-            parameterType="com.eden.fans.bs.domain.user.UserVo">
-        INSERT INTO user_info(
-        user_code,user_name,phone,password,user_status,gender,active_level,user_role,platform
-        ) VALUES (
-        (SELECT nextval("user_code1")),#{userName,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
-        #{userStatus,jdbcType=TINYINT},#{gender,jdbcType=TINYINT},#{activeLevel,jdbcType=VARCHAR},#{userRole,jdbcType=TINYINT},#{platform,jdbcType=VARCHAR}
+    <insert id="addAttention"
+            parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        INSERT INTO user_attention(
+        att_type,from_user_code,to_user_code
+        ) VALUES
+        (
+        #{attType,jdbcType=VARCHAR},#{fromUserCode,jdbcType=VARCHAR},#{toUserCode,jdbcType=VARCHAR}
         )
     </insert>
+    <!-- 根据用户粉丝列表 -->
+    <select id="qryAttentionVo" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        <include refid="allColumn"/>
+        where 1=1
+        <if test="fromUserCode != null">
+            and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
+        </if>
+        <if test="toUserCode != null">
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+        </if>
+    </select>
 
-    <insert id="addUserInfoDetail"
-            parameterType="com.eden.fans.bs.domain.user.UserVo">
-        INSERT INTO user_info
-        (user_code,user_name,phone,password,user_status,
-        <if test="bgImgUrl != null">
-            bg_img_url,
-        </if>
-        <if test="headImgUrl != null">
-            head_img_url,
-        </if>
-        <if test="gender != null">
-            gender,
-        </if>
-        <if test="constellation != null">
-            constellation,
-        </if>
-        <if test="cityCode != null">
-            city_code,
-        </if>
-        active_level,user_role,
-        <if test="signature != null">
-            signature,
-        </if>
-        ,platform)
-        VALUES
-        ((SELECT nextval("user_code1")),#{userName,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR}
-        ,#{userStatus,jdbcType=TINYINT},
-        <if test="bgImgUrl != null">
-            #{bg_img_url,jdbcType=VARCHAR},
-        </if>
-        <if test="headImgUrl != null">
-            #{head_img_url,jdbcType=VARCHAR},
-        </if>
-        <if test="gender != null">
-            #{gender,jdbcType=TINYINT},
-        </if>
-        <if test="constellation != null">
-            #{constellation,jdbcType=VARCHAR},
-        </if>
-        <if test="cityCode != null">
-            #{cityCode,jdbcType=VARCHAR},
-        </if>
-        #{activeLevel,jdbcType=VARCHAR},#{userRole,jdbcType=TINYINT},
-        <if test="signature != null">
-            #{signature,jdbcType=VARCHAR},
-        </if>
-        #{platform,jdbcType=VARCHAR}
-        )
-    </insert>
+    <update id="updateAttention" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
+        update user_attention set
+        att_type = #{attType,jdbcType=VARCHAR},
+        update_time = now()
+        where from_user_code = #{fromUserCode,jdbcType=BIGINT}
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+    </update>
 
 </mapper>

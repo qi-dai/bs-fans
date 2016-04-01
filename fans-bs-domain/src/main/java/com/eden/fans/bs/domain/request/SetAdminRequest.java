@@ -9,6 +9,7 @@ public class SetAdminRequest {
     private String token;//管理员登录凭证
     private String phone;//管理员手机号码
     private Long userCode;//待设管理员编码
+    private boolean type;//设置 true or 取消 false
 
     @ActionInput(notNull = true)
     public String getToken() {
@@ -35,5 +36,14 @@ public class SetAdminRequest {
 
     public void setUserCode(Long userCode) {
         this.userCode = userCode;
+    }
+
+    @ActionInput(notNull = true)
+    public boolean getType() {
+        return type;
+    }
+
+    public void setType(boolean type) {
+        this.type = type;
     }
 }

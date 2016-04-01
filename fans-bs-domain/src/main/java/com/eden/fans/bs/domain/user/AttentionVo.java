@@ -10,9 +10,9 @@ import java.sql.Timestamp;
 public class AttentionVo implements Serializable {
 
     private Long id;
-    private String attType;//类型，0 关注，-1 取消关注
-    private long fromUserCode;//发起关注用户编码
-    private long toUserCode;//被关注用户编码
+    protected String attType;//类型，0 关注，-1 取消关注
+    protected long fromUserCode;//发起关注用户编码
+    protected long toUserCode;//被关注用户编码
     private Timestamp createTime;//创建时间
     private Timestamp updateTime;//最后更新时间
 

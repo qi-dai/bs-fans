@@ -6,16 +6,12 @@ import com.eden.fans.bs.common.util.UserUtils;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
-import com.eden.fans.bs.domain.request.RegisterRequest;
-import com.eden.fans.bs.domain.request.ResetPwdRequest;
-import com.eden.fans.bs.domain.request.SetAdminRequest;
-import com.eden.fans.bs.domain.request.StatusUpdateRequest;
+import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.*;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IUserService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +168,11 @@ public class UserServiceImpl implements IUserService {
             //2.更新用户角色
             UserVo adminUser = new UserVo();
             adminUser.setUserCode(setAdminRequest.getUserCode());
-            adminUser.setUserRole("02");//管理员编码02
+            if(setAdminRequest.getType()){
+                adminUser.setUserRole("02");//管理员编码02
+            }else{
+                adminUser.setUserRole("01");//取消管理员权限
+            }
             boolean updateFlag = userDao.updateUserRecord(adminUser,"UserMapper.setAdmin");
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.SET_ADMIN_ERROR);

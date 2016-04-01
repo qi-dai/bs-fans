@@ -19,10 +19,8 @@ public enum UserErrorCodeEnum implements BaseCodeEnum {
     OLD_PWD_ERROR("1016", "原密码输入不正确，请重新输入!", "原密码不正确！"),
     RESET_PWD_ERROR("1017", "设置密码出错!", "用户不存在或已注销！"),
     UPDATE_USER_STATUS_ERROR("1018", "设置用户状态出错!", "用户不存在或已注销！"),
-    UPDATE_USER_STATUS_FAILED("1019", "设置用户状态出错!", "操作数据库失败！");
+    UPDATE_USER_STATUS_FAILED("1019", "设置用户状态出错!", "操作数据库发生异常！");
 
-            ;
-    //RPC调用异常
     public String code;
     public String msg;
     public String detail;

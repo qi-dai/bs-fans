@@ -1,9 +1,6 @@
 package com.eden.fans.bs.service;
 
-import com.eden.fans.bs.domain.request.RegisterRequest;
-import com.eden.fans.bs.domain.request.ResetPwdRequest;
-import com.eden.fans.bs.domain.request.SetAdminRequest;
-import com.eden.fans.bs.domain.request.StatusUpdateRequest;
+import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.RegisterReponse;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
 import com.eden.fans.bs.domain.user.UserVo;
@@ -52,4 +49,5 @@ public interface IUserService {
      * 刷新用户缓存信息
      * */
     public ServiceResponse<Boolean> freshUserInfo(String phone);
+
 }
