@@ -11,6 +11,7 @@ public class QryFromAttRequest{
     private String phone;
     protected long fromUserCode;//发起关注用户编码
     private int pageNumber;
+    private int currentPage;
 
     @ActionInput(notNull = true)
     public String getToken() {
@@ -50,5 +51,13 @@ public class QryFromAttRequest{
 
     public void setPageNumber(int pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 }

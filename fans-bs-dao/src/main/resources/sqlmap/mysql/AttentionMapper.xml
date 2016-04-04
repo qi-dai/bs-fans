@@ -9,10 +9,17 @@
         <result column="to_user_code" property="toUserCode" jdbcType="BIGINT"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="allColumn">
         select id,att_type,from_user_code,to_user_code,create_time,update_time
         from user_attention
+    </sql>
+
+    <sql id="qryAllColumn">
+        SELECT ua.id,ua.att_type,ua.from_user_code,ua.to_user_code,ua.create_time,ua.update_time,ui.user_name,ui.head_img_url
+        FROM user_info ui,user_attention ua
     </sql>
 
     <!-- 插入用户关注记录-->
@@ -28,30 +35,34 @@
 
     <!-- 统计用户关注好友总数 -->
     <select id="countFromAtt"  parameterType="java.lang.Long" resultType="int">
-        select count(0) from user_atttion
+        select count(0) from user_attention
         where att_type = '0'
         and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
     </select>
     <!-- 分页查询用户关注列表 -->
     <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="java.util.Map">
-        <include refid="allColumn"/>
-        where att_type = '1'
-            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
-            order by ID limit #{page.dbIndex},#{page.dbNumber}
+        SELECT ua.id,ua.att_type,ua.to_user_code,ua.create_time,ua.update_time,ui.user_name,ui.head_img_url
+        FROM user_info ui,user_attention ua
+        where ui.user_code = ua.to_user_code
+            AND ua.att_type = '0'
+            and ua.from_user_code = #{fromUserCode,jdbcType=BIGINT}
+            order by ua.ID limit #{page.dbIndex},#{page.dbNumber}
     </select>
 
     <!-- 统计用户粉丝总数 -->
     <select id="countToAtt"  parameterType="java.lang.Long" resultType="int">
-        select count(0) from user_atttion
+        select count(0) from user_attention
         where att_type = '0'
         and to_user_code = #{toUserCode,jdbcType=BIGINT}
     </select>
     <!-- 分页查询用户粉丝列表 -->
     <select id="qryToAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
-        <include refid="allColumn"/>
-        where att_type = '0'
-            and to_user_code = #{toUserCode,jdbcType=BIGINT}
-            order by ID limit #{page.dbIndex},#{page.dbNumber}
+        SELECT ua.id,ua.att_type,ua.from_user_code,ua.create_time,ua.update_time,ui.user_name,ui.head_img_url
+        FROM user_info ui,user_attention ua
+        where ui.user_code = ua.from_user_code
+        AND ua.att_type = '0'
+        and ua.to_user_code = #{toUserCode,jdbcType=BIGINT}
+        order by ua.ID limit #{page.dbIndex},#{page.dbNumber}
     </select>
 
     <!-- 根据用户之间关注关系列表 -->

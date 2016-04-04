@@ -2,6 +2,8 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.UserGsonUtil;
 import com.eden.fans.bs.domain.request.AttentionRequest;
+import com.eden.fans.bs.domain.request.QryFromAttRequest;
+import com.eden.fans.bs.domain.request.QryToAttRequest;
 import com.eden.fans.bs.domain.request.ResetPwdRequest;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.IUserAttentionService;
@@ -46,10 +48,26 @@ public class UserController {
         return UserGsonUtil.getGson().toJson(userService.resetPwd(resetPwdRequest));
     }
 
-    @RequestMapping(value = "/attention", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    /**
+     * 关注/取消关注用户
+     * */
+    @RequestMapping(value = "/setAttention", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String attention(AttentionRequest attentionRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userAttentionService.setAttention(attentionRequest));
+    }
+
+
+    @RequestMapping(value = "/getFromAttentions", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getFromAttentions(QryFromAttRequest qryFromAttRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(userAttentionService.getFromAttentions(qryFromAttRequest));
+    }
+
+    @RequestMapping(value = "/getToAttentions", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String getToAttentions(QryToAttRequest qryToAttRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(userAttentionService.getToAttentions(qryToAttRequest));
     }
 
 }

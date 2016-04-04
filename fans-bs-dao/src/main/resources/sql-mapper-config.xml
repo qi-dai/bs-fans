@@ -17,5 +17,7 @@
         <mapper resource="sqlmap/mysql/PlistAdmin.xml" />
         <mapper resource="sqlmap/mysql/UserMapper.xml" />
         <mapper resource="sqlmap/mysql/UserOperateMapper.xml" />
+        <mapper resource="sqlmap/mysql/AttentionMapper.xml" />
+        <mapper resource="sqlmap/mysql/UserPraiseMapper.xml" />
     </mappers>
  </configuration>

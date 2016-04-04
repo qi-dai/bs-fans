@@ -9,7 +9,6 @@ import com.eden.fans.bs.domain.user.AttentionVo;
 public class AttentionRequest{
     private String token;
     private String phone;
-    private long fromUserCode;//发起关注用户编码
     private long toUserCode;//被关注用户编码
     private boolean attentionFlag;//关注 true or 取消关注 false；
 
@@ -32,14 +31,6 @@ public class AttentionRequest{
     }
 
     @ActionInput(notNull = true)
-    public long getFromUserCode() {
-        return fromUserCode;
-    }
-
-    public void setFromUserCode(long fromUserCode) {
-        this.fromUserCode = fromUserCode;
-    }
-    @ActionInput(notNull = true)
     public long getToUserCode() {
         return toUserCode;
     }
@@ -60,7 +51,6 @@ public class AttentionRequest{
 
     @Override
     public String toString(){
-        return new StringBuilder().append("toUserCode:").append(toUserCode)
-                .append(",fromUserCode:").append(fromUserCode).append(",attentionFlag:").append(this.attentionFlag).toString();
+        return new StringBuilder().append("toUserCode:").append(toUserCode).append(",attentionFlag:").append(this.attentionFlag).toString();
     }
 }

@@ -11,10 +11,12 @@ public class AttentionVo implements Serializable {
 
     private Long id;
     protected String attType;//类型，0 关注，-1 取消关注
-    protected long fromUserCode;//发起关注用户编码
-    protected long toUserCode;//被关注用户编码
+    protected Long fromUserCode;//发起关注用户编码
+    protected Long toUserCode;//被关注用户编码
     private Timestamp createTime;//创建时间
     private Timestamp updateTime;//最后更新时间
+    private String headImgUrl;//用户头像url
+    private String userName;//用户昵称
 
     public Long getId() {
         return id;
@@ -32,19 +34,19 @@ public class AttentionVo implements Serializable {
         this.attType = attType;
     }
 
-    public long getFromUserCode() {
+    public Long getFromUserCode() {
         return fromUserCode;
     }
 
-    public void setFromUserCode(long fromUserCode) {
+    public void setFromUserCode(Long fromUserCode) {
         this.fromUserCode = fromUserCode;
     }
 
-    public long getToUserCode() {
+    public Long getToUserCode() {
         return toUserCode;
     }
 
-    public void setToUserCode(long toUserCode) {
+    public void setToUserCode(Long toUserCode) {
         this.toUserCode = toUserCode;
     }
 
@@ -62,5 +64,21 @@ public class AttentionVo implements Serializable {
 
     public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

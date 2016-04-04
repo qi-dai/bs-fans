@@ -4,6 +4,7 @@ import com.eden.fans.bs.dao.BaseDao;
 import com.eden.fans.bs.dao.IAttentionDao;
 import com.eden.fans.bs.domain.user.AttentionVo;
 import com.eden.fans.bs.domain.user.UserVo;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 /**
  * Created by lirong5 on 2016/4/1.
  */
+@Repository
 public class AttentionDaoImpl extends BaseDao<AttentionVo> implements IAttentionDao {
 
     @Override
