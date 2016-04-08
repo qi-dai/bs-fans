@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -152,4 +154,11 @@ public class CommonServiceImpl implements ICommonService{
         }
         return serviceResponse;
     }
+
+    @Override
+    public List<UserVo> qryUserVosBatch(Long... userCodes ){
+        List<UserVo> rtnUserVos = userDao.qryUserVosBatch(userCodes);
+        return rtnUserVos;
+    }
+
 }

@@ -103,4 +103,15 @@
         update user_info set user_status = #{userStatus,jdbcType=TINYINT},update_time = now()
         where user_code = #{userCode,jdbcType=VARCHAR}
     </update>
+
+    <!-- 根据userCode集合批量查询用户基础信息-->
+    <select id="queryUserVoBatch" resultMap="userVoMap">
+        select user_code,user_name,user_status,bg_img_url,head_img_url,gender,
+        constellation,city_code,active_level,signature
+        from user_info where user_code in
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

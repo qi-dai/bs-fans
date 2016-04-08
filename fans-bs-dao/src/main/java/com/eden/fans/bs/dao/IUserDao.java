@@ -2,6 +2,8 @@ package com.eden.fans.bs.dao;
 
 import com.eden.fans.bs.domain.user.UserVo;
 
+import java.util.List;
+
 /**
  * Created by Administrator on 2016/3/15.
  */
@@ -44,4 +46,6 @@ public interface IUserDao {
      * @Return boolean 更新成功标记
      * */
     public boolean updateUserRecord(UserVo userVo,String sqlId);
+
+    public List<UserVo> qryUserVosBatch(Long... userCodes);
 }

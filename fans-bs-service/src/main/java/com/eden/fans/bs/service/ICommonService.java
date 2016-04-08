@@ -3,6 +3,9 @@ package com.eden.fans.bs.service;
 import com.eden.fans.bs.domain.request.LoginRequest;
 import com.eden.fans.bs.domain.response.LoginResponse;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.domain.user.UserVo;
+
+import java.util.List;
 
 /**
  * Created by Mr.lee on 2016/3/15.
@@ -25,4 +28,9 @@ public interface ICommonService {
      * @param loginRequest 登录验证需要参数
      * */
     public ServiceResponse<LoginResponse> checkUserInfo(LoginRequest loginRequest);
+
+    /**
+     * 根据用户userCode集合批量查询用户基础信息
+     * */
+    public List<UserVo> qryUserVosBatch(Long... userCode );
 }

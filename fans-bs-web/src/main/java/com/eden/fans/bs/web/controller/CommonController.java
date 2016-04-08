@@ -164,4 +164,18 @@ public class CommonController {
 		sos.flush();
 		sos.close();
 	}
+
+	/**批量获取用户信息*/
+	@RequestMapping(value = "/getUsers", method = RequestMethod.GET)
+	@ResponseBody
+	public String getUsers(HttpServletRequest req, HttpServletResponse resp){
+		Long[] arr = new Long[5];
+		arr[0]=100020l;
+		arr[1]=100021l;
+		arr[2]=100022l;
+		arr[3]=100023l;
+		arr[4]=100024l;
+		return gson.toJson(commonService.qryUserVosBatch(arr));
+	}
+
 }

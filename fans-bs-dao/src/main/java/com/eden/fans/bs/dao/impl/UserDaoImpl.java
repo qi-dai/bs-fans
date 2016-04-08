@@ -5,6 +5,8 @@ import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.domain.user.UserVo;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Created by Mr.lee on 2016/3/15.
  */
@@ -44,4 +46,11 @@ public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     public boolean updateUserRecord(UserVo userVo,String sqlId) {
         return super.update(sqlId,userVo);
     }
+
+    @Override
+    public List<UserVo> qryUserVosBatch(Long... userCodes) {
+        return super.queryForList("UserMapper.queryUserVoBatch",userCodes);
+    }
+
+
 }
