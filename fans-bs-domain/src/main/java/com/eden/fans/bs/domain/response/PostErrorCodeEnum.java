@@ -12,7 +12,11 @@ public enum PostErrorCodeEnum implements BaseCodeEnum {
     CONCERN_POST_SUCCESS("3003", "关注成功", "关注成功"),
     CONCERN_POST_FAILED("-3003", "关注失败", "系统出现问题关注失败"),
     REPLY_POST_SUCCESS("3004", "回帖成功", "回帖成功"),
-    REPLY_POST_FAILED("-3004", "回帖失败", "系统出现问题，回帖失败");
+    REPLY_POST_FAILED("-3004", "回帖失败", "系统出现问题，回帖失败"),
+    UPDATE_POST_SUCCESS("3005", "更新帖子状态成功", "更新帖子状态成功"),
+    UPDATE_POST_FAILED("-3005", "更新帖子状态失败", "您不是帖子的创建人或管理员"),
+    GET_APPROVAL_POST_SUCCESS("3006", "获取待审批的帖子成功", "获取待审批的帖子成功"),
+    GET_APPROVAL_POST_FAILED("-3006", "获取待审批的帖子", "您不是管理员");
     //RPC调用异常
     public String code;
     public String msg;

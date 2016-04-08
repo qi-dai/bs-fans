@@ -47,7 +47,7 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countPost(String appCode) {
-        DBObject query = new BasicDBObject("status","正常");
+        DBObject query = new BasicDBObject("status",PostStatus.NORMAL.getValue());
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
     }
 
@@ -62,7 +62,13 @@ public class PostDaoImpl implements IPostDao {
     public Long countPostByUserCode(String appCode, Long userCode) {
         DBObject query = new BasicDBObject();
         query.put("userCode",userCode);
-        query.put("status","正常");
+        query.put("status",PostStatus.NORMAL.getValue());
+        return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
+    }
+    @Override
+    public Long countMyPost(String appCode, Long userCode) {
+        DBObject query = new BasicDBObject();
+        query.put("userCode",userCode);
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
     }
 
@@ -76,8 +82,13 @@ public class PostDaoImpl implements IPostDao {
     @Override
     public List<DBObject> obtainPostByPage(String appCode, Integer pageNum) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+
+        DBObject object = new BasicDBObject();
+        object.put("status", PostStatus.NORMAL.getValue());
+
         DBObject sort = new BasicDBObject();
         sort.put("createDate",-1);
+
         DBObject keys = new BasicDBObject();
         keys.put("title", 1);
         keys.put("createDate", 1);
@@ -112,27 +123,29 @@ public class PostDaoImpl implements IPostDao {
         sort.put("createDate",-1);
 
         DBObject query = new BasicDBObject("userCode",userCode);
+        query.put("status",PostStatus.NORMAL.getValue());
 
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
         keys.put("createDate", 1);
+        return userPostObject(appCode,pageNum,query,keys,sort);
+    }
 
-        DBCursor cursor = null;
-        try{
-            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).sort(sort).skip(pageNum*10).limit(10);
-            while (cursor.hasNext()){
-                DBObject dbObject =  cursor.next();
-                dbObjectList.add(dbObject);
-            }
-        } catch (Exception e){
-            logger.error("根据用户标识获取帖子列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
-        } finally {
-            if(null != cursor){
-                cursor.close();
-            }
-        }
-        return dbObjectList;
+    @Override
+    public List<DBObject> myPost(String appCode, Long userCode, Integer pageNum) {
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject sort = new BasicDBObject();
+        sort.put("createDate",-1);
+
+        DBObject query = new BasicDBObject("userCode",userCode);
+
+        DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
+        keys.put("title", 1);
+        keys.put("createDate", 1);
+        keys.put("status", 1);
+        return userPostObject(appCode, pageNum, query, keys, sort);
     }
 
     /**
@@ -178,16 +191,20 @@ public class PostDaoImpl implements IPostDao {
      * 更新帖子状态（status）
      *
      * @param appCode
-     * @param postId
      * @param status
+     * @param postChecker
      */
     @Override
-    public boolean updateStatus(String appCode, String postId, PostStatus status) {
+    public boolean updateStatus(String appCode, String postId, PostStatus status,Long postChecker) {
         Query query = Query.query(Criteria.where("_id").is(postId));
         Update update = new Update();
-        update.set("status",status.getName());
-        update.set("publishDate", new Date().getTime());
-
+        update.set("status",status.getValue());
+        update.set("publishDate", new Date());
+        // 如果审批人不为空，则更新审批人列表
+        if(null != postChecker){
+            Update.AddToSetBuilder builder = update.addToSet("operatorList");
+            builder.each(postChecker);
+        }
         int result = this.mongoTemplate.updateFirst(query, update, MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
         if(0 == result){
             return false;
@@ -423,7 +440,7 @@ public class PostDaoImpl implements IPostDao {
         }
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
-        replyInfoStringBuilder(stringBuilder,postObject);
+        replyInfoStringBuilder(stringBuilder, postObject);
         stringBuilder.append("]");
         return stringBuilder.toString();
     }
@@ -521,7 +538,7 @@ public class PostDaoImpl implements IPostDao {
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                replyInfoStringBuilder(stringBuilder,dbObject);
+                replyInfoStringBuilder(stringBuilder, dbObject);
             }
         }catch (Exception e){
             logger.error("根据帖子的标志获取回帖信息列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -532,6 +549,28 @@ public class PostDaoImpl implements IPostDao {
         }
         stringBuilder.append("]");
         return stringBuilder.toString();
+    }
+
+    /**
+     * 分页获取待审批的帖子列表
+     *
+     * @param appCode
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public List<DBObject> queryApprovalPost(String appCode, Integer pageNum) {
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject sort = new BasicDBObject();
+        sort.put("createDate",-1);
+
+        DBObject query = new BasicDBObject("status",PostStatus.CHECK.getValue());
+
+        DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
+        keys.put("title", 1);
+        keys.put("createDate", 1);
+        return this.userPostObject(appCode,pageNum,query,keys,sort);
     }
 
     /**
@@ -548,7 +587,7 @@ public class PostDaoImpl implements IPostDao {
             stringBuilder.append("\"userName\":\"" + object.get("userName") + "\"");
             stringBuilder.append("},");
         }
-        stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
     }
 
     /**
@@ -599,6 +638,34 @@ public class PostDaoImpl implements IPostDao {
             stringBuilder.append("},");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+    }
+
+    /**
+     * 根据查询条件获取帖子列表
+     * @param appCode
+     * @param pageNum
+     * @param query
+     * @param keys
+     * @param sort
+     * @return
+     */
+    private List<DBObject> userPostObject(String appCode,Integer pageNum,DBObject query,DBObject keys,DBObject sort){
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBCursor cursor = null;
+        try{
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(query,keys).sort(sort).skip(pageNum*10).limit(10);
+            while (cursor.hasNext()){
+                DBObject dbObject =  cursor.next();
+                dbObjectList.add(dbObject);
+            }
+        } catch (Exception e){
+            logger.error("根据用户标识获取帖子列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
+        } finally {
+            if(null != cursor){
+                cursor.close();
+            }
+        }
+        return dbObjectList;
     }
 
 }

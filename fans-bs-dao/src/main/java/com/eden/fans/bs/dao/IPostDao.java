@@ -32,6 +32,7 @@ public interface IPostDao {
      * @return
      */
     public Long countPostByUserCode(String appCode,Long userCode);
+    public Long countMyPost(String appCode,Long userCode);
 
     /**
      * 分页获取帖子
@@ -48,6 +49,7 @@ public interface IPostDao {
      * @return
      */
     public List<DBObject> obtainPostByUserCode(String appCode,Long userCode,Integer pageNum);
+    public List<DBObject> myPost(String appCode,Long userCode,Integer pageNum);
 
     /**
      * 根据帖子标识获取帖子
@@ -63,7 +65,7 @@ public interface IPostDao {
     /**
      * 更新帖子状态（status）
      */
-    public boolean updateStatus(String appCode,String id,PostStatus status);
+    public boolean updateStatus(String appCode,String id,PostStatus status,Long postChecker);
 
     /**
      *更新帖子的点赞用户列表（点赞、取消点赞）
@@ -130,5 +132,13 @@ public interface IPostDao {
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      */
     public String queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
+
+    /**
+     * 分页获取待审批的帖子列表
+     * @param appCode
+     * @param pageNum
+     * @return
+     */
+    public List<DBObject> queryApprovalPost(String appCode, Integer pageNum);
 
 }

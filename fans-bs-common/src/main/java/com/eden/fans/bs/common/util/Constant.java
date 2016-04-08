@@ -5,6 +5,7 @@ package com.eden.fans.bs.common.util;
  */
 public class Constant {
     public static final String MD5_KEY = "k9opz";
+    public static final String ADMIN_ROLE_CODE = "02";
     public static class REDIS{
         public static final String VALID_TIME = "VALID_TIME_";
         public static final int VALID_CODE_TIMES=300;//验证码超时
@@ -21,6 +22,7 @@ public class Constant {
          * 分页查询用户发的帖子count前缀
          */
         public static final String USER_POST_COUNT_PREFIX="user_post_count_";
+        public static final String MY_POST_COUNT_PREFIX="my_post_count_";
 
         /**
          * 分页查询帖子下关注用户count前缀

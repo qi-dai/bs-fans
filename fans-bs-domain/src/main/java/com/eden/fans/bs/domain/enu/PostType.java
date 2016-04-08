@@ -8,6 +8,7 @@ import com.eden.fans.bs.domain.IPostEnum;
  * Created by Administrator on 2016/3/13.
  */
 public enum PostType implements IPostEnum {
+    ADVERT("广告",0),
     TEXT_MESSAGE("消息",1),
     VIDEO("视频",2),
     MV("MV",3),

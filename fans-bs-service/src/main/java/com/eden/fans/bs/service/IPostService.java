@@ -33,12 +33,14 @@ public interface IPostService {
      * @return
      */
     public String obtainPostByUserCode(String appCode,Long userCode,Integer pageNum);
+    public String myPost(String appCode,Long userCode,Integer pageNum);
 
     /**
      * 根据帖子标识获取帖子
      *
      */
     public String obtainPostById(String appCode,String postId);
+    public DBObject obtainMyPostById(String appCode,String postId);
 
     /**
      * 创建帖子
@@ -48,7 +50,7 @@ public interface IPostService {
     /**
      * 更新帖子状态（status）
      */
-    public boolean updateStatus(String appCode,String postId,PostStatus status);
+    public boolean updateStatus(String appCode,String postId,PostStatus status,Long postCreater,Long postChecker);
 
     /**
      *更新帖子的点赞用户列表（点赞、取消点赞）
@@ -115,4 +117,12 @@ public interface IPostService {
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      */
     public String queryReplyPostInfosByPage(String appCode,String postId,Integer pageNum);
+
+    /**
+     * 获取待审批的帖子
+     * @param appCode
+     * @param pageNum
+     * @return
+     */
+    public String queryApprovalPost(String appCode,Integer pageNum);
 }

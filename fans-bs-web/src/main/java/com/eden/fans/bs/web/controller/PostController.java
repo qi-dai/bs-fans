@@ -1,6 +1,7 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
+import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -49,6 +50,8 @@ public class PostController {
     @RequestMapping(value = "/createPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String createPost(@RequestParam(value="appCode",required=true) String appCode,PostInfo postInfo) throws Exception {
+        // TODO 如果帖子类型是广告且创建人不是管理员则不允许创建广告帖子
+        postInfo.setStatus(PostStatus.CHECK);
         ServiceResponse<Boolean> response = null;
         boolean result = postService.createPost(appCode, postInfo);
         if(result){
@@ -289,4 +292,6 @@ public class PostController {
         response.setResult(result);
         return gson.toJson(response);
     }
+
+
 }
