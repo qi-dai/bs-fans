@@ -3,9 +3,11 @@ package com.eden.fans.bs.dao.impl;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IUserPostDao;
+import com.eden.fans.bs.domain.enu.PostPraise;
 import com.eden.fans.bs.domain.mvo.UserPostInfo;
 import com.eden.fans.bs.domain.svo.ConcernPost;
 import com.eden.fans.bs.domain.svo.PraisePost;
+import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -182,7 +184,7 @@ public class UserPostDaoImpl implements IUserPostDao {
      * @param pageNum
      */
     @Override
-    public String queryConcernPostByPage(String appCode, Long userCode, Integer pageNum) {
+    public String queryConcernPostByPage(String appCode, Long userCode, Integer pageNum,Long total) {
         DBObject queryObject = new BasicDBObject();
         queryObject.put("userCode",userCode);
         queryObject.put("concerns.status",1);
@@ -196,13 +198,12 @@ public class UserPostDaoImpl implements IUserPostDao {
 
         DBCursor cursor = null;
         StringBuilder concernPostString = new StringBuilder();
-        concernPostString.append("[");
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 BasicDBList dbList = (BasicDBList)dbObject.get("concerns");
-                concernOrPraise2String(concernPostString,dbList);
+                concernOrPraise2String(concernPostString,dbList,total);
             }
         } catch (Exception e){
             logger.error("分页获取用户关注的帖子列表异常 MSG:{},ERROR:{}",e.getMessage(), Arrays.deepToString(e.getStackTrace()));
@@ -222,7 +223,7 @@ public class UserPostDaoImpl implements IUserPostDao {
      * @param pageNum
      */
     @Override
-    public String queryPraisePostByPage(String appCode, Long userCode, Integer pageNum) {
+    public String queryPraisePostByPage(String appCode, Long userCode, Integer pageNum,Long total) {
         DBObject queryObject = new BasicDBObject();
         queryObject.put("userCode",userCode);
         queryObject.put("praises.status",1);
@@ -236,13 +237,12 @@ public class UserPostDaoImpl implements IUserPostDao {
 
         DBCursor cursor = null;
         StringBuilder praisePostString = new StringBuilder();
-        praisePostString.append("[");
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.USER_POST_COLLECTION_PREFIX + appCode).find(queryObject, keys).sort(sortObject);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 BasicDBList dbList = (BasicDBList)dbObject.get("praises");
-                concernOrPraise2String(praisePostString,dbList);
+                concernOrPraise2String(praisePostString,dbList,total);
             }
         } catch (Exception e){
             logger.error("分页获取用户关注的帖子列表异常 MSG:{},ERROR:{}",e.getMessage(), Arrays.deepToString(e.getStackTrace()));
@@ -251,7 +251,6 @@ public class UserPostDaoImpl implements IUserPostDao {
                 cursor.close();
             }
         }
-        praisePostString.append("]");
         return praisePostString.toString();
     }
 
@@ -277,9 +276,7 @@ public class UserPostDaoImpl implements IUserPostDao {
             return "";
         }
         concernPostString = new StringBuilder();
-        concernPostString.append("[");
-        concernOrPraise2String(concernPostString,(BasicDBList) praisePost.get("praises"));
-        concernPostString.append("]");
+        concernOrPraise2String(concernPostString,(BasicDBList) praisePost.get("praises"),null);
         return concernPostString.toString();
     }
 
@@ -305,9 +302,7 @@ public class UserPostDaoImpl implements IUserPostDao {
             return "";
         }
         praisePostString = new StringBuilder();
-        praisePostString.append("[");
-        concernOrPraise2String(praisePostString,(BasicDBList) praisePost.get("praises"));
-        praisePostString.append("]");
+        concernOrPraise2String(praisePostString,(BasicDBList) praisePost.get("praises"),null);
         return praisePostString.toString();
     }
 
@@ -316,8 +311,9 @@ public class UserPostDaoImpl implements IUserPostDao {
      * @param stringBuilder
      * @param dbList
      */
-    private void concernOrPraise2String(StringBuilder stringBuilder,BasicDBList dbList){
+    private void concernOrPraise2String(StringBuilder stringBuilder,BasicDBList dbList,Long total){
         if(null != dbList && dbList.size()>0){
+            stringBuilder.append("{\"data\":[");
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             for(Object object:dbList){
                 BasicDBObject dbObject = (BasicDBObject)object;
@@ -328,6 +324,7 @@ public class UserPostDaoImpl implements IUserPostDao {
                 stringBuilder.append("},");
             }
             stringBuilder.deleteCharAt(stringBuilder.length()-1);
+            stringBuilder.append("],\"total\":" + (null == total?dbList.size():total ) + "}");
         }
     }
 }

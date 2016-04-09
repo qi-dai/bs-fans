@@ -36,12 +36,12 @@ public interface IUserPostDao {
     /**
      * 分页获取用户关注的帖子列表(分页参数 pageNum先从缓存获取，缓存不能用时从本地获取)
      */
-    public String queryConcernPostByPage(String appCode, Long userCode,Integer pageNum);
+    public String queryConcernPostByPage(String appCode, Long userCode,Integer pageNum,Long total);
 
     /**
      * 分页获取用户点赞的帖子列表
      */
-    public String queryPraisePostByPage(String appCode, Long userCode,Integer pageNum);
+    public String queryPraisePostByPage(String appCode, Long userCode,Integer pageNum,Long total);
 
     /**
      * 获取用户关注的所有贴子

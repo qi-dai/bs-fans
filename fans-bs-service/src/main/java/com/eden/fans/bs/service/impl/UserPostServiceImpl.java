@@ -107,16 +107,10 @@ public class UserPostServiceImpl implements IUserPostService{
      */
     @Override
     public String queryConcernPostByPage(String appCode, Long userCode, Integer pageNum) {
-        String postCount = redisCache.get(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + userCode + "_" + appCode);
-        if(null == postCount){
-            logger.warn("用户关注的帖子数量在缓存中不存在 请检查缓存设置~");
-            Long count = userPostDao.countConcernPost(appCode, userCode);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + userCode + "_" + appCode,postCount);
-        }
+        Long postCount = userPostDao.countConcernPost(appCode, userCode);
         if(null == pageNum||pageNum<0)
             pageNum=0;
-        return userPostDao.queryConcernPostByPage(appCode, userCode, pageNum);
+        return userPostDao.queryConcernPostByPage(appCode, userCode, pageNum,postCount);
     }
 
     /**
@@ -128,16 +122,10 @@ public class UserPostServiceImpl implements IUserPostService{
      */
     @Override
     public String queryPraisePostByPage(String appCode, Long userCode, Integer pageNum) {
-        String postCount = redisCache.get(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + userCode + "_" + appCode);
-        if(null == postCount){
-            logger.warn("用户点赞的帖子数量在缓存中不存在 请检查缓存设置~");
-            Long count = userPostDao.countPraisePost(appCode, userCode);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + userCode + "_" + appCode,postCount);
-        }
+        Long postCount = userPostDao.countPraisePost(appCode, userCode);
         if(null == pageNum||pageNum<0)
             pageNum=0;
-        return userPostDao.queryPraisePostByPage(appCode, userCode, pageNum) + ",\"total\"" + postCount;
+        return userPostDao.queryPraisePostByPage(appCode, userCode, pageNum,postCount);
     }
 
     /**

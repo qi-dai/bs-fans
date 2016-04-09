@@ -35,6 +35,13 @@ public interface IPostDao {
     public Long countMyPost(String appCode,Long userCode);
 
     /**
+     * 获取待审批的帖子的数量
+     * @param appCode
+     * @return
+     */
+    public Long countApprovalPost(String appCode);
+
+    /**
      * 分页获取帖子
      * @param appCode
      * @param pageNum
@@ -121,17 +128,17 @@ public interface IPostDao {
     /**
      * 根据帖子的标志获取帖子下关注的用户列表（分页获取，每页固定10条）
      */
-    public String queryConcernUsersByPage(String appCode,String id,Integer pageNum);
+    public String queryConcernUsersByPage(String appCode,String id,Integer pageNum,Long total);
 
     /**
      * 根据帖子的标志获取帖子下的点赞用户列表（分页获取，每页固定10条）
      */
-    public String queryPraiseUsersByPage(String appCode,String id,Integer pageNum);
+    public String queryPraiseUsersByPage(String appCode,String id,Integer pageNum,Long total);
 
     /**
      * 根据帖子的标志获取回帖信息列表（分页获取，每页固定10条）
      */
-    public String queryReplyPostInfosByPage(String appCode,String id,Integer pageNum);
+    public String queryReplyPostInfosByPage(String appCode,String id,Integer pageNum,Long total);
 
     /**
      * 分页获取待审批的帖子列表
@@ -139,6 +146,6 @@ public interface IPostDao {
      * @param pageNum
      * @return
      */
-    public List<DBObject> queryApprovalPost(String appCode, Integer pageNum);
+    public String queryApprovalPost(String appCode, Integer pageNum,Long total);
 
 }

@@ -73,6 +73,19 @@ public class PostDaoImpl implements IPostDao {
     }
 
     /**
+     * 获取待审批的帖子的数量
+     *
+     * @param appCode
+     * @return
+     */
+    @Override
+    public Long countApprovalPost(String appCode) {
+        DBObject query = new BasicDBObject();
+        query.put("status",PostStatus.CHECK.getValue());
+        return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
+    }
+
+    /**
      * 分页获取帖子
      *
      * @param appCode
@@ -386,12 +399,10 @@ public class PostDaoImpl implements IPostDao {
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
-            return  "[]";
+            return  "";
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        concernUserStringBuilder(stringBuilder,postObject);
-        stringBuilder.append("]");
+        concernUserStringBuilder(stringBuilder,postObject,null);
         return stringBuilder.toString();
     }
 
@@ -417,9 +428,7 @@ public class PostDaoImpl implements IPostDao {
             return "";
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        praiseUserStringBuilder(stringBuilder, postObject);
-        stringBuilder.append("]");
+        praiseUserStringBuilder(stringBuilder, postObject,null);
         return stringBuilder.toString();
     }
 
@@ -436,12 +445,10 @@ public class PostDaoImpl implements IPostDao {
         keys.put("replyPostInfos", 1);
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
-            return  "[]";
+            return  "";
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
-        replyInfoStringBuilder(stringBuilder, postObject);
-        stringBuilder.append("]");
+        replyInfoStringBuilder(stringBuilder, postObject,null);
         return stringBuilder.toString();
     }
 
@@ -453,7 +460,7 @@ public class PostDaoImpl implements IPostDao {
      * @param pageNum
      */
     @Override
-    public String queryConcernUsersByPage(String appCode, String postId,Integer pageNum) {
+    public String queryConcernUsersByPage(String appCode, String postId,Integer pageNum,Long total) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject();
@@ -469,7 +476,7 @@ public class PostDaoImpl implements IPostDao {
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                concernUserStringBuilder(stringBuilder,dbObject);
+                concernUserStringBuilder(stringBuilder,dbObject,total);
             }
         } catch (Exception e){
             logger.error("根据帖子的标志获取帖子下的点赞用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -490,7 +497,7 @@ public class PostDaoImpl implements IPostDao {
      * @param pageNum
      */
     @Override
-    public String queryPraiseUsersByPage(String appCode, String postId,Integer pageNum) {
+    public String queryPraiseUsersByPage(String appCode, String postId,Integer pageNum,Long total) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject();
@@ -506,7 +513,7 @@ public class PostDaoImpl implements IPostDao {
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                praiseUserStringBuilder(stringBuilder, dbObject);
+                praiseUserStringBuilder(stringBuilder, dbObject,total);
             }
         } catch (Exception e){
             logger.error("根据帖子的标志获取帖子下关注的用户列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -527,7 +534,7 @@ public class PostDaoImpl implements IPostDao {
      * @param pageNum
      */
     @Override
-    public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum) {
+    public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum,Long total) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject("_id",new ObjectId(postId));
@@ -538,7 +545,7 @@ public class PostDaoImpl implements IPostDao {
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
             if (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
-                replyInfoStringBuilder(stringBuilder, dbObject);
+                replyInfoStringBuilder(stringBuilder, dbObject,total);
             }
         }catch (Exception e){
             logger.error("根据帖子的标志获取回帖信息列表异常 MSG:{},ERROR:{}",e.getMessage(),Arrays.deepToString(e.getStackTrace()));
@@ -547,9 +554,17 @@ public class PostDaoImpl implements IPostDao {
                 cursor.close();
             }
         }
-        stringBuilder.append("]");
         return stringBuilder.toString();
     }
+
+    /**
+     * 分页获取待审批的帖子列表
+     *
+     * @param appCode
+     * @param pageNum
+     * @param total
+     * @return
+     */
 
     /**
      * 分页获取待审批的帖子列表
@@ -559,7 +574,7 @@ public class PostDaoImpl implements IPostDao {
      * @return
      */
     @Override
-    public List<DBObject> queryApprovalPost(String appCode, Integer pageNum) {
+    public String queryApprovalPost(String appCode, Integer pageNum,Long total) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
         DBObject sort = new BasicDBObject();
         sort.put("createDate",-1);
@@ -570,7 +585,25 @@ public class PostDaoImpl implements IPostDao {
         keys.put("_id", 1);
         keys.put("title", 1);
         keys.put("createDate", 1);
-        return this.userPostObject(appCode,pageNum,query,keys,sort);
+        dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
+        
+        StringBuilder stringBuilder = new StringBuilder();
+        if(null != dbObjectList && dbObjectList.size()>0){
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            stringBuilder.append("{\"data\":[");
+            for(DBObject dbObject:dbObjectList){
+                BasicDBObject object = (BasicDBObject)dbObject;
+                stringBuilder.append("{");
+                stringBuilder.append("\"postId\":\"" + object.get("_id") + "\",");
+                stringBuilder.append("\"title\":\"" + object.get("title") + "\",");
+                stringBuilder.append("\"createDate\":\"" + formatter.format((Date)object.get("createDate")) + "\"");
+                stringBuilder.append("},");
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+            stringBuilder.append("],\"total\":" + total + "}");
+        }
+        
+        return "";
     }
 
     /**
@@ -578,8 +611,9 @@ public class PostDaoImpl implements IPostDao {
      * @param stringBuilder
      * @param dbObject
      */
-    private void concernUserStringBuilder(StringBuilder stringBuilder,DBObject dbObject){
+    private void concernUserStringBuilder(StringBuilder stringBuilder,DBObject dbObject,Long total){
         BasicDBList dbList = (BasicDBList)dbObject.get("concernUsers");
+        stringBuilder.append("{\"data\":[");
         for(Object obj:dbList){
             BasicDBObject object = (BasicDBObject)obj;
             stringBuilder.append("{");
@@ -588,6 +622,7 @@ public class PostDaoImpl implements IPostDao {
             stringBuilder.append("},");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append("],\"total\":"+ (null == total?dbList.size():total) +"}");
     }
 
     /**
@@ -595,8 +630,9 @@ public class PostDaoImpl implements IPostDao {
      * @param stringBuilder
      * @param dbObject
      */
-    private void praiseUserStringBuilder(StringBuilder stringBuilder,DBObject dbObject){
+    private void praiseUserStringBuilder(StringBuilder stringBuilder,DBObject dbObject,Long total){
         BasicDBList dbList = (BasicDBList)dbObject.get("praiseUsers");
+        stringBuilder.append("{\"data\":[");
         for(Object obj:dbList){
             BasicDBObject object = (BasicDBObject)obj;
             stringBuilder.append("{");
@@ -605,6 +641,7 @@ public class PostDaoImpl implements IPostDao {
             stringBuilder.append("},");
         }
         stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        stringBuilder.append("],\"total\":" + (null == total?dbList.size():total) +"}");
     }
 
     /**
@@ -612,8 +649,9 @@ public class PostDaoImpl implements IPostDao {
      * @param stringBuilder
      * @param replyDBObject
      */
-    private void replyInfoStringBuilder(StringBuilder stringBuilder,DBObject replyDBObject){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private void replyInfoStringBuilder(StringBuilder stringBuilder,DBObject replyDBObject,Long total){
+        stringBuilder.append("{\"data\":[");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         BasicDBList dbList = (BasicDBList)replyDBObject.get("replyPostInfos");
         for(Object obj:dbList){
             BasicDBObject dbObject = (BasicDBObject)obj;
@@ -633,11 +671,12 @@ public class PostDaoImpl implements IPostDao {
             } else {
                 stringBuilder.append("\"medias\":[],");
             }
-            stringBuilder.append("\"replyTime\":\"" + format.format((Date) dbObject.get("replyTime")) + "\",");
+            stringBuilder.append("\"replyTime\":\"" + formatter.format((Date) dbObject.get("replyTime")) + "\",");
             stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\"");
             stringBuilder.append("},");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder.append("],\"total\":"+ (null == total?dbList.size():total) +"}");
     }
 
     /**

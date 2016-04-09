@@ -50,7 +50,7 @@ public interface IPostService {
     /**
      * 更新帖子状态（status）
      */
-    public boolean updateStatus(String appCode,String postId,PostStatus status,Long postCreater,Long postChecker);
+    public boolean updateStatus(String appCode,String postId,PostStatus status,Long postChecker);
 
     /**
      *更新帖子的点赞用户列表（点赞、取消点赞）

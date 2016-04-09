@@ -2,6 +2,7 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.domain.enu.PostStatus;
+import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -11,6 +12,7 @@ import com.eden.fans.bs.domain.svo.ReplyPostInfo;
 import com.eden.fans.bs.service.IPostService;
 import com.eden.fans.bs.service.IUserPostService;
 import com.google.gson.Gson;
+import com.mongodb.DBObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +52,14 @@ public class PostController {
     @RequestMapping(value = "/createPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String createPost(@RequestParam(value="appCode",required=true) String appCode,PostInfo postInfo) throws Exception {
-        // TODO 如果帖子类型是广告且创建人不是管理员则不允许创建广告帖子
-        postInfo.setStatus(PostStatus.CHECK);
+        // 普通帖子默认都是待审状态
         ServiceResponse<Boolean> response = null;
+        if(PostType.ADVERT.getValue() == postInfo.getType().getValue()){
+            response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_AUTH_FAILED);
+            return gson.toJson(response);
+        }
+
+        postInfo.setStatus(PostStatus.CHECK);
         boolean result = postService.createPost(appCode, postInfo);
         if(result){
             response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_SUCCESS);
@@ -293,5 +300,51 @@ public class PostController {
         return gson.toJson(response);
     }
 
+    /**
+     *  用户获取自己发布的帖子（包含未审批的）
+     * @param appCode
+     * @param userCode
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/myPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String myPost(@RequestParam(value="appCode",required=true) String appCode,
+                         @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        String result = postService.myPost(appCode,userCode,pageNum);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
+        response.setResult(result);
+        return gson.toJson(response);
+    }
 
+    /**
+     *  更新帖子状态：只有发帖人可以更改帖子的状态
+     * @param appCode
+     * @param postId
+     * @postStatus
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/updatePost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String updatePost(@RequestParam(value="appCode",required=true) String appCode,
+                             @RequestParam(value="postId",required=true) String postId,
+                             @RequestParam(value="userCode",required=true) Long userCode,PostStatus postStatus) throws Exception {
+        DBObject dbObject = postService.obtainMyPostById(appCode, postId);
+        if(null == dbObject){
+            ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.UPDATE_POST_FAILED);
+            response.setResult(false+"");
+            return gson.toJson(response);
+        }
+        if(userCode == (Long)dbObject.get("userCode")){
+            boolean result = postService.updateStatus(appCode,postId,postStatus,null);
+            ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.UPDATE_POST_SUCCESS);
+            response.setResult(result+"");
+            return gson.toJson(response);
+        } else {
+            ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.UPDATE_POST_AUTH_FAILED);
+            response.setResult(false+"");
+            return gson.toJson(response);
+        }
+    }
 }

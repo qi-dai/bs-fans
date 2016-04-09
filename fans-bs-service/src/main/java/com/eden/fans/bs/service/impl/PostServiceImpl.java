@@ -1,29 +1,29 @@
 package com.eden.fans.bs.service.impl;
 
-import com.eden.fans.bs.common.util.Constant;
-import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.dao.IUserPostDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.enu.PostLevel;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
-import com.eden.fans.bs.domain.svo.*;
+import com.eden.fans.bs.domain.svo.ConcernUser;
+import com.eden.fans.bs.domain.svo.PraiseUser;
+import com.eden.fans.bs.domain.svo.ReplyPostInfo;
 import com.eden.fans.bs.service.IPostService;
-import com.google.gson.Gson;
 import com.google.gson.internal.LinkedHashTreeMap;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -47,17 +47,8 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String obtainPostByPage(String appCode, Integer pageNum) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("{");
-        stringBuilder.append("[");
-        String postCount = redisCache.get(Constant.REDIS.POST_COUNT_PREFIX + appCode);
-        if(null == postCount){
-            logger.warn("帖子的数量在缓存中不存在 请检查缓存设置~");
-            Long count = postDao.countPost(appCode);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.POST_COUNT_PREFIX+appCode,postCount);
-        }
+        Long postCount = postDao.countPost(appCode);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
@@ -79,13 +70,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String obtainPostByUserCode(String appCode, Long userCode, Integer pageNum) {
         StringBuilder stringBuilder = new StringBuilder();
-        String postCount = redisCache.get(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode);
-        if(null == postCount){
-            logger.warn("用户的数量在缓存中不存在 请检查缓存设置~");
-            Long count = postDao.countPostByUserCode(appCode, userCode);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.USER_POST_COUNT_PREFIX + userCode + "_" + appCode,postCount);
-        }
+        Long postCount = postDao.countPostByUserCode(appCode, userCode);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
@@ -96,16 +81,17 @@ public class PostServiceImpl implements IPostService {
         return stringBuilder.toString();
     }
 
+    /**
+     * 获取我的帖子
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
     @Override
     public String myPost(String appCode, Long userCode, Integer pageNum) {
         StringBuilder stringBuilder = new StringBuilder();
-        String postCount = redisCache.get(Constant.REDIS.MY_POST_COUNT_PREFIX + userCode + "_" + appCode);
-        if(null == postCount){
-            logger.warn("用户的数量在缓存中不存在 请检查缓存设置~");
-            Long count = postDao.countMyPost(appCode, userCode);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.MY_POST_COUNT_PREFIX + userCode + "_" + appCode,postCount);
-        }
+        Long postCount = postDao.countMyPost(appCode, userCode);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
@@ -147,19 +133,7 @@ public class PostServiceImpl implements IPostService {
         post2Map(postInfo,map);
         DBObject dbObject = new BasicDBObject();
         dbObject.putAll(map);
-        boolean result =  postDao.createPost(appCode, dbObject);
-        if(result){
-            Long count = 0L;
-            boolean myPostCountExists = redisCache.exists(Constant.REDIS.MY_POST_COUNT_PREFIX + appCode);
-            if(!myPostCountExists){
-                logger.warn("帖子的总数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countMyPost(appCode,postInfo.getUserCode());
-                redisCache.set(Constant.REDIS.MY_POST_COUNT_PREFIX + appCode,count + "");
-            } else {
-                redisCache.incr(Constant.REDIS.MY_POST_COUNT_PREFIX + postInfo.getUserCode() + "_" + appCode);
-            }
-        }
-        return result;
+        return postDao.createPost(appCode, dbObject);
     }
 
     /**
@@ -170,46 +144,12 @@ public class PostServiceImpl implements IPostService {
      * @param status
      */
     @Override
-    public boolean updateStatus(String appCode, String postId,PostStatus status,Long postCreater,Long postChecker) {
-        boolean updateResult = true;
-        updateResult =  postDao.updateStatus(appCode, postId, status,postChecker);
-        // 帖子更新后检查缓存设置
-        if(updateResult){
-            // 检查并更新总帖子数
-            Long count = 0L;
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_COUNT_PREFIX + appCode);
-            if(!postCountExists){
-                logger.warn("帖子的总数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countPost(appCode);
-                redisCache.set(Constant.REDIS.POST_COUNT_PREFIX + appCode,count + "");
-            } else {
-                if(status.getValue() == PostStatus.CHECK.getValue()){
-                    redisCache.incr(Constant.REDIS.POST_COUNT_PREFIX + appCode);
-                } else {
-                    if(status.getValue() == PostStatus.DELETE.getValue())
-                        redisCache.decr(Constant.REDIS.POST_COUNT_PREFIX + appCode);
-                }
-            }
-            // 检查并更新用户的帖子数
-            boolean myPostCountExists = redisCache.exists(Constant.REDIS.USER_POST_COUNT_PREFIX + appCode);
-            if(!myPostCountExists){
-                logger.warn("用户帖子的总数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countMyPost(appCode,postCreater);
-                redisCache.set(Constant.REDIS.USER_POST_COUNT_PREFIX + appCode,count + "");
-            } else {
-                if(status.getValue() == PostStatus.CHECK.getValue()){
-                    redisCache.incr(Constant.REDIS.USER_POST_COUNT_PREFIX + postCreater + "_" + appCode);
-                } else {
-                    if(status.getValue() == PostStatus.DELETE.getValue())
-                        redisCache.decr(Constant.REDIS.USER_POST_COUNT_PREFIX + postCreater + "_" + appCode);
-                }
-            }
-        }
-        return updateResult;
+    public boolean updateStatus(String appCode, String postId,PostStatus status,Long postChecker) {
+        return  postDao.updateStatus(appCode, postId, status,postChecker);
     }
 
     /**
-     * 更新帖子的点赞用户列表（点赞、取消点赞）
+     * 更新帖子的点赞用户列表（点赞、取消点赞）,更新成功之后同时更新“我的点赞”列表
      *
      * @param appCode
      * @param postId
@@ -217,6 +157,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean updatePraiseUsers(String appCode, String postId, PraiseUser praiseUser) {
+        boolean result_= true;
         boolean result = postDao.updatePraiseUsers(appCode, postId, praiseUser);
         if(result){
             DBObject object = postDao.obtainPostById(appCode,postId);
@@ -225,30 +166,14 @@ public class PostServiceImpl implements IPostService {
             praisePostMap.put("title",object.get("title"));
             praisePostMap.put("status",praiseUser.getPraise().getValue());
             praisePostMap.put("time",new Date());
-
-            Long count = 0L;
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
-            if(postCountExists){
-                logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countPraiseUsers(appCode, postId);
-                redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode,count + "");
-            } else {
-                if(1 == praiseUser.getPraise().getValue()){
-                    redisCache.incr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
-                    redisCache.incr(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + appCode);
-                } else {
-                    redisCache.decr(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
-                    redisCache.decr(Constant.REDIS.USER_PRAISE_POST_COUNT_PREFIX + appCode);
-                }
-            }
-            userPostDao.praisePost(appCode, praiseUser.getUserCode(), praiseUser.getUserName(), praisePostMap);
+            result_ = userPostDao.praisePost(appCode, praiseUser.getUserCode(), praiseUser.getUserName(), praisePostMap);
         }
 
-        return  result;
+        return  result&result_;
     }
 
     /**
-     * 更新帖子的关注用户列表（关注、取消关注）
+     * 更新帖子的关注用户列表（关注、取消关注，更新成功之后同时更新“我的关注”列表
      *
      * @param appCode
      * @param postId
@@ -256,6 +181,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public boolean updateConcernUsers(String appCode, String postId, ConcernUser concernUser) {
+        boolean result_ = true;
         boolean result = postDao.updateConcernUsers(appCode, postId, concernUser);
 
         if(result){
@@ -265,26 +191,10 @@ public class PostServiceImpl implements IPostService {
             concernPostMap.put("title",object.get("title"));
             concernPostMap.put("status",concernUser.getConcern().getValue());
             concernPostMap.put("time",new Date());
-
-            Long count = 0L;
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
-            if(postCountExists){
-                logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countConcernUsers(appCode, postId);
-                redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode,count + "");
-            } else {
-                if(1 == concernUser.getConcern().getValue()){
-                    redisCache.incr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
-                    redisCache.incr(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + appCode);
-                } else {
-                    redisCache.decr(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
-                    redisCache.decr(Constant.REDIS.USER_CONCERN_POST_COUNT_PREFIX + appCode);
-                }
-            }
             userPostDao.concernPost(appCode,concernUser.getUserCode(),concernUser.getUserName(),concernPostMap);
         }
 
-        return  result;
+        return  result&result_;
     }
 
     /**
@@ -298,19 +208,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public boolean updateReplyInfos(String appCode, String postId, ReplyPostInfo replyPostInfo) {
         replyPostInfo.setReplyTime(new Date());
-        boolean result = postDao.updateReplyInfos(appCode, postId, replyPostInfo);
-        if(result){
-            boolean postCountExists = redisCache.exists(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
-            if(postCountExists){
-                Long count = 0L;
-                logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-                count = postDao.countReplyPostInfos(appCode,postId);
-                redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode,count + "");
-            } else {
-                redisCache.incr(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
-            }
-        }
-        return result;
+        return postDao.updateReplyInfos(appCode, postId, replyPostInfo);
     }
 
     /**
@@ -385,18 +283,10 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryConcernUsersByPage(String appCode, String postId, Integer pageNum) {
-        Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode);
-        if(null == postCount){
-            logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countConcernUsers(appCode, postId);
-            postCount = count+"";
-            redisCache.set(Constant.REDIS.POST_CONCERN_COUNT_PREFIX +postId + "_" + appCode,count + "");
-        }
-
+        Long postCount = postDao.countConcernUsers(appCode, postId);
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryConcernUsersByPage(appCode, postId, pageNum) + ",\"total\":"+postCount;
+        return postDao.queryConcernUsersByPage(appCode, postId, pageNum,postCount);
     }
 
     /**
@@ -408,18 +298,11 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryPraiseUsersByPage(String appCode, String postId, Integer pageNum) {
-        Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode);
-        if(null == postCount){
-            logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countPraiseUsers(appCode, postId);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.POST_PRAISE_COUNT_PREFIX +postId + "_" + appCode,count + "");
-        }
+        Long postCount = postDao.countPraiseUsers(appCode, postId);
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryPraiseUsersByPage(appCode, postId, pageNum) + ",\"total\":" + postCount;
+        return postDao.queryPraiseUsersByPage(appCode, postId, pageNum,postCount);
     }
 
     /**
@@ -431,18 +314,10 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum) {
-        Long count = 0L;
-        String postCount = redisCache.get(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode);
-        if(null == postCount){
-            logger.warn("根据帖子的标志获取回帖信息的数量在缓存中不存在 请检查缓存设置~");
-            count = postDao.countReplyPostInfos(appCode,postId);
-            postCount = count + "";
-            redisCache.set(Constant.REDIS.POST_REPLY_COUNT_PREFIX +postId + "_" + appCode,count + "");
-        }
-
+        Long postCount = postDao.countReplyPostInfos(appCode,postId);
         if(null == pageNum || pageNum<0)
             pageNum = 0;
-        return postDao.queryReplyPostInfosByPage(appCode, postId, pageNum) + ",\"total\":" + postCount;
+        return postDao.queryReplyPostInfosByPage(appCode, postId, pageNum,postCount);
     }
 
     /**
@@ -454,7 +329,10 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryApprovalPost(String appCode, Integer pageNum) {
-        return null;
+        Long postCount = postDao.countApprovalPost(appCode);
+        if(null == pageNum || pageNum<0||pageNum>(postCount/10+1))
+            pageNum = 0;
+        return postDao.queryApprovalPost(appCode,pageNum,postCount);
     }
 
 
@@ -487,10 +365,10 @@ public class PostServiceImpl implements IPostService {
      * @param dbObjectList
      * @param postCount
      */
-    private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,String postCount,boolean myPost){
+    private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,Long postCount,boolean myPost){
         if(null != dbObjectList && dbObjectList.size()>0){
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            stringBuilder.append("{[");
+            stringBuilder.append("{ \"data\":[");
             for(DBObject dbObject:dbObjectList){
                 stringBuilder.append("{");
                 stringBuilder.append("\"postId\":\"" + dbObject.get("_id") + "\",");
@@ -501,9 +379,8 @@ public class PostServiceImpl implements IPostService {
                 stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\"");
                 stringBuilder.append("},");
             }
-            stringBuilder.delete(stringBuilder.length()-1,stringBuilder.length());
-            stringBuilder.append("],\"total\":" + postCount);
-            stringBuilder.append("}");
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+            stringBuilder.append("],\"total\":" + postCount + "}");
         }
     }
 

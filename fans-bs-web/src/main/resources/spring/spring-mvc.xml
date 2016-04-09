@@ -73,6 +73,7 @@
             <!-- 拦截manager管理员所有操作，验证管理员身份Controller -->
             <mvc:mapping path="/" />
             <mvc:mapping path="/bsmanager/**" />
+            <mvc:mapping path="/mpost/**" />
             <bean id="managerInterceptor" class="com.eden.fans.bs.web.interceptor.ManagerInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
