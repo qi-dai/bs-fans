@@ -59,6 +59,26 @@
 			<groupId>com.aliyun.openservices</groupId>
 			<artifactId>ots-public</artifactId>
 			<version>2.1.2</version>
+			<!--  解决日志打印不出来的问题，
+				log4j-slf4j-impl
+				log4j-core
+				log4j-api
+				会和logback包冲突。导致无法正常打印日志。
+			 -->
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j-slf4j-impl</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j-core</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j-api</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
