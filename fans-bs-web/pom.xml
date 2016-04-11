@@ -112,6 +112,9 @@
 				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
 				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
 				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
+				<!--JPUSH-->
+				<fans.bs.jpush.appkey>0c2cc885752aba5ead5e6e27</fans.bs.jpush.appkey>
+				<fans.bs.jpush.master.secret>153120b1eba6066ea8f12fa1</fans.bs.jpush.master.secret>
 				<!-- REDIS -->
 				<fans.bs.redis.maxIdle>300</fans.bs.redis.maxIdle>
 				<fans.bs.redis.maxWait>1000</fans.bs.redis.maxWait>
@@ -149,7 +152,6 @@
 				<fans.bs.mongo.socketTimeout>1500</fans.bs.mongo.socketTimeout>
 				<fans.bs.mongo.slaveOk>false</fans.bs.mongo.slaveOk>
 				<fans.bs.mongo.replicaSet>127.0.0.1:8990</fans.bs.mongo.replicaSet>
-
 				<!-- REDIS -->
 				<fans.bs.redis.maxIdle>300</fans.bs.redis.maxIdle>
 				<fans.bs.redis.maxWait>1000</fans.bs.redis.maxWait>
