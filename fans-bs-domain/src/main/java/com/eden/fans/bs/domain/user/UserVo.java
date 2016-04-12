@@ -18,6 +18,7 @@ public class UserVo implements Serializable {
     private int userStatus;//用户状态
     private String bgImgUrl;//背景图片
     private String headImgUrl;//头像图片
+    private Date birthday;//出生年月
     private String gender;//性别
     private String constellation;//星座
     private String cityCode;//城市
@@ -98,6 +99,14 @@ public class UserVo implements Serializable {
 
     public void setHeadImgUrl(String headImgUrl) {
         this.headImgUrl = headImgUrl;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 
     public String getGender() {

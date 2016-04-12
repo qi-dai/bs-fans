@@ -11,6 +11,7 @@
         <result column="user_status" property="userStatus" jdbcType="VARCHAR"/>
         <result column="bg_img_url" property="bgImgUrl" jdbcType="VARCHAR"/>
         <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR"/>
+        <result column="birthday" property="birthday" jdbcType="DATE"/>
         <result column="gender" property="gender" jdbcType="VARCHAR"/>
         <result column="constellation" property="constellation" jdbcType="VARCHAR"/>
         <result column="city_code" property="cityCode" jdbcType="VARCHAR"/>
@@ -22,7 +23,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="allColumn">
-        select id,user_code,user_name,phone,password,user_status,bg_img_url,head_img_url,gender,
+        select id,user_code,user_name,phone,password,user_status,bg_img_url,head_img_url,birthday,gender,
         constellation,city_code,active_level,user_role,signature,platform,create_time,update_time
         from user_info
     </sql>
@@ -81,6 +82,7 @@
         <if test="userName!=null"> user_name = #{userName,jdbcType=VARCHAR},</if>
         <if test="bgImgUrl!=null"> bg_img_url = #{bgImgUrl,jdbcType=VARCHAR},</if>
         <if test="headImgUrl!=null">head_img_url = #{headImgUrl,jdbcType=VARCHAR},</if>
+        <if test="birthday!=null">gender = #{birthday,jdbcType=Date},</if>
         <if test="gender!=null">gender = #{gender,jdbcType=VARCHAR},</if>
         <if test="constellation!=null">constellation = #{constellation,jdbcType=VARCHAR},</if>
         <if test="cityCode!=null">city_code = #{cityCode,jdbcType=VARCHAR},</if>
