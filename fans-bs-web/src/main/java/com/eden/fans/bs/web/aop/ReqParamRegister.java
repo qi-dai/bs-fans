@@ -1,7 +1,6 @@
 package com.eden.fans.bs.web.aop;
 
-import com.eden.fans.bs.domain.request.LoginRequest;
-import com.eden.fans.bs.domain.request.RegisterRequest;
+import com.eden.fans.bs.domain.request.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,5 +12,11 @@ public class ReqParamRegister {
     static {
         BaseEntity.init(LoginRequest.class);
         BaseEntity.init(RegisterRequest.class);
+        BaseEntity.init(StatusUpdateRequest.class);
+        BaseEntity.init(SetAdminRequest.class);
+        BaseEntity.init(ResetPwdRequest.class);
+        BaseEntity.init(AttentionRequest.class);
+        BaseEntity.init(QryFromAttRequest.class);
+        BaseEntity.init(QryToAttRequest.class);
     }
 }

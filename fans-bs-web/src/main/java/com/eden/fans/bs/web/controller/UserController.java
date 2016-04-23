@@ -1,6 +1,7 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.UserGsonUtil;
+import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.request.AttentionRequest;
 import com.eden.fans.bs.domain.request.QryFromAttRequest;
 import com.eden.fans.bs.domain.request.QryToAttRequest;
@@ -44,7 +45,7 @@ public class UserController {
 
     @RequestMapping(value = "/resetPwd", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String resetPwd(ResetPwdRequest resetPwdRequest) throws Exception {
+    public String resetPwd(@ReqCheckParam ResetPwdRequest resetPwdRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userService.resetPwd(resetPwdRequest));
     }
 
@@ -53,20 +54,20 @@ public class UserController {
      * */
     @RequestMapping(value = "/setAttention", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String attention(AttentionRequest attentionRequest) throws Exception {
+    public String attention(@ReqCheckParam AttentionRequest attentionRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userAttentionService.setAttention(attentionRequest));
     }
 
 
     @RequestMapping(value = "/getFromAttentions", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getFromAttentions(QryFromAttRequest qryFromAttRequest) throws Exception {
+    public String getFromAttentions(@ReqCheckParam QryFromAttRequest qryFromAttRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userAttentionService.getFromAttentions(qryFromAttRequest));
     }
 
     @RequestMapping(value = "/getToAttentions", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String getToAttentions(QryToAttRequest qryToAttRequest) throws Exception {
+    public String getToAttentions(@ReqCheckParam QryToAttRequest qryToAttRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userAttentionService.getToAttentions(qryToAttRequest));
     }
 
