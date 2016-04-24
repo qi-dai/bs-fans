@@ -18,5 +18,8 @@ public class ReqParamRegister {
         BaseEntity.init(AttentionRequest.class);
         BaseEntity.init(QryFromAttRequest.class);
         BaseEntity.init(QryToAttRequest.class);
+        BaseEntity.init(MediaRequest.class);
+        BaseEntity.init(QryUserMediaVos.class);
+        BaseEntity.init(UpdateMediaRequest.class);
     }
 }

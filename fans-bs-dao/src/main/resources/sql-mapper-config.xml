@@ -19,5 +19,6 @@
         <mapper resource="sqlmap/mysql/UserOperateMapper.xml" />
         <mapper resource="sqlmap/mysql/AttentionMapper.xml" />
         <mapper resource="sqlmap/mysql/UserPraiseMapper.xml" />
+        <mapper resource="sqlmap/mysql/UserMediaMapper.xml" />
     </mappers>
  </configuration>

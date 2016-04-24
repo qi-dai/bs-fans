@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserMediaMapper">
+    <resultMap id="userMediaVoMap" type="com.eden.fans.bs.domain.user.UserMediaVo">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_code" property="userCode" jdbcType="BIGINT"/>
+        <result column="um_type" property="umType" jdbcType="VARCHAR"/>
+        <result column="um_url" property="umUrl" jdbcType="VARCHAR"/>
+        <result column="is_valid" property="isValid" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="allColumn">
+        select id,user_code,um_type,is_valid,um_url,create_time,update_time
+        from user_media
+    </sql>
+
+
+
+    <!-- 插入用户关注记录-->
+    <insert id="addUserMediaVo"
+            parameterType="com.eden.fans.bs.domain.user.UserMediaVo">
+        INSERT INTO user_media(
+        user_code,um_type,um_url
+        ) VALUES
+        (
+        #{userCode,jdbcType=BIGINT},#{umType,jdbcType=VARCHAR},#{umUrl,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!-- 根据用户编码和多媒体类型统计总数 -->
+    <select id="countUserMediaByType"  parameterType="com.eden.fans.bs.domain.user.UserMediaVo" resultType="int">
+        select count(0) from user_media
+        where um_type = #{umType,jdbcType=VARCHAR}
+        and user_code = #{userCode,jdbcType=BIGINT}
+    </select>
+    <!-- 分页查询用户某类型多媒体列表 -->
+    <select id="qryUserMediaVos" resultMap="userMediaVoMap" parameterType="java.util.Map">
+        SELECT id,user_code,um_type,is_valid,um_url,create_time,update_time
+        FROM user_media
+        where is_valid= #{isValid,jdbcType=VARCHAR}
+        and um_type = #{umType,jdbcType=VARCHAR}
+        and user_code = #{userCode,jdbcType=BIGINT}
+        order by create_time limit #{page.dbIndex},#{page.dbNumber}
+    </select>
+
+    <!-- 删除用户多媒体信息 -->
+    <update id="updateUserMedia" parameterType="com.eden.fans.bs.domain.user.UserMediaVo">
+        update user_media set
+        is_valid = #{isValid,jdbcType=VARCHAR},
+        update_time = now()
+        where id = #{id,jdbcType=BIGINT}
+        and user_code = #{userCode,jdbcType=BIGINT}
+    </update>
+
+</mapper>

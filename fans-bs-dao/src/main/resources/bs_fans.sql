@@ -2,7 +2,8 @@
 SQLyog Ultimate v11.33 (64 bit)
 MySQL - 5.6.24 : Database - bs_fans
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -143,6 +144,7 @@ CREATE TABLE `user_info` (
   `user_status` tinyint(1) NOT NULL COMMENT '状态  1 正常，2 冻结，3 黑名单',
   `bg_img_url` varchar(500) DEFAULT NULL COMMENT '背景图片url',
   `head_img_url` varchar(100) DEFAULT NULL COMMENT '头像图片url',
+  `birthday` date DEFAULT NULL COMMENT '出生日期',
   `gender` varchar(4) DEFAULT 'un' COMMENT '性别，男 m，女 w，未知 un',
   `constellation` varchar(4) DEFAULT NULL COMMENT '星座,参看详细枚举值',
   `city_code` varchar(4) DEFAULT NULL COMMENT '所在城市，参看详细城市枚举值',
@@ -190,6 +192,20 @@ CREATE TABLE `user_praise` (
 
 /*Data for the table `user_praise` */
 
+/*Table structure for table `user_media` */
+CREATE TABLE `user_media` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_code` bigint(11) NOT NULL COMMENT '用户编码',
+  `um_type` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '多媒体类型',
+  `um_url` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '多媒体地址',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `is_valid` varchar(2) COLLATE utf8_bin NOT NULL DEFAULT '0' COMMENT '是否有效：0有效，-1无效（被删除）',
+  `update_time` datetime NOT NULL DEFAULT '2099-12-31 23:59:59' COMMENT '最后更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+
+/*Data for the table `user_media` */
+
 /* Function  structure for function  `currval` */
 
 /*!50003 DROP FUNCTION IF EXISTS `currval` */;
@@ -198,16 +214,26 @@ DELIMITER $$
 /*!50003 CREATE DEFINER=`root`@`localhost` FUNCTION `currval`(seq_name VARCHAR(50)) RETURNS int(11)
     READS SQL DATA
     DETERMINISTIC
-BEGIN  
-  
-DECLARE S_VALUE INTEGER;  
-  
-SET S_VALUE = 0;  
-  
-SELECT current_value INTO S_VALUE FROM bs_sequence WHERE NAME = seq_name;  
-  
-RETURN S_VALUE;  
-  
+BEGIN  
+
+  
+
+DECLARE S_VALUE INTEGER;  
+
+  
+
+SET S_VALUE = 0;  
+
+  
+
+SELECT current_value INTO S_VALUE FROM bs_sequence WHERE NAME = seq_name;  
+
+  
+
+RETURN S_VALUE;  
+
+  
+
 END */$$
 DELIMITER ;
 
