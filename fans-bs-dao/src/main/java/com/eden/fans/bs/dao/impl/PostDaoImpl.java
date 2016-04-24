@@ -104,6 +104,7 @@ public class PostDaoImpl implements IPostDao {
 
         DBObject keys = new BasicDBObject();
         keys.put("title", 1);
+        keys.put("userCode", 1);
         keys.put("createDate", 1);
         DBCursor cursor = null;
         try{
@@ -141,6 +142,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("userCode", 1);
         keys.put("createDate", 1);
         return userPostObject(appCode,pageNum,query,keys,sort);
     }
@@ -156,6 +158,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("userCode", 1);
         keys.put("createDate", 1);
         keys.put("status", 1);
         return userPostObject(appCode, pageNum, query, keys, sort);

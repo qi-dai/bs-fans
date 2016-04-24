@@ -1,6 +1,7 @@
 package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.dao.IPostDao;
+import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.IUserPostDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.enu.PostLevel;
@@ -9,7 +10,13 @@ import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
+import com.eden.fans.bs.domain.user.UserVo;
+import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IPostService;
+import com.eden.fans.bs.service.concurrent.ObtainReplyAndPraiseCountCallable;
+import com.eden.fans.bs.service.concurrent.ObtainReplyAndPraiseCountCallableUtil;
+import com.eden.fans.bs.service.concurrent.ObtainUserInfoCallable;
+import com.eden.fans.bs.service.concurrent.ObtainUserInfoCallableUtil;
 import com.google.gson.internal.LinkedHashTreeMap;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -20,10 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by shengyanpeng on 2016/3/4.
@@ -32,6 +38,8 @@ import java.util.Map;
 public class PostServiceImpl implements IPostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
 
+    @Autowired
+    private IUserDao userDao;
     @Autowired
     private IUserPostDao userPostDao;
     @Autowired
@@ -54,7 +62,10 @@ public class PostServiceImpl implements IPostService {
             pageNum = 0;
 
         List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
-        postHead2String(stringBuilder,dbObjectList,postCount,false);
+        // 批量获取用户信息,点赞数和回帖数
+        Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
+
+        postHead2String(stringBuilder,dbObjectList,postCount,false,postHeadMap);
         logger.info("分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
@@ -76,7 +87,9 @@ public class PostServiceImpl implements IPostService {
             pageNum = 0;
 
         List<DBObject> dbObjectList = postDao.obtainPostByUserCode(appCode, userCode, pageNum);
-        postHead2String(stringBuilder,dbObjectList,postCount,false);
+        // 批量获取用户信息,点赞数和回帖数
+        Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
+        postHead2String(stringBuilder,dbObjectList,postCount,false,postHeadMap);
         logger.info("根据用户分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
@@ -96,7 +109,9 @@ public class PostServiceImpl implements IPostService {
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
         List<DBObject> dbObjectList = postDao.myPost(appCode, userCode, pageNum);
-        postHead2String(stringBuilder,dbObjectList,postCount,false);
+        // 批量获取用户信息,点赞数和回帖数
+        Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
+        postHead2String(stringBuilder,dbObjectList,postCount,false,postHeadMap);
         logger.info("根据用户分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
@@ -365,14 +380,20 @@ public class PostServiceImpl implements IPostService {
      * @param dbObjectList
      * @param postCount
      */
-    private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,Long postCount,boolean myPost){
+    private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,Long postCount,boolean myPost,Map<String,Map<String,String>> postHeadMap){
         if(null != dbObjectList && dbObjectList.size()>0){
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             stringBuilder.append("{ \"data\":[");
             for(DBObject dbObject:dbObjectList){
+                String postId = dbObject.get("_id") + "";
+                Map<String,String> map = postHeadMap.get(postId);
                 stringBuilder.append("{");
-                stringBuilder.append("\"postId\":\"" + dbObject.get("_id") + "\",");
+                stringBuilder.append("\"postId\":\"" + postId + "\",");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+                stringBuilder.append("\"headImgUrl\":\"" + map.get("headImgUrl") + "\",");
+                stringBuilder.append("\"userName\":\"" + map.get("userName") + "\",");
+                stringBuilder.append("\"replyCount\":" + map.get("replyCount") + ",");
+                stringBuilder.append("\"praiseCount\":" + map.get("praiseCount") + ",");
                 if(myPost){
                     stringBuilder.append("\"status\":\"" + PostStatus.getName((Integer)dbObject.get("status")) + "\",");
                 }
@@ -480,4 +501,53 @@ public class PostServiceImpl implements IPostService {
         stringBuilder.append("}");
     }
 
+    // TODO 根据用户标志获取用户头像信息；
+    // TODO 根据帖子ID获取点赞和回帖数
+
+    /**
+     * 获取帖子头相关信息（用户名称，用户头像,回帖数、点赞数等信息）
+     * @param dbObjectList
+     * @return
+     */
+    private Map<String,Map<String,String>> obtainPostHead(List<DBObject> dbObjectList,String appCode){
+        Map<String,Map<String,String>> resultMap = new HashMap<String, Map<String, String>>(10);
+        List<ObtainReplyAndPraiseCountCallable> countCallableList = new ArrayList<ObtainReplyAndPraiseCountCallable>(10);
+        List<ObtainUserInfoCallable> userCallableList = new ArrayList<ObtainUserInfoCallable>(10);
+        for(DBObject dbObject:dbObjectList){
+            ObtainReplyAndPraiseCountCallable countCallable = new ObtainReplyAndPraiseCountCallable();
+            countCallable.setAppCode(appCode);
+            countCallable.setPostDao(postDao);
+            countCallable.setPostId(dbObject.get("_id")+"");
+            countCallableList.add(countCallable);
+
+            ObtainUserInfoCallable userInfoCallable = new ObtainUserInfoCallable();
+            userInfoCallable.setUserCode(Long.valueOf(dbObject.get("userCode")+""));
+            userInfoCallable.setUserDao(userDao);
+            userInfoCallable.setPostId(dbObject.get("_id")+"");
+            userCallableList.add(userInfoCallable);
+        }
+        List<Future<Map<String,Map<String,String>>>> futureList = ObtainReplyAndPraiseCountCallableUtil.ObtainReplyAndPraiseCount(countCallableList);
+        Map<String,Map<String,String>> userMap = ObtainUserInfoCallableUtil.ObtainReplyAndPraiseCount(userCallableList);
+        for(Future<Map<String,Map<String,String>>> future:futureList){
+            try {
+                try {
+                    Map<String,Map<String,String>> postMap = future.get();
+                    String postId = postMap.keySet().iterator().next();
+
+                    Map<String,String> countMap = postMap.get(postId);
+                    Map<String,String> userTmpMap = userMap.get(postId);
+                    userTmpMap.putAll(countMap);
+
+                    resultMap.put(postId,userTmpMap);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } catch (ExecutionException e) {
+                // TODO
+            }
+        }
+
+        return null;
+
+    }
 }
