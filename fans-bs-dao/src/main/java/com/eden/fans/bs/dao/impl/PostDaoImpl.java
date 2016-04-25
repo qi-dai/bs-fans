@@ -86,6 +86,21 @@ public class PostDaoImpl implements IPostDao {
     }
 
     /**
+     * 根据用户标识获取已审批的帖子数量
+     *
+     * @param appCode
+     * @param userCode
+     * @return
+     */
+    @Override
+    public Long countApprovedPost(String appCode, Long userCode) {
+        DBObject query = new BasicDBObject();
+        query.put("status",PostStatus.NORMAL.getValue());
+        query.put("userCode",userCode);
+        return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
+    }
+
+    /**
      * 分页获取帖子
      *
      * @param appCode
@@ -93,11 +108,12 @@ public class PostDaoImpl implements IPostDao {
      * @return
      */
     @Override
-    public List<DBObject> obtainPostByPage(String appCode, Integer pageNum) {
+    public List<DBObject> obtainPostByPage(String appCode,Integer postType,Integer pageNum) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
 
         DBObject object = new BasicDBObject();
         object.put("status", PostStatus.NORMAL.getValue());
+        object.put("type",postType.intValue());
 
         DBObject sort = new BasicDBObject();
         sort.put("createDate",-1);
@@ -607,6 +623,33 @@ public class PostDaoImpl implements IPostDao {
         }
         
         return "";
+    }
+
+    /**
+     * 根据用户标识分页获取已经审核通过的帖子列表
+     *
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public List<DBObject> queryApprovedPost(String appCode, Long userCode, Integer pageNum) {
+
+        List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
+        DBObject sort = new BasicDBObject();
+        sort.put("createDate",-1);
+
+        DBObject query = new BasicDBObject("status",PostStatus.NORMAL.getValue());
+        query.put("userCode",userCode);
+
+        DBObject keys = new BasicDBObject();
+        keys.put("_id", 1);
+        keys.put("title", 1);
+        keys.put("createDate", 1);
+        dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
+
+        return dbObjectList;
     }
 
     /**

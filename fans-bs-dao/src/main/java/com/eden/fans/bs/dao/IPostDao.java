@@ -42,12 +42,21 @@ public interface IPostDao {
     public Long countApprovalPost(String appCode);
 
     /**
+     * 根据用户标识获取已审批的帖子数量
+     * @param appCode
+     * @param userCode
+     * @return
+     */
+    public Long countApprovedPost(String appCode,Long userCode);
+
+    /**
      * 分页获取帖子
      * @param appCode
+     * @param postType
      * @param pageNum
      * @return
      */
-    public List<DBObject> obtainPostByPage(String appCode,Integer pageNum);
+    public List<DBObject> obtainPostByPage(String appCode,Integer postType,Integer pageNum);
 
     /**
      * 根据用户标识获取用户发的帖子列表
@@ -147,5 +156,14 @@ public interface IPostDao {
      * @return
      */
     public String queryApprovalPost(String appCode, Integer pageNum,Long total);
+
+    /**
+     * 根据用户标识分页获取已经审核通过的帖子列表
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
+    public List<DBObject> queryApprovedPost(String appCode,Long userCode,Integer pageNum);
 
 }

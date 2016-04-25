@@ -79,8 +79,9 @@ public class PostController {
      */
     @RequestMapping(value = "/obtainPostByPage", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String obtainPostByPage(@RequestParam(value="appCode",required=true) String appCode,Integer pageNum) throws Exception {
-        String result = postService.obtainPostByPage(appCode, pageNum);
+    public String obtainPostByPage(@RequestParam(value="appCode",required=true) String appCode,
+                                   @RequestParam(value="postType",required=true) PostType postType,Integer pageNum) throws Exception {
+        String result = postService.obtainPostByPage(appCode,postType.getValue(),pageNum);
         ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
         response.setResult(result);
         return gson.toJson(response);

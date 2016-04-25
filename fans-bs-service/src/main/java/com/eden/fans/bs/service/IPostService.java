@@ -20,10 +20,11 @@ public interface IPostService {
     /**
      * 根据用户标识获取用户发的帖子列表
      * @param appCode
+     * @param postType
      * @param pageNum
      * @return
      */
-    public String obtainPostByPage(String appCode,Integer pageNum);
+    public String obtainPostByPage(String appCode,Integer postType,Integer pageNum);
 
 
     /**
@@ -125,4 +126,13 @@ public interface IPostService {
      * @return
      */
     public String queryApprovalPost(String appCode,Integer pageNum);
+
+    /**
+     * 根据用户标识获取已审批的帖子列表
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
+    public String queryApprovedPost(String appCode,Long userCode,Integer pageNum);
 }

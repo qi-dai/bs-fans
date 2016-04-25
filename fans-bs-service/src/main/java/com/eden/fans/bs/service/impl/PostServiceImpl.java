@@ -54,14 +54,14 @@ public class PostServiceImpl implements IPostService {
      * @return
      */
     @Override
-    public String obtainPostByPage(String appCode, Integer pageNum) {
+    public String obtainPostByPage(String appCode,Integer postType,Integer pageNum) {
         StringBuilder stringBuilder = new StringBuilder();
         Long postCount = postDao.countPost(appCode);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
 
-        List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode, pageNum);
+        List<DBObject> dbObjectList = postDao.obtainPostByPage(appCode,postType,pageNum);
         // 批量获取用户信息,点赞数和回帖数
         Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
 
@@ -350,6 +350,27 @@ public class PostServiceImpl implements IPostService {
         return postDao.queryApprovalPost(appCode,pageNum,postCount);
     }
 
+    /**
+     * 根据用户标识获取已审批的帖子列表
+     *
+     * @param appCode
+     * @param userCode
+     * @param pageNum
+     * @return
+     */
+    @Override
+    public String queryApprovedPost(String appCode, Long userCode, Integer pageNum) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Long postCount = postDao.countApprovedPost(appCode, userCode);
+
+        if(null == pageNum || pageNum < 0)
+            pageNum = 0;
+        List<DBObject> dbObjectList = postDao.queryApprovedPost(appCode, userCode, pageNum);
+        Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
+        postHead2String(stringBuilder,dbObjectList,postCount,false,postHeadMap);
+        return stringBuilder.toString();
+    }
+
 
     /**
      * 将帖子转成map（减少序列号和反序列化的操作）
@@ -500,9 +521,6 @@ public class PostServiceImpl implements IPostService {
         stringBuilder.append("\"level\":\"" + PostLevel.getName((Integer)dbObject.get("level")) + "\"");
         stringBuilder.append("}");
     }
-
-    // TODO 根据用户标志获取用户头像信息；
-    // TODO 根据帖子ID获取点赞和回帖数
 
     /**
      * 获取帖子头相关信息（用户名称，用户头像,回帖数、点赞数等信息）
