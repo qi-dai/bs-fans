@@ -116,4 +116,29 @@
             #{item}
         </foreach>
     </select>
+
+    <!-- 根据指定条件统计用户总数-->
+    <select id="countUserNum" resultMap="userVoMap" parameterType="java.util.Map">
+        select count(0)
+        from user_info where 1=1
+        <if test="userRole != null">
+            and user_role = #{userRole,jdbcType=VARCHAR}
+        </if>
+        <if test="userStatus != null">
+            and user_status = #{userStatus,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <!-- 根据指定条件分页查询用户列表-->
+    <select id="queryUserByPage" resultMap="userVoMap" parameterType="java.util.Map">
+        <include refid="allColumn"/>
+        where 1=1
+        <if test="userRole != null">
+            and user_role = #{userRole,jdbcType=VARCHAR}
+        </if>
+        <if test="userStatus != null">
+            and user_status = #{userStatus,jdbcType=VARCHAR}
+        </if>
+        order by ID limit #{page.dbIndex},#{page.dbNumber}
+    </select>
 </mapper>

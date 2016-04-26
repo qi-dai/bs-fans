@@ -3,16 +3,16 @@ package com.eden.fans.bs.domain.request;
 import com.eden.fans.bs.domain.annotation.ActionInput;
 
 /**
- * Created by Administrator on 2016/4/1.
- * 查询关注自己的用户列表
+ * Created by Administrator on 2016/4/26.
  */
-public class QryToAttRequest {
+public class QryUserListRequest {
     private String token;
     private String phone;
-    private long toUserCode;//被关注用户编码
+    private String qryType;
+    private String role;
+    private String status;
     private int pageNumber;
     private int currentPage;
-
 
     @ActionInput(notNull = true)
     public String getToken() {
@@ -32,19 +32,29 @@ public class QryToAttRequest {
         this.phone = phone;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @ActionInput(notNull = true)
-    public long getToUserCode() {
-        return toUserCode;
+    public String getQryType() {
+        return qryType;
     }
 
-    public void setToUserCode(long toUserCode) {
-        this.toUserCode = toUserCode;
+    public void setQryType(String qryType) {
+        this.qryType = qryType;
     }
 
+    public String getStatus() {
+        return status;
+    }
 
-    @Override
-    public String toString(){
-        return new StringBuilder().append("toUserCode:").append(toUserCode).toString();
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @ActionInput(notNull = true)

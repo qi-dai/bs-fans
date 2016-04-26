@@ -6,6 +6,7 @@ import com.eden.fans.bs.common.util.UserUtils;
 import com.eden.fans.bs.dao.IOperUserDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.*;
 import com.eden.fans.bs.domain.user.UserOperVo;
@@ -16,6 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/3/20.
@@ -321,5 +326,38 @@ public class UserServiceImpl implements IUserService {
         UserVo userInfo =userDao.qryUserVoByPhone(phone);
         redisCache.set(userInfo.getPhone(),userInfo);
         return new ServiceResponse<Boolean>();
+    }
+
+    @Override
+    public ServiceResponse<UserListResponse> qryUserVos(QryUserListRequest qryUserListRequest) {
+        ServiceResponse<UserListResponse> response = null;
+        try{
+            Map<String,Object> params = new HashMap<String, Object>();
+            Page page= new Page(qryUserListRequest.getPageNumber());
+            page.setCurrentPage(qryUserListRequest.getCurrentPage());
+            if("1".equals(qryUserListRequest.getQryType())){
+                //根据角色查询，构建查询条件
+                params.put("userRole",qryUserListRequest.getRole());
+                int totalNumber = userDao.countTotalNum(params);
+                page.setTotalNumber(totalNumber);
+                params.put("page",page);
+            }
+            if("2".equals(qryUserListRequest.getQryType())){
+                //根据用户状态查询，构建查询条件
+                params.put("userStatus",qryUserListRequest.getStatus());
+                int totalNumber = userDao.countTotalNum(params);
+                page.setTotalNumber(totalNumber);
+                params.put("page",page);
+            }
+            UserListResponse userListResponse = new UserListResponse();
+            userListResponse.setPage(page);
+            userListResponse.setUserVoList(userDao.qryUserVosBatch(params));
+            response = new ServiceResponse<UserListResponse>(userListResponse);
+            return response;
+        }catch(Exception e){
+            logger.error("查询用户列表失败",e);
+            response = new ServiceResponse(UserErrorCodeEnum.QRY_USER_LIST_ERROR);
+        }
+        return response;
     }
 }

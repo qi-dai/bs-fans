@@ -1,10 +1,14 @@
 package com.eden.fans.bs.service;
 
+import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.RegisterReponse;
 import com.eden.fans.bs.domain.response.UserDetailResponse;
+import com.eden.fans.bs.domain.response.UserListResponse;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+
+import java.util.List;
 
 /**
  * Created by Administrator on 2016/3/20.
@@ -49,5 +53,10 @@ public interface IUserService {
      * 刷新用户缓存信息
      * */
     public ServiceResponse<Boolean> freshUserInfo(String phone);
+
+    /**
+     * 分页查询用户列表
+     * */
+    public ServiceResponse<UserListResponse> qryUserVos(QryUserListRequest qryUserListRequest);
 
 }

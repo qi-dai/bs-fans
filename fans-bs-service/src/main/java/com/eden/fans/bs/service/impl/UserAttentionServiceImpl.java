@@ -128,6 +128,7 @@ public class UserAttentionServiceImpl implements IUserAttentionService{
                 return qryToAttResponse;
             }
             Page page= new Page(qryToAttRequest.getPageNumber());
+            page.setCurrentPage(qryToAttRequest.getCurrentPage());
             page.setTotalNumber(totalNumber);
             Map<String,Object> params = new HashMap<String, Object>();
             params.put("page", page);

@@ -2,6 +2,7 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.UserGsonUtil;
 import com.eden.fans.bs.domain.annotation.ReqCheckParam;
+import com.eden.fans.bs.domain.request.QryUserListRequest;
 import com.eden.fans.bs.domain.request.SetAdminRequest;
 import com.eden.fans.bs.domain.request.StatusUpdateRequest;
 import com.eden.fans.bs.service.IUserService;
@@ -36,9 +37,9 @@ public class ManagerUserController {
         return UserGsonUtil.getGson().toJson(userService.updateUserStatus(statusUpdateRequest));
     }
 
-    @RequestMapping(value = "/qryUndoPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/qryUserList", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String qryUndoPost(@ReqCheckParam StatusUpdateRequest statusUpdateRequest) throws Exception {
-        return UserGsonUtil.getGson().toJson(userService.updateUserStatus(statusUpdateRequest));
+    public String qryManagers(@ReqCheckParam QryUserListRequest qryUserListRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(userService.qryUserVos(qryUserListRequest));
     }
 }

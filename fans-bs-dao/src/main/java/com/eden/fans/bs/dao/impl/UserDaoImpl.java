@@ -6,6 +6,7 @@ import com.eden.fans.bs.domain.user.UserVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Mr.lee on 2016/3/15.
@@ -50,6 +51,16 @@ public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     @Override
     public List<UserVo> qryUserVosBatch(Long... userCodes) {
         return super.queryForList("UserMapper.queryUserVoBatch",userCodes);
+    }
+
+    @Override
+    public List<UserVo> qryUserVosBatch(Map<String, Object> params) {
+        return super.queryForList("UserMapper.queryUserByPage",params);
+    }
+
+    @Override
+    public int countTotalNum(Map<String, Object> params) {
+        return super.queryCountForObject("UserMapper.countUserNum",params);
     }
 
 

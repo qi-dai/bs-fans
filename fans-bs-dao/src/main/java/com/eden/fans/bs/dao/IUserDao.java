@@ -3,6 +3,7 @@ package com.eden.fans.bs.dao;
 import com.eden.fans.bs.domain.user.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/3/15.
@@ -47,5 +48,20 @@ public interface IUserDao {
      * */
     public boolean updateUserRecord(UserVo userVo,String sqlId);
 
+    /**
+     * 根据用户编码，批量查询用户信息
+     * @param userCodes 用户编码集合
+     * */
     public List<UserVo> qryUserVosBatch(Long... userCodes);
+
+    /**
+     * 根据查询条件，批量查询用户信息
+     * @param
+     * */
+    public List<UserVo> qryUserVosBatch(Map<String,Object> params);
+
+    /**
+     * 根据指定条件统计用户记录数
+     * */
+    public int countTotalNum(Map<String,Object> params);
 }

@@ -7,6 +7,7 @@ import com.eden.fans.bs.domain.request.MediaRequest;
 import com.eden.fans.bs.domain.request.UpdateMediaRequest;
 import com.eden.fans.bs.domain.response.MediaErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.domain.response.UserMediaResponse;
 import com.eden.fans.bs.domain.user.UserMediaVo;
 import com.eden.fans.bs.service.IUserMediaService;
 import org.slf4j.Logger;
@@ -44,8 +45,8 @@ public class UserMediaServiceImpl implements IUserMediaService {
     }
 
     @Override
-    public ServiceResponse<List<UserMediaVo>> getUserMediaVos(QryUserMediaVos qryUserMediaVos) {
-        ServiceResponse<List<UserMediaVo>> serviceResponse = null;
+    public ServiceResponse<UserMediaResponse> getUserMediaVos(QryUserMediaVos qryUserMediaVos) {
+        ServiceResponse<UserMediaResponse> serviceResponse = null;
         try{
             int totalNumber = mediaDao.countUserMediaNumByType(qryUserMediaVos.getUserCode(),qryUserMediaVos.getUmType());
             Map<String,Object> params = new HashMap<String, Object>();
@@ -56,10 +57,13 @@ public class UserMediaServiceImpl implements IUserMediaService {
             page.setCurrentPage(qryUserMediaVos.getCurrentPage());
             page.setTotalNumber(totalNumber);//重新计算分页信息
             params.put("page",page);
-            serviceResponse = new ServiceResponse<List<UserMediaVo>>(mediaDao.qryUserMediaByPage(params));
+            UserMediaResponse userMediaResponse = new UserMediaResponse();
+            userMediaResponse.setPage(page);
+            userMediaResponse.setAttentionVoList(mediaDao.qryUserMediaByPage(params));
+            serviceResponse = new ServiceResponse<UserMediaResponse>(userMediaResponse);
         }catch(Exception e){
             logger.error("查询多媒体信息失败，数据库异常！",e);
-            serviceResponse = new ServiceResponse<List<UserMediaVo>>(MediaErrorCodeEnum.QRY_MEDIA_FAILED);
+            serviceResponse = new ServiceResponse(MediaErrorCodeEnum.QRY_MEDIA_FAILED);
         }
         return serviceResponse;
     }
