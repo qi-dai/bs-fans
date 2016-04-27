@@ -371,7 +371,6 @@ public class PostServiceImpl implements IPostService {
         return stringBuilder.toString();
     }
 
-
     /**
      * 将帖子转成map（减少序列号和反序列化的操作）
      * @param postInfo

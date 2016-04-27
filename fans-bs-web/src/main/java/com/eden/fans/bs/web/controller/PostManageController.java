@@ -109,6 +109,11 @@ public class PostManageController {
         return gson.toJson(response);
     }
 
+    /**
+     * 获取帖子类型列表
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/postType", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String postType() throws Exception {

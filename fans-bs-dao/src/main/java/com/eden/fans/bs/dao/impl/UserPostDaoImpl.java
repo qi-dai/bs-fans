@@ -154,6 +154,7 @@ public class UserPostDaoImpl implements IUserPostDao {
         return Long.valueOf(userPostInfo.getConcerns().size());
     }
 
+
     /**
      * 统计用户点赞的帖子数
      *

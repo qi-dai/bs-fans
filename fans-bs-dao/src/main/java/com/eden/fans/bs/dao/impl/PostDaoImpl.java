@@ -584,14 +584,6 @@ public class PostDaoImpl implements IPostDao {
      * @param total
      * @return
      */
-
-    /**
-     * 分页获取待审批的帖子列表
-     *
-     * @param appCode
-     * @param pageNum
-     * @return
-     */
     @Override
     public String queryApprovalPost(String appCode, Integer pageNum,Long total) {
         List<DBObject> dbObjectList = new ArrayList<DBObject>(10);
