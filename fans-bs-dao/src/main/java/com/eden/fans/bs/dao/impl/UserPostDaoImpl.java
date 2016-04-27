@@ -3,6 +3,7 @@ package com.eden.fans.bs.dao.impl;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IUserPostDao;
+import com.eden.fans.bs.domain.enu.PostConcern;
 import com.eden.fans.bs.domain.enu.PostPraise;
 import com.eden.fans.bs.domain.mvo.UserPostInfo;
 import com.eden.fans.bs.domain.svo.ConcernPost;
@@ -140,7 +141,7 @@ public class UserPostDaoImpl implements IUserPostDao {
     public Long countConcernPost(String appCode, Long userCode) {
         DBObject object = new BasicDBObject();
         object.put("userCode",userCode);
-        object.put("concerns.status",1);
+        object.put("concerns.status", PostConcern.COMMIT.getValue());
 
         DBObject keys = new BasicDBObject();
         keys.put("concerns.status",1);
@@ -163,7 +164,7 @@ public class UserPostDaoImpl implements IUserPostDao {
     public Long countPraisePost(String appCode, Long userCode) {
         DBObject object = new BasicDBObject();
         object.put("userCode",userCode);
-        object.put("praises.status",1);
+        object.put("praises.status",PostPraise.COMMIT.getValue());
 
         DBObject keys = new BasicDBObject();
         keys.put("praises.status",1);
@@ -187,7 +188,7 @@ public class UserPostDaoImpl implements IUserPostDao {
     public String queryConcernPostByPage(String appCode, Long userCode, Integer pageNum,Long total) {
         DBObject queryObject = new BasicDBObject();
         queryObject.put("userCode",userCode);
-        queryObject.put("concerns.status",1);
+        queryObject.put("concerns.status",PostConcern.COMMIT.getValue());
 
         DBObject sortObject = new BasicDBObject();
         sortObject.put("time",-1);
@@ -226,7 +227,7 @@ public class UserPostDaoImpl implements IUserPostDao {
     public String queryPraisePostByPage(String appCode, Long userCode, Integer pageNum,Long total) {
         DBObject queryObject = new BasicDBObject();
         queryObject.put("userCode",userCode);
-        queryObject.put("praises.status",1);
+        queryObject.put("praises.status",PostPraise.COMMIT.getValue());
 
         DBObject sortObject = new BasicDBObject();
         sortObject.put("time",-1);
@@ -318,7 +319,7 @@ public class UserPostDaoImpl implements IUserPostDao {
             for(Object object:dbList){
                 BasicDBObject dbObject = (BasicDBObject)object;
                 stringBuilder.append("{");
-                stringBuilder.append("\"postId:\":\"" + dbObject.get("postId") +"\",");
+                stringBuilder.append("\"postId:\":\"" + dbObject.get("_id") +"\",");
                 stringBuilder.append("\"title:\":\"" + dbObject.get("title") +"\",");
                 stringBuilder.append("\"time:\":\"" + formatter.format((Date)dbObject.get("time")) +"\"");
                 stringBuilder.append("},");

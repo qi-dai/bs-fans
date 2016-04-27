@@ -3,6 +3,7 @@ package com.eden.fans.bs.web.controller;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.domain.enu.ApprovePost;
 import com.eden.fans.bs.domain.enu.PostStatus;
+import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *帖子的审批（依赖管理员拦截器）
@@ -102,6 +106,17 @@ public class PostManageController {
             response = new ServiceResponse<Boolean>(PostErrorCodeEnum.CREATE_POST_FAILED);
         }
         response.setResult(result);
+        return gson.toJson(response);
+    }
+
+    @RequestMapping(value = "/postType", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String postType() throws Exception {
+        PostType [] types = PostType.values();
+        Map<String,String> response = new HashMap<String, String>();
+        for(PostType type:types){
+            response.put(type.name(),type.getName());
+        }
         return gson.toJson(response);
     }
 

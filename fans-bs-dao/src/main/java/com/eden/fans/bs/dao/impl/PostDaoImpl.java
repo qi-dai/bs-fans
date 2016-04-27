@@ -96,7 +96,7 @@ public class PostDaoImpl implements IPostDao {
     public Long countApprovedPost(String appCode, Long userCode) {
         DBObject query = new BasicDBObject();
         query.put("status",PostStatus.NORMAL.getValue());
-        query.put("userCode",userCode);
+        query.put("operatorList",userCode);
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
     }
 
@@ -603,6 +603,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("userCode", 1);
         keys.put("createDate", 1);
         dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
         
@@ -614,6 +615,7 @@ public class PostDaoImpl implements IPostDao {
                 BasicDBObject object = (BasicDBObject)dbObject;
                 stringBuilder.append("{");
                 stringBuilder.append("\"postId\":\"" + object.get("_id") + "\",");
+                stringBuilder.append("\"userCode\":\"" + object.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + object.get("title") + "\",");
                 stringBuilder.append("\"createDate\":\"" + formatter.format((Date)object.get("createDate")) + "\"");
                 stringBuilder.append("},");
@@ -641,11 +643,12 @@ public class PostDaoImpl implements IPostDao {
         sort.put("createDate",-1);
 
         DBObject query = new BasicDBObject("status",PostStatus.NORMAL.getValue());
-        query.put("userCode",userCode);
+        query.put("operatorList",userCode);
 
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("userCode", 1);
         keys.put("createDate", 1);
         dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
 

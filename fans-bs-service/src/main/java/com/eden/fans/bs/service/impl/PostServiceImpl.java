@@ -410,6 +410,7 @@ public class PostServiceImpl implements IPostService {
                 Map<String,String> map = postHeadMap.get(postId);
                 stringBuilder.append("{");
                 stringBuilder.append("\"postId\":\"" + postId + "\",");
+                stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
                 stringBuilder.append("\"headImgUrl\":\"" + map.get("headImgUrl") + "\",");
                 stringBuilder.append("\"userName\":\"" + map.get("userName") + "\",");
