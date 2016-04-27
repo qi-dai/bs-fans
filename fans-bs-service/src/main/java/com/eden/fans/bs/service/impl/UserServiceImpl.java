@@ -4,11 +4,13 @@ import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.common.util.UserUtils;
 import com.eden.fans.bs.dao.IOperUserDao;
+import com.eden.fans.bs.dao.IUserCountDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.*;
+import com.eden.fans.bs.domain.user.UserCountVo;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.ICommonService;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements IUserService {
     private RedisCache redisCache;
     @Autowired
     private ICommonService commonService;
+    @Autowired
+    private IUserCountDao userCountDao;
 
 
     @Override
@@ -114,15 +118,19 @@ public class UserServiceImpl implements IUserService {
     public ServiceResponse<UserDetailResponse> qryUserInfo(Long userCode) {
         ServiceResponse<UserDetailResponse> qryUserResponse = null;
         try{
+            //1.查询用户基本信息
             UserVo userVoQry = new UserVo();
             userVoQry.setUserCode(Long.valueOf(userCode));
             UserVo userVoResult = userDao.qryUserVo(userVoQry);
             UserDetailResponse detailResponse = new UserDetailResponse();
             detailResponse.setUserVo(userVoResult);
             if(userVoResult!=null){
-                //查询其他详细,1.查询关注用户，2.查询被关注用户
-                detailResponse.setAttentionNum(0);//Todo
-                detailResponse.setFansNum(0);//Todo
+                //查询其他详细,1.查询关注用户，2.查询被关注用户,3.贡献人气，4.帖子数量，5.相册照片数量，6.视频数量，7.是否已关注
+                UserCountVo userCountVo = userCountDao.qryUserCountVo(userVoQry);
+                detailResponse.setAttentionNum(userCountVo.getAttentionNum());//Todo
+                detailResponse.setFansNum(userCountVo.getFansNum());//Todo
+                detailResponse.setImgNum(userCountVo.getImgNum());
+                detailResponse.setVideoNum(userCountVo.getVideoNum());
             }else{
                 qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_ERROR);
                 return qryUserResponse;

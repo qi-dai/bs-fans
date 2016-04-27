@@ -2,6 +2,7 @@ package com.eden.fans.bs.dao.impl;
 
 import com.eden.fans.bs.dao.BaseDao;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.domain.user.UserCountVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +63,5 @@ public class UserDaoImpl extends BaseDao<UserVo> implements IUserDao {
     public int countTotalNum(Map<String, Object> params) {
         return super.queryCountForObject("UserMapper.countUserNum",params);
     }
-
 
 }

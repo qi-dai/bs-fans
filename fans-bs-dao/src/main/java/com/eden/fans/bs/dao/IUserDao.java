@@ -1,5 +1,6 @@
 package com.eden.fans.bs.dao;
 
+import com.eden.fans.bs.domain.user.UserCountVo;
 import com.eden.fans.bs.domain.user.UserVo;
 
 import java.util.List;
@@ -64,4 +65,5 @@ public interface IUserDao {
      * 根据指定条件统计用户记录数
      * */
     public int countTotalNum(Map<String,Object> params);
+
 }
