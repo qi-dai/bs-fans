@@ -52,12 +52,7 @@ public class CommonServiceImpl implements ICommonService{
         }
         validCode = validCode.toUpperCase();
         boolean checkResult = sourceCode.toUpperCase().equals(validCode);
-        if(checkResult){
-            redisCache.delete(Constant.REDIS.VALID_TIME+timestamp);
-            return checkResult;
-        }else{
-            return false;
-        }
+        return checkResult;
     }
 
     @Override
@@ -68,9 +63,10 @@ public class CommonServiceImpl implements ICommonService{
             /**0.获取用户输入错误密码次数，如大于3次以上，校验验证码*/
             String pwdErrorNum = redisCache.get(loginRequest.getPhone()+Constant.REDIS.PWD_ERROR_NUM);
             int errorCount = 0;
+            boolean validFlag = false;
             if(StringUtils.isNotBlank(pwdErrorNum)&&(errorCount = Integer.parseInt(pwdErrorNum))>=3){
                 /**输入密码错误次数达到3次，需校验验证码*/
-                boolean validFlag = checkValidCode(loginRequest.getTimestamp(),loginRequest.getValidCode());
+                validFlag = checkValidCode(loginRequest.getTimestamp(),loginRequest.getValidCode());
                 if(!validFlag){
                     /**验证码错误直接返回*/
                     serviceResponse = new ServiceResponse<LoginResponse>(UserErrorCodeEnum.VALIDCODE_CHECK_FAILED);
@@ -110,6 +106,7 @@ public class CommonServiceImpl implements ICommonService{
                 return serviceResponse;
             }
             /**4.验证通过，a存放用户信息到redis；b存放登录信息到redis,c删除错误密码次数，不用再输入验证码*/
+            redisCache.delete(Constant.REDIS.VALID_TIME+loginRequest.getTimestamp());
             String token = UUID.randomUUID().toString();
             token = token.replace("-","");
 
