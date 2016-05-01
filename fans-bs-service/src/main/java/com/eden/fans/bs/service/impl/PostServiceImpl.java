@@ -443,81 +443,11 @@ public class PostServiceImpl implements IPostService {
         stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
         stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
         stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
-        stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
-        // 构建图片地址列表
-        BasicDBList imgList = (BasicDBList)dbObject.get("imgs");
-        if(null != imgList && imgList.size()>0){
-            StringBuilder imgBuilder = new StringBuilder();
-            imgBuilder.append("[");
-            for(Object object:imgList){
-                BasicDBObject basicDBObject = (BasicDBObject)object;
-                imgBuilder.append("{");
-                imgBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
-                imgBuilder.append("\"imgUrl\":\"" + basicDBObject.get("imgUrl") + "\"");
-                imgBuilder.append("},");
-            }
-            imgBuilder.delete(imgBuilder.length()-1,imgBuilder.length());
-            imgBuilder.append("]");
-            stringBuilder.append("\"imgs\":\"" + imgBuilder + "\",");
-        } else {
-            stringBuilder.append("\"imgs\":[],");
-        }
-        // 构建视频地址列表
-        BasicDBList videoList = (BasicDBList)dbObject.get("videos");
-        if(null != videoList && videoList.size()>0){
-            StringBuilder videoBuilder = new StringBuilder();
-            videoBuilder.append("[");
-            for(Object object:videoList){
-                BasicDBObject basicDBObject = (BasicDBObject)object;
-                videoBuilder.append("{");
-                videoBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
-                videoBuilder.append("\"videoUrl\":\"" + basicDBObject.get("videoUrl") + "\"");
-                videoBuilder.append("},");
-            }
-            videoBuilder.delete(videoBuilder.length()-1,videoBuilder.length());
-            videoBuilder.append("]");
-            stringBuilder.append("\"videos\":\"" + videoBuilder + "\",");
-        } else {
-            stringBuilder.append("\"videos\":[],");
-        }
 
-        // 构建音乐地址列表
-        BasicDBList musicList = (BasicDBList)dbObject.get("musics");
-        if(null != musicList && musicList.size()>0){
-            StringBuilder musicBuilder = new StringBuilder();
-            musicBuilder.append("[");
-            for(Object object:musicList){
-                BasicDBObject basicDBObject = (BasicDBObject)object;
-                musicBuilder.append("{");
-                musicBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
-                musicBuilder.append("\"musicUrl\":\"" + basicDBObject.get("musicUrl") + "\"");
-                musicBuilder.append("},");
-            }
-            musicBuilder.delete(musicBuilder.length()-1,musicBuilder.length());
-            musicBuilder.append("]");
-            stringBuilder.append("\"musics\":\"" + musicBuilder + "\",");
-        } else {
-            stringBuilder.append("\"musics\":[],");
-        }
-
-        // 构建其他媒体列表
-        BasicDBList otherList = (BasicDBList)dbObject.get("others");
-        if(null != otherList && otherList.size()>0){
-            StringBuilder otherBuilder = new StringBuilder();
-            otherBuilder.append("[");
-            for(Object object:otherList){
-                BasicDBObject basicDBObject = (BasicDBObject)object;
-                otherBuilder.append("{");
-                otherBuilder.append("\"index\":" + basicDBObject.get("index") + ",");
-                otherBuilder.append("\"otherUrl\":\"" + basicDBObject.get("otherUrl") + "\"");
-                otherBuilder.append("},");
-            }
-            otherBuilder.delete(otherBuilder.length()-1,otherBuilder.length());
-            otherBuilder.append("]");
-            stringBuilder.append("\"others\":\"" + otherBuilder + "\",");
-        } else {
-            stringBuilder.append("\"others\":[],");
-        }
+        stringBuilder.append("\"imgs\":" + dbObject.get("imgs") + ",");
+        stringBuilder.append("\"videos\":" + dbObject.get("videos") + ",");
+        stringBuilder.append("\"musics\":" + dbObject.get("musics") + ",");
+        stringBuilder.append("\"others\":" + dbObject.get("others") + ",");
 
         stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
         stringBuilder.append("\"publishDate\":\"" + format.format((Date)dbObject.get("publishDate")) + "\",");
