@@ -4,7 +4,7 @@ package com.eden.fans.bs.domain.response;
  * Created by Administrator on 2016/3/19.
  */
 public enum PostErrorCodeEnum implements BaseCodeEnum {
-    SUCCESS("3000", "成功", "成功"),
+    SUCCESS("0", "成功", "成功"),
     CREATE_POST_SUCCESS("3001", "创建帖子成功", "创建帖子成功"),
     CREATE_POST_FAILED("-3001", "创建帖子失败", "创建帖子失败，请稍后再试"),
     CREATE_POST_AUTH_FAILED("-30011", "创建帖子失败", "只有管理员可以创建广告帖子"),

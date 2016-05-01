@@ -127,10 +127,12 @@ public class UserServiceImpl implements IUserService {
             if(userVoResult!=null){
                 //查询其他详细,1.查询关注用户，2.查询被关注用户,3.贡献人气，4.帖子数量，5.相册照片数量，6.视频数量，7.是否已关注
                 UserCountVo userCountVo = userCountDao.qryUserCountVo(userVoQry);
-                detailResponse.setAttentionNum(userCountVo.getAttentionNum());//Todo
-                detailResponse.setFansNum(userCountVo.getFansNum());//Todo
-                detailResponse.setImgNum(userCountVo.getImgNum());
-                detailResponse.setVideoNum(userCountVo.getVideoNum());
+                if(userCountVo!=null){
+                    detailResponse.setAttentionNum(userCountVo.getAttentionNum());//Todo
+                    detailResponse.setFansNum(userCountVo.getFansNum());//Todo
+                    detailResponse.setImgNum(userCountVo.getImgNum());
+                    detailResponse.setVideoNum(userCountVo.getVideoNum());
+                }
             }else{
                 qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_ERROR);
                 return qryUserResponse;
