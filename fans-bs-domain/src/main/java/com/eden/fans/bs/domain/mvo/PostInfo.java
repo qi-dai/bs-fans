@@ -6,7 +6,6 @@ import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.svo.*;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,22 +47,22 @@ public class PostInfo implements Serializable {
     /**
      *帖子包含的图片列表
      */
-    private List<PostImg> imgs = new ArrayList<PostImg>();
+    private String imgs;
 
     /**
      *帖子包含的视频列表
      */
-    private List<PostVideo> videos = new ArrayList<PostVideo>();
+    private String videos;
 
     /**
      *帖子的包含的音乐列表
      */
-    private List<PostMusic> musics = new ArrayList<PostMusic>();
+    private String musics;
 
     /**
      *帖子包含的其他媒体列表
      */
-    private List<PostOtherMedia> others = new ArrayList<PostOtherMedia>();
+    private String others;
 
     /**
      *帖子的创建时间（该字段需要建索引）
@@ -89,6 +88,7 @@ public class PostInfo implements Serializable {
      *帖子的管理员操作列表
      */
     private List<Integer> operatorList = new ArrayList<Integer>();
+
     /**
      * 用户对帖子的两种操作：关注和点赞是相互独立的，并且同一类型操作状态是互斥的
      */
@@ -150,35 +150,35 @@ public class PostInfo implements Serializable {
         this.userName = userName;
     }
 
-    public List<PostImg> getImgs() {
+    public String getImgs() {
         return imgs;
     }
 
-    public void setImgs(List<PostImg> imgs) {
+    public void setImgs(String imgs) {
         this.imgs = imgs;
     }
 
-    public List<PostVideo> getVideos() {
+    public String getVideos() {
         return videos;
     }
 
-    public void setVideos(List<PostVideo> videos) {
+    public void setVideos(String videos) {
         this.videos = videos;
     }
 
-    public List<PostMusic> getMusics() {
+    public String getMusics() {
         return musics;
     }
 
-    public void setMusics(List<PostMusic> musics) {
+    public void setMusics(String musics) {
         this.musics = musics;
     }
 
-    public List<PostOtherMedia> getOthers() {
+    public String getOthers() {
         return others;
     }
 
-    public void setOthers(List<PostOtherMedia> others) {
+    public void setOthers(String others) {
         this.others = others;
     }
 

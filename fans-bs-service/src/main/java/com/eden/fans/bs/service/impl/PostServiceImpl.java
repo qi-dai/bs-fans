@@ -1,5 +1,6 @@
 package com.eden.fans.bs.service.impl;
 
+import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.IUserPostDao;
@@ -7,9 +8,7 @@ import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.enu.PostLevel;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
-import com.eden.fans.bs.domain.svo.ConcernUser;
-import com.eden.fans.bs.domain.svo.PraiseUser;
-import com.eden.fans.bs.domain.svo.ReplyPostInfo;
+import com.eden.fans.bs.domain.svo.*;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IPostService;
@@ -17,6 +16,7 @@ import com.eden.fans.bs.service.concurrent.ObtainReplyAndPraiseCountCallable;
 import com.eden.fans.bs.service.concurrent.ObtainReplyAndPraiseCountCallableUtil;
 import com.eden.fans.bs.service.concurrent.ObtainUserInfoCallable;
 import com.eden.fans.bs.service.concurrent.ObtainUserInfoCallableUtil;
+import com.google.gson.Gson;
 import com.google.gson.internal.LinkedHashTreeMap;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -37,7 +37,7 @@ import java.util.concurrent.Future;
 @Service
 public class PostServiceImpl implements IPostService {
     private static final Logger logger = LoggerFactory.getLogger(PostServiceImpl.class);
-
+    private static Gson gson = GsonUtil.getGson();
     @Autowired
     private IUserDao userDao;
     @Autowired
@@ -381,10 +381,10 @@ public class PostServiceImpl implements IPostService {
         map.put("type",postInfo.getType().getValue());
         map.put("content",postInfo.getContent());
         map.put("userCode",postInfo.getUserCode());
-        map.put("imgs",postInfo.getImgs());
-        map.put("videos",postInfo.getVideos());
-        map.put("musics",postInfo.getMusics());
-        map.put("others",postInfo.getOthers());
+        map.put("imgs",gson.fromJson(postInfo.getImgs(), PostImg.class));
+        map.put("videos",gson.fromJson(postInfo.getVideos(), PostVideo.class));
+        map.put("musics",gson.fromJson(postInfo.getMusics(),PostMusic.class));
+        map.put("others",gson.fromJson(postInfo.getOthers(),PostOtherMedia.class));
         map.put("createDate",new Date());
         map.put("publishDate",new Date());
         map.put("status",postInfo.getStatus().getValue());
