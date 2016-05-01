@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="DictoryMapper">
+    <resultMap id="dictVoMap" type="com.eden.fans.bs.domain.dict.DictVo">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="d_code" property="dcode" jdbcType="VARCHAR"/>
+        <result column="d_value" property="dvalue" jdbcType="VARCHAR"/>
+        <result column="d_name" property="dname" jdbcType="VARCHAR"/>
+        <result column="d_desc" property="ddesc" jdbcType="VARCHAR"/>
+        <result column="parent_code" property="parentCode" jdbcType="VARCHAR"/>
+        <result column="is_valid" property="isValid" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="creater" property="creater" jdbcType="BIGINT"/>
+        <result column="updater" property="updater" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!--<sql id="allColumn">
+        select id,d_code,d_value,d_name,d_desc,parent_code,is_valid,create_time,update_time,creater,updater
+        from data_dict
+    </sql>-->
+
+    <!-- 插入数据字典记录-->
+    <insert id="addDict"
+            parameterType="com.eden.fans.bs.domain.dict.DictVo">
+        INSERT INTO data_dict(
+        d_code,d_value,d_name,d_desc,parent_code,creater
+        ) VALUES
+        (
+        #{dCode,jdbcType=VARCHAR},#{dValue,jdbcType=VARCHAR},#{dName,jdbcType=VARCHAR},#{dDesc,jdbcType=VARCHAR}
+        ,#{parentCode,jdbcType=VARCHAR},#{creater,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+    <!--<select id="countFromAtt"  parameterType="java.lang.Long" resultType="int">
+        select count(0) from user_attention
+        where att_type = '0'
+        and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
+    </select>-->
+    <!-- 根据数据编码查询数据字典 -->
+    <select id="qryDictItem" resultMap="dictVoMap" parameterType="com.eden.fans.bs.domain.dict.DictVo">
+        select d_value,d_name
+        from data_dict
+        where 1=1
+        <if test="dcode != null">
+            and d_Code = #{dcode,jdbcType=VARCHAR}
+        </if>
+        <if test="dvalue != null">
+            and d_value = #{dvalue,jdbcType=VARCHAR}
+        </if>
+        <if test="dname != null">
+            and d_name = #{dname,jdbcType=VARCHAR}
+        </if>
+        <if test="parentCode != null">
+            and parent_code =#{parentCode,jdbcType=VARCHAR}
+        </if>
+        <if test="isValid !=null">
+            is_valid = #{isValid,jdbcType=VARCHAR}
+        </if>
+        order by d_value
+    </select>
+
+    <!-- 分页查询用户关注列表 -->
+    <select id="queryDictVosByPage" resultMap="dictVoMap" parameterType="java.util.Map">
+        select id,d_code,d_value,d_name,d_desc,parent_code,is_valid,create_time,update_time,creater,updater
+        from data_dict
+        where 1=1
+        <if test="dcode != null">
+            and d_Code = #{dcode,jdbcType=VARCHAR}
+        </if>
+        <if test="dvalue != null">
+            and d_value = #{dvalue,jdbcType=VARCHAR}
+        </if>
+        <if test="dname != null">
+            and d_name = #{dname,jdbcType=VARCHAR}
+        </if>
+        <if test="parentCode != null">
+            and parent_code =#{parentCode,jdbcType=VARCHAR}
+        </if>
+        <if test="isValid !=null">
+            is_valid = #{isValid,jdbcType=VARCHAR}
+        </if>
+        group by d_code limit #{page.dbIndex},#{page.dbNumber}
+    </select>
+
+    <!-- 更改数据字典信息 -->
+    <update id="updateDictVo" parameterType="com.eden.fans.bs.domain.dict.DictVo">
+        update data_dict set
+        <if test="dcode!=null"> d_code = #{dcode,jdbcType=VARCHAR},</if>
+        <if test="dvalue!=null"> d_value = #{dvalue,jdbcType=VARCHAR},</if>
+        <if test="dname!=null"> d_name = #{dname,jdbcType=VARCHAR},</if>
+        <if test="ddesc!=null">d_desc = #{ddesc,jdbcType=VARCHAR},</if>
+        <if test="isValid!=null">is_valid = #{isValid,jdbcType=Date},</if>
+        <if test="seqNo!=null">seq_no = #{seqNo,jdbcType=VARCHAR},</if>
+        <if test="parentCode!=null">parent_code = #{parentCode,jdbcType=VARCHAR},</if>
+        update_time = now(),
+        <if test="updater!=null">updater = #{updater,jdbcType=VARCHAR}</if>
+        where user_code = #{userCode,jdbcType=BIGINT}
+    </update>
+
+</mapper>
