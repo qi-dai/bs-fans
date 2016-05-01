@@ -40,6 +40,8 @@ public class SecurityInterceptor implements HandlerInterceptor {
             String token = httpServletRequest.getParameter("token");
             String phone = httpServletRequest.getParameter("phone");
             logger.error("权限认证开始-sid:{},phone:{}",token,phone);
+            String requestUri = httpServletRequest.getRequestURI();
+            logger.error("请求路径：{}",requestUri);
             /**
              * 获取该手机号已登录tokens集合
              * 格式：ja7e82sdqw212d_ssdki2279kklas_7iosl1aFCMQ1as
