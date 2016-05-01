@@ -3,6 +3,8 @@ package com.eden.fans.bs.dao.impl;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IPostDao;
+import com.eden.fans.bs.domain.enu.PostConcern;
+import com.eden.fans.bs.domain.enu.PostPraise;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
@@ -253,6 +255,17 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updatePraiseUsers(String appCode, String postId, PraiseUser praiseUser) {
+        // 更新文章点赞数
+        DBObject newPraiseCount = null;
+        DBObject id = new BasicDBObject("_id",new ObjectId(postId));
+        if(praiseUser.getPraise().getValue() == PostPraise.COMMIT.getValue()){
+            newPraiseCount = new BasicDBObject().append("$inc",new BasicDBObject().append("praiseCount", 1));
+        } else {
+            newPraiseCount = new BasicDBObject().append("$inc",new BasicDBObject().append("praiseCount", -1));
+        }
+        this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findAndModify(id,newPraiseCount);
+
+
         // 先更新内嵌文档
         Update update = new Update();
         update.set("praiseUsers.$.praise",praiseUser.getPraise().getValue());
@@ -287,6 +300,11 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updateReplyInfos(String appCode, String postId, ReplyPostInfo replyPostInfo) {
+        // 更新回帖数
+        DBObject newReplyCount = new BasicDBObject().append("$inc",new BasicDBObject().append("replyCount", 1));
+        DBObject id = new BasicDBObject("_id",new ObjectId(postId));
+        this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findAndModify(id,newReplyCount);
+
         Map<String,Object> replyPostMap = new LinkedHashMap<String, Object>(4);
         replyPostMap.put("title",replyPostInfo.getTitle());
         replyPostMap.put("medias",replyPostInfo.getMedias());
@@ -311,6 +329,17 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public boolean updateConcernUsers(String appCode, String postId, ConcernUser concernUser) {
+
+        // 更新关注帖子数
+        DBObject newConcernCount = null;
+        DBObject id = new BasicDBObject("_id",new ObjectId(postId));
+        if(concernUser.getConcern().getValue() == PostConcern.COMMIT.getValue()){
+            newConcernCount = new BasicDBObject().append("$inc",new BasicDBObject().append("concernCount", 1));
+        } else {
+            newConcernCount = new BasicDBObject().append("$inc",new BasicDBObject().append("concernCount", -1));
+        }
+        this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findAndModify(id,newConcernCount);
+
         // 先更新内嵌文档
         Update update = new Update();
         update.set("concernUsers.$.concern", concernUser.getConcern().getValue());
@@ -343,19 +372,21 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countPraiseUsers(String postId,String appCode) {
+
         DBObject object = new BasicDBObject();
-        object.put("praiseUsers.praise", 1);
         object.put("_id", new ObjectId(postId));
 
         DBObject keys = new BasicDBObject();
-        keys.put("praiseUsers.userCode",1);
+        keys.put("praiseCount",1);
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject), PostInfo.class);
-        return Long.valueOf(postInfo.getPraiseUsers().size());
+        if(null == postObject.get("praiseCount")){
+            return 0L;
+        }
+        return Long.valueOf(postObject.get("praiseCount")+"");
     }
 
     /**
@@ -367,17 +398,18 @@ public class PostDaoImpl implements IPostDao {
     public Long countConcernUsers(String postId,String appCode) {
         DBObject object = new BasicDBObject();
         object.put("_id", new ObjectId(postId));
-        object.put("concernUsers.concern", 1);
 
         DBObject keys = new BasicDBObject();
-        keys.put("concernUsers.userCode",1);
+        keys.put("concernCount",1);
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject),PostInfo.class);
-        return Long.valueOf(postInfo.getConcernUsers().size());
+        if(null == postObject.get("concernCount")){
+            return 0L;
+        }
+        return Long.valueOf(postObject.get("concernCount")+"");
     }
 
     /**
@@ -387,16 +419,20 @@ public class PostDaoImpl implements IPostDao {
      */
     @Override
     public Long countReplyPostInfos(String postId,String appCode) {
-        DBObject object = new BasicDBObject("_id",new ObjectId(postId));
+        DBObject object = new BasicDBObject();
+        object.put("_id", new ObjectId(postId));
+
         DBObject keys = new BasicDBObject();
-        keys.put("replyPostInfos.replyTime",1);
+        keys.put("replyCount",1);
 
         DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
         if(null == postObject){
             return 0L;
         }
-        PostInfo postInfo = PARSER.fromJson(PARSER.toJson(postObject), PostInfo.class);
-        return Long.valueOf(postInfo.getConcernUsers().size());
+        if(null == postObject.get("replyCount")){
+            return 0L;
+        }
+        return Long.valueOf(postObject.get("replyCount")+"");
     }
 
     /**
@@ -645,6 +681,28 @@ public class PostDaoImpl implements IPostDao {
         dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
 
         return dbObjectList;
+    }
+
+    /**
+     * 获取帖子点赞数，关注数和回帖数
+     *
+     * @param appCode
+     * @param postId
+     * @return
+     */
+    @Override
+    public Map<String, Object> postCountInfo(String appCode, String postId) {
+        DBObject object = new BasicDBObject();
+        object.put("_id", new ObjectId(postId));
+
+        DBObject keys = new BasicDBObject();
+        keys.put("praiseCount",1);
+        keys.put("concernCount",1);
+        keys.put("replyCount",1);
+
+        DBObject postObject = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(object,keys);
+        postObject.removeField("_id");
+        return postObject.toMap();
     }
 
     /**

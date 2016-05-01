@@ -392,6 +392,10 @@ public class PostServiceImpl implements IPostService {
         map.put("operatorList",postInfo.getOperatorList());
         map.put("concernUsers",postInfo.getConcernUsers());
         map.put("praiseUsers",postInfo.getPraiseUsers());
+        // 优化点赞数，关注数和回帖数
+        map.put("praiseCount",0);
+        map.put("concernCount",0);
+        map.put("replyCount",0);
     }
 
     /**

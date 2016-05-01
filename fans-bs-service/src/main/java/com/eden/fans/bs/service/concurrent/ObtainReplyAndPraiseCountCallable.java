@@ -22,10 +22,13 @@ public class ObtainReplyAndPraiseCountCallable implements Callable<Map<String,Ma
         Map<String,Map<String,String>> resultMap = new HashMap<String, Map<String, String>>(1);
         Map<String,String> countMap = new HashMap<String, String>(2);
 
-        Long replyCount = postDao.countReplyPostInfos(postId,appCode);
-        Long praiseCount = postDao.countPraiseUsers(postId,appCode);
-        countMap.put("replyCount",replyCount+"");
-        countMap.put("praiseCount",praiseCount+"");
+        Map<String,Object> countInfo = postDao.postCountInfo(appCode, postId);
+
+        Object replyCount = countInfo.get("replyCount");
+        Object praiseCount = countInfo.get("praiseCount");
+
+        countMap.put("replyCount",null == replyCount?"0":replyCount+"");
+        countMap.put("praiseCount",null == praiseCount?"0":praiseCount+"");
 
         resultMap.put(postId,countMap);
         return resultMap;

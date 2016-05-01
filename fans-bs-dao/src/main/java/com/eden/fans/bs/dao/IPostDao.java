@@ -10,6 +10,7 @@ import com.mongodb.DBObject;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 帖子有关操作定义
@@ -165,5 +166,13 @@ public interface IPostDao {
      * @return
      */
     public List<DBObject> queryApprovedPost(String appCode,Long userCode,Integer pageNum);
+
+    /**
+     * 获取帖子点赞数，关注数和回帖数
+     * @param appCode
+     * @param postId
+     * @return
+     */
+    public Map<String,Object> postCountInfo(String appCode, String postId);
 
 }
