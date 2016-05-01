@@ -498,8 +498,6 @@ public class PostServiceImpl implements IPostService {
                 // TODO
             }
         }
-
-        return null;
-
+        return resultMap;
     }
 }
