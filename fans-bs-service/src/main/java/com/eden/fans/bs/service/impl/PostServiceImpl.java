@@ -388,7 +388,7 @@ public class PostServiceImpl implements IPostService {
         map.put("createDate",new Date());
         map.put("publishDate",new Date());
         map.put("status",postInfo.getStatus().getValue());
-        map.put("level",postInfo.getLevel());
+        map.put("level",postInfo.getLevel().getValue());
         map.put("operatorList",postInfo.getOperatorList());
         map.put("concernUsers",postInfo.getConcernUsers());
         map.put("praiseUsers",postInfo.getPraiseUsers());
