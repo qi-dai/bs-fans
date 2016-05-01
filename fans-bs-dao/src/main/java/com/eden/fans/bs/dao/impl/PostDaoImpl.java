@@ -652,7 +652,7 @@ public class PostDaoImpl implements IPostDao {
             stringBuilder.append("],\"total\":" + total + "}");
         }
         
-        return "";
+        return stringBuilder.toString();
     }
 
     /**
