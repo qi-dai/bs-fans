@@ -64,7 +64,7 @@ public class PostDaoImpl implements IPostDao {
     public Long countPostByUserCode(String appCode, Long userCode) {
         DBObject query = new BasicDBObject();
         query.put("userCode",userCode);
-        query.put("status",PostStatus.NORMAL.getValue());
+        //query.put("status",PostStatus.NORMAL.getValue());
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
     }
     @Override
@@ -159,12 +159,17 @@ public class PostDaoImpl implements IPostDao {
         sort.put("createDate",-1);
 
         DBObject query = new BasicDBObject("userCode",userCode);
-        query.put("status",PostStatus.NORMAL.getValue());
+        //query.put("status",PostStatus.NORMAL.getValue());
 
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
         keys.put("userCode", 1);
+        keys.put("imgs", 1);
+        keys.put("videos", 1);
+        keys.put("musics", 1);
+        keys.put("others", 1);
+        keys.put("status", 1);
         keys.put("createDate", 1);
         return userPostObject(appCode,pageNum,query,keys,sort);
     }

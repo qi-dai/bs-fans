@@ -89,7 +89,7 @@ public class PostServiceImpl implements IPostService {
         List<DBObject> dbObjectList = postDao.obtainPostByUserCode(appCode, userCode, pageNum);
         // 批量获取用户信息,点赞数和回帖数
         Map<String,Map<String,String>> postHeadMap = this.obtainPostHead(dbObjectList,appCode);
-        postHead2String(stringBuilder,dbObjectList,postCount,false,postHeadMap);
+        postHead2String(stringBuilder,dbObjectList,postCount,true,postHeadMap);
         logger.info("根据用户分页获取帖子列表:{}",stringBuilder.toString());
         return stringBuilder.toString();
     }
