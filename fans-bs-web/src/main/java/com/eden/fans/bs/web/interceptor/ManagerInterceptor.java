@@ -1,6 +1,7 @@
 package com.eden.fans.bs.web.interceptor;
 
 import com.eden.fans.bs.common.util.Constant;
+import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.domain.response.SystemErrorEnum;
@@ -25,7 +26,8 @@ public class ManagerInterceptor implements HandlerInterceptor {
     private RedisCache redisCache;
 
     private static Gson gson = new Gson();
-
+    @Autowired
+    private IUserDao userDao;
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
         httpServletResponse.setContentType("text/html;charset=utf-8");
@@ -58,6 +60,12 @@ public class ManagerInterceptor implements HandlerInterceptor {
              * */
             if(isLogin){
                 UserVo userVo = redisCache.get(phone, UserVo.class);
+                if(userVo==null){
+                    userVo = userDao.qryUserVoByPhone(phone);
+                    if(userVo!=null){
+                        redisCache.set(phone,userVo);
+                    }
+                }
                 if(userVo!=null&&"02".equals(userVo.getUserRole())){
                     return true;
                 }
