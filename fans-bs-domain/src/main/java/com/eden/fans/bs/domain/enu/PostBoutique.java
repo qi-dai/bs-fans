@@ -3,29 +3,19 @@ package com.eden.fans.bs.domain.enu;
 import com.eden.fans.bs.domain.IPostEnum;
 
 /**
- *帖子类型描述
+ *帖子加精
  *
  * Created by Administrator on 2016/3/13.
  */
-public enum PostType implements IPostEnum {
-    ADVERT("广告",0),
-    TEXT_MESSAGE("消息",1),
-    VIDEO("视频",2),
-    MV("MV",3),
-    MUSIC("音乐",4),
-    ALBUM("相册",5),
-    ITINERARY("行程",6),
-    BOUTIQUE("精品",100),
-    COMMONPOST("普通帖子",101),
-    IMITATION_VIDEO("模仿视频",102),
-    IMITATION_MUSIC("音乐模仿",103),
-    DYNAMIC_GRAPH("动态图", 104);
+public enum PostBoutique implements IPostEnum {
+    BOUTIQUE("加精",1),
+    NOBOUTIQUE("取消加精",0);
 
     private String name;
     private int value;
 
 
-    private PostType(String name,int value){
+    private PostBoutique(String name, int value){
         this.value = value;
         this.name = name;
     }

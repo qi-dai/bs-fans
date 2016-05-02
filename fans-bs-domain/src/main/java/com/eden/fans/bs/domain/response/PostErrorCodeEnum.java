@@ -22,7 +22,11 @@ public enum PostErrorCodeEnum implements BaseCodeEnum {
     GET_APPROVAL_POST_SUCCESS("0", "获取待审批的帖子成功", "获取待审批的帖子成功"),
     GET_APPROVAL_POST_FAILED("-3006", "获取待审批的帖子失败", "获取待审批的帖子失败，您不是管理员"),
     GET_APPROVED_POST_SUCCESS("0", "获取已审批的帖子成功", "获取已审批的帖子成功"),
-    GET_APPROVED_POST_FAILED("-3008", "获取已审批的帖子失败", "获取待审批的帖子失败，您不是管理员");
+    GET_APPROVED_POST_FAILED("-3008", "获取已审批的帖子失败", "获取待审批的帖子失败，您不是管理员"),
+    ONTOP_POST_SUCCESS("0", "帖子置顶成功", "帖子置顶成功"),
+    ONTOP_POST_FAILED("-3009", "帖子置顶失败", "帖子置顶失败，您不是管理员"),
+    BOUTIQUE_POST_SUCCESS("0", "帖子加精成功", "帖子加精成功"),
+    BOUTIQUE_POST_FAILED("-3010", "帖子加精失败", "帖子加精失败，您不是管理员");
     //RPC调用异常
     public String code;
     public String msg;

@@ -3,9 +3,7 @@ package com.eden.fans.bs.dao.impl;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IPostDao;
-import com.eden.fans.bs.domain.enu.PostConcern;
-import com.eden.fans.bs.domain.enu.PostPraise;
-import com.eden.fans.bs.domain.enu.PostStatus;
+import com.eden.fans.bs.domain.enu.*;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
@@ -118,6 +116,7 @@ public class PostDaoImpl implements IPostDao {
         object.put("type",postType.intValue());
 
         DBObject sort = new BasicDBObject();
+        sort.put("onTop",-1);
         sort.put("createDate",-1);
 
         DBObject keys = new BasicDBObject();
@@ -243,6 +242,56 @@ public class PostDaoImpl implements IPostDao {
         Update update = new Update();
         update.set("status",status.getValue());
         update.set("publishDate", new Date());
+        // 如果审批人不为空，则更新审批人列表
+        if(null != postChecker){
+            Update.AddToSetBuilder builder = update.addToSet("operatorList");
+            builder.each(postChecker);
+        }
+        int result = this.mongoTemplate.updateFirst(query, update, MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        if(0 == result){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 更新帖子状态（onTop）
+     *
+     * @param appCode
+     * @param postId
+     * @param postOnTop
+     * @param postChecker
+     */
+    @Override
+    public boolean updateOnTop(String appCode, String postId, PostOnTop postOnTop, Long postChecker) {
+        Query query = Query.query(Criteria.where("_id").is(postId));
+        Update update = new Update();
+        update.set("onTop",postOnTop.getValue());
+        // 如果审批人不为空，则更新审批人列表
+        if(null != postChecker){
+            Update.AddToSetBuilder builder = update.addToSet("operatorList");
+            builder.each(postChecker);
+        }
+        int result = this.mongoTemplate.updateFirst(query, update, MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+        if(0 == result){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 更新帖子状态（boutique）
+     *
+     * @param appCode
+     * @param postId
+     * @param postBoutique
+     * @param postChecker
+     */
+    @Override
+    public boolean updateBoutique(String appCode, String postId, PostBoutique postBoutique, Long postChecker) {
+        Query query = Query.query(Criteria.where("_id").is(postId));
+        Update update = new Update();
+        update.set("boutique",postBoutique.getValue());
         // 如果审批人不为空，则更新审批人列表
         if(null != postChecker){
             Update.AddToSetBuilder builder = update.addToSet("operatorList");

@@ -1,5 +1,7 @@
 package com.eden.fans.bs.dao;
 
+import com.eden.fans.bs.domain.enu.PostBoutique;
+import com.eden.fans.bs.domain.enu.PostOnTop;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
@@ -83,6 +85,16 @@ public interface IPostDao {
      * 更新帖子状态（status）
      */
     public boolean updateStatus(String appCode,String id,PostStatus status,Long postChecker);
+
+    /**
+     * 更新帖子状态（onTop）
+     */
+    public boolean updateOnTop(String appCode,String postId,PostOnTop postOnTop,Long postChecker);
+
+    /**
+     * 更新帖子状态（boutique）
+     */
+    public boolean updateBoutique(String appCode,String postId,PostBoutique postBoutique,Long postChecker);
 
     /**
      *更新帖子的点赞用户列表（点赞、取消点赞）

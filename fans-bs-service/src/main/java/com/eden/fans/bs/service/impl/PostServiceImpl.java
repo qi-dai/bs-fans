@@ -4,7 +4,9 @@ import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.dao.IUserDao;
 import com.eden.fans.bs.dao.IUserPostDao;
 import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.enu.PostBoutique;
 import com.eden.fans.bs.domain.enu.PostLevel;
+import com.eden.fans.bs.domain.enu.PostOnTop;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
@@ -161,6 +163,32 @@ public class PostServiceImpl implements IPostService {
     @Override
     public boolean updateStatus(String appCode, String postId,PostStatus status,Long postChecker) {
         return  postDao.updateStatus(appCode, postId, status,postChecker);
+    }
+
+    /**
+     * 更新帖子状态（onTop）
+     *
+     * @param appCode
+     * @param postId
+     * @param postOnTop
+     * @param postChecker
+     */
+    @Override
+    public boolean updateOnTop(String appCode, String postId, PostOnTop postOnTop, Long postChecker) {
+        return  postDao.updateOnTop(appCode, postId, postOnTop,postChecker);
+    }
+
+    /**
+     * 更新帖子状态（boutique）
+     *
+     * @param appCode
+     * @param postId
+     * @param postBoutique
+     * @param postChecker
+     */
+    @Override
+    public boolean updateBoutique(String appCode, String postId, PostBoutique postBoutique, Long postChecker) {
+        return  postDao.updateBoutique(appCode, postId, postBoutique, postChecker);
     }
 
     /**
@@ -396,6 +424,9 @@ public class PostServiceImpl implements IPostService {
         map.put("praiseCount",0);
         map.put("concernCount",0);
         map.put("replyCount",0);
+        // 置顶和加精标识
+        map.put("onTop",0);
+        map.put("boutique",0);
     }
 
     /**

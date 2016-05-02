@@ -1,9 +1,7 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
-import com.eden.fans.bs.domain.enu.ApprovePost;
-import com.eden.fans.bs.domain.enu.PostStatus;
-import com.eden.fans.bs.domain.enu.PostType;
+import com.eden.fans.bs.domain.enu.*;
 import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -81,10 +79,51 @@ public class PostManageController {
     public String updatePost(@RequestParam(value="appCode",required=true) String appCode,
                              @RequestParam(value="postId",required=true) String postId,
                              Long userCode, ApprovePost approvePost) throws Exception {
-            boolean result = postService.updateStatus(appCode,postId,PostStatus.getPostStatus(approvePost.getValue()),userCode);
+            boolean result = postService.updateStatus(appCode, postId, PostStatus.getPostStatus(approvePost.getValue()), userCode);
             ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.UPDATE_POST_SUCCESS);
             response.setResult(result+"");
             return gson.toJson(response);
+    }
+
+
+    /**
+     *  更新帖子状态：帖子加精、取消加精
+     * @param appCode
+     * @param postId
+     * @postStatus
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/postOnTop", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String onTop(@RequestParam(value="appCode",required=true) String appCode,
+                        @RequestParam(value="postId",required=true) String postId,
+                        @RequestParam(value="onTop",required=true) PostOnTop onTop,
+                        Long userCode) throws Exception {
+        boolean result = postService.updateOnTop(appCode, postId, onTop, userCode);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.ONTOP_POST_SUCCESS);
+        response.setResult(result+"");
+        return gson.toJson(response);
+    }
+
+    /**
+     *  更新帖子状态：审批帖子
+     * @param appCode
+     * @param postId
+     * @postStatus
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/postBoutique", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String updatePost(@RequestParam(value="appCode",required=true) String appCode,
+                             @RequestParam(value="postId",required=true) String postId,
+                             @RequestParam(value="boutique",required=true) PostBoutique boutique,
+                             Long userCode) throws Exception {
+        boolean result = postService.updateBoutique(appCode,postId,boutique,userCode);
+        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.BOUTIQUE_POST_SUCCESS);
+        response.setResult(result+"");
+        return gson.toJson(response);
     }
 
     /**
