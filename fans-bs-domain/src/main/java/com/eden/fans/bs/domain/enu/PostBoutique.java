@@ -8,8 +8,8 @@ import com.eden.fans.bs.domain.IPostEnum;
  * Created by Administrator on 2016/3/13.
  */
 public enum PostBoutique implements IPostEnum {
-    BOUTIQUE("加精",1),
-    NOBOUTIQUE("取消加精",0);
+    ONBOUTIQUE("加精",1),
+    OFFBOUTIQUE("取消加精",0);
 
     private String name;
     private int value;

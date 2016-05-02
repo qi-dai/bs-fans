@@ -116,7 +116,7 @@ public class PostManageController {
      */
     @RequestMapping(value = "/postBoutique", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String updatePost(@RequestParam(value="appCode",required=true) String appCode,
+    public String boutique(@RequestParam(value="appCode",required=true) String appCode,
                              @RequestParam(value="postId",required=true) String postId,
                              @RequestParam(value="boutique",required=true) PostBoutique boutique,
                              Long userCode) throws Exception {
