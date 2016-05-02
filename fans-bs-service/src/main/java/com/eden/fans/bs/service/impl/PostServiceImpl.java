@@ -415,6 +415,10 @@ public class PostServiceImpl implements IPostService {
                 stringBuilder.append("\"postId\":\"" + postId + "\",");
                 stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+                stringBuilder.append("\"imgs\":\"" + dbObject.get("imgs") + "\",");
+                stringBuilder.append("\"videos\":\"" + dbObject.get("videos") + "\",");
+                stringBuilder.append("\"musics\":\"" + dbObject.get("musics") + "\",");
+                stringBuilder.append("\"others\":\"" + dbObject.get("others") + "\",");
                 stringBuilder.append("\"headImgUrl\":\"" + map.get("headImgUrl") + "\",");
                 stringBuilder.append("\"userName\":\"" + map.get("userName") + "\",");
                 stringBuilder.append("\"replyCount\":" + map.get("replyCount") + ",");
