@@ -446,11 +446,11 @@ public class PostServiceImpl implements IPostService {
                 stringBuilder.append("\"postId\":\"" + postId + "\",");
                 stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
-                stringBuilder.append("\"imgs\":\"" + dbObject.get("imgs") + "\",");
-                stringBuilder.append("\"videos\":\"" + dbObject.get("videos") + "\",");
-                stringBuilder.append("\"musics\":\"" + dbObject.get("musics") + "\",");
-                stringBuilder.append("\"others\":\"" + dbObject.get("others") + "\",");
-                stringBuilder.append("\"headImgUrl\":\"" + map.get("headImgUrl") + "\",");
+                stringBuilder.append("\"imgs\":" + ((null == dbObject.get("imgs"))?"[]":dbObject.get("imgs")) + ",");
+                stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) +  ",");
+                stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) +  ",");
+                stringBuilder.append("\"others\":" + ((null == dbObject.get("others"))?"[]":dbObject.get("others")) +  ",");
+                stringBuilder.append("\"headImgUrl\":" + map.get("headImgUrl") + ",");
                 stringBuilder.append("\"userName\":\"" + map.get("userName") + "\",");
                 stringBuilder.append("\"replyCount\":" + map.get("replyCount") + ",");
                 stringBuilder.append("\"praiseCount\":" + map.get("praiseCount") + ",");
@@ -479,10 +479,10 @@ public class PostServiceImpl implements IPostService {
         stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
         stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
 
-        stringBuilder.append("\"imgs\":" + dbObject.get("imgs") + ",");
-        stringBuilder.append("\"videos\":" + dbObject.get("videos") + ",");
-        stringBuilder.append("\"musics\":" + dbObject.get("musics") + ",");
-        stringBuilder.append("\"others\":" + dbObject.get("others") + ",");
+        stringBuilder.append("\"imgs\":" + ((null == dbObject.get("imgs"))?"[]":dbObject.get("imgs")) + ",");
+        stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) + ",");
+        stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) + ",");
+        stringBuilder.append("\"others\":" + ((null == dbObject.get("others"))?"[]":dbObject.get("others")) + ",");
 
         stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
         stringBuilder.append("\"publishDate\":\"" + format.format((Date)dbObject.get("publishDate")) + "\",");

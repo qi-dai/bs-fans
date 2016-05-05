@@ -1,10 +1,8 @@
 package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.GsonUtil;
-import com.eden.fans.bs.domain.mvo.PostInfo;
+import com.eden.fans.bs.domain.response.BaseCodeEnum;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
-import com.eden.fans.bs.domain.response.ServiceResponse;
-import com.eden.fans.bs.service.IPostService;
 import com.eden.fans.bs.service.IUserPostService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -38,40 +36,49 @@ public class UserPostController {
     @ResponseBody
     public String queryPraisePost(@RequestParam(value="appCode",required=true) String appCode,
                                   @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = userPostService.queryPraisePostByPage(appCode, userCode, pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     @RequestMapping(value = "/queryConcernPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String queryConcernPost(@RequestParam(value="appCode",required=true) String appCode,
                    @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = userPostService.queryConcernPostByPage(appCode, userCode, pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     @RequestMapping(value = "/queryAllPraisePost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String queryAllPraisePost(@RequestParam(value="appCode",required=true) String appCode,
                                      @RequestParam(value="userCode",required=true) Long userCode) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = userPostService.queryAllPraisePost(appCode, userCode);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     @RequestMapping(value = "/queryAllConcernPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String queryAllConcernPost(@RequestParam(value="appCode",required=true) String appCode,
                                       @RequestParam(value="userCode",required=true) Long userCode) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = userPostService.queryAllConcernPost(appCode, userCode);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
+    private void createResponseHeader(StringBuilder response, BaseCodeEnum baseCodeEnum){
+        response.append("{\"code\":" + baseCodeEnum.getCode()+",");
+        response.append("\"msg\":\"" + baseCodeEnum.getMsg()+"\",");
+        response.append("\"detail\":\"" + baseCodeEnum.getDetail()+"\",");
+    }
 }

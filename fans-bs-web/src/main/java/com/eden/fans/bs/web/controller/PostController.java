@@ -4,6 +4,7 @@ import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.domain.enu.PostStatus;
 import com.eden.fans.bs.domain.enu.PostType;
 import com.eden.fans.bs.domain.mvo.PostInfo;
+import com.eden.fans.bs.domain.response.BaseCodeEnum;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.domain.svo.ConcernUser;
@@ -81,9 +82,10 @@ public class PostController {
     @ResponseBody
     public String obtainPostByPage(@RequestParam(value="appCode",required=true) String appCode,
                                    @RequestParam(value="postType",required=true) PostType postType,Integer pageNum) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = postService.obtainPostByPage(appCode,postType.getValue(),pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
         return gson.toJson(response);
     }
 
@@ -99,10 +101,11 @@ public class PostController {
     @ResponseBody
     public String obtainPostByUser(@RequestParam(value="appCode",required=true) String appCode,
                                    @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = postService.obtainPostByUserCode(appCode,userCode,pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -115,10 +118,11 @@ public class PostController {
     @RequestMapping(value = "/obtainPostById", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String obtainPostById(@RequestParam(value="appCode",required=true) String appCode,String postId) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = postService.obtainPostById(appCode,postId);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -205,10 +209,11 @@ public class PostController {
     public String allConcernUser(@RequestParam(value="appCode",required=true) String appCode,
                                  @RequestParam(value="postId",required=true) String postId) throws Exception {
         logger.info("获取所有关注的用户，appCode:{},postId:{}",appCode,postId);
+        StringBuilder response = new StringBuilder();
         String result = postService.queryAllConcernUsers(appCode,postId);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -223,10 +228,11 @@ public class PostController {
     public String allPraiseUser(@RequestParam(value="appCode",required=true) String appCode,
                                 @RequestParam(value="postId",required=true) String postId) throws Exception {
         logger.info("获取所有点赞的用户，appCode:{},postId:{}",appCode,postId);
+        StringBuilder response = new StringBuilder();
         String result = postService.queryAllPraiseUsers(appCode,postId);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -241,10 +247,11 @@ public class PostController {
     public String allReplyPostInfo(@RequestParam(value="appCode",required=true) String appCode,
                                    @RequestParam(value="postId",required=true) String postId) throws Exception {
         logger.info("获取所有回帖信息，appCode:{},postId:{}",appCode,postId);
+        StringBuilder response = new StringBuilder();
         String result = postService.queryAllReplyPostInfos(appCode,postId);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -259,10 +266,11 @@ public class PostController {
     public String concernUser(@RequestParam(value="appCode",required=true) String appCode,
                               @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
         logger.info("根据帖子的标志获取帖子下关注的用户，appCode:{},postId:{},pageNum:{}",new Object[]{appCode,postId,pageNum});
+        StringBuilder response = new StringBuilder();
         String result = postService.queryConcernUsersByPage(appCode, postId, pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -277,10 +285,11 @@ public class PostController {
     public String praiseUser(@RequestParam(value="appCode",required=true) String appCode,
                              @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
         logger.info("获根据帖子的标志获取帖子下点赞的用户，appCode:{},postId:{},pageNum:{}",new Object[]{appCode,postId,pageNum});
+        StringBuilder response = new StringBuilder();
         String result = postService.queryPraiseUsersByPage(appCode, postId, pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -295,10 +304,11 @@ public class PostController {
     public String replyPostInfo(@RequestParam(value="appCode",required=true) String appCode,
                                 @RequestParam(value="postId",required=true) String postId,Integer pageNum) throws Exception {
         logger.info("根据帖子的标志获取回帖信息，appCode:{},postId:{},pageNum",new Object[]{appCode,postId,pageNum});
+        StringBuilder response = new StringBuilder();
         String result = postService.queryReplyPostInfosByPage(appCode, postId, pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -312,10 +322,11 @@ public class PostController {
     @ResponseBody
     public String myPost(@RequestParam(value="appCode",required=true) String appCode,
                          @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
+        StringBuilder response = new StringBuilder();
         String result = postService.myPost(appCode,userCode,pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.SUCCESS);
-        response.setResult(result);
-        return gson.toJson(response);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -347,5 +358,11 @@ public class PostController {
             response.setResult(false+"");
             return gson.toJson(response);
         }
+    }
+
+    private void createResponseHeader(StringBuilder response, BaseCodeEnum baseCodeEnum){
+        response.append("{\"code\":" + baseCodeEnum.getCode()+",");
+        response.append("\"msg\":\"" + baseCodeEnum.getMsg()+"\",");
+        response.append("\"detail\":\"" + baseCodeEnum.getDetail()+"\",");
     }
 }

@@ -3,6 +3,7 @@ package com.eden.fans.bs.web.controller;
 import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.domain.enu.*;
 import com.eden.fans.bs.domain.mvo.PostInfo;
+import com.eden.fans.bs.domain.response.BaseCodeEnum;
 import com.eden.fans.bs.domain.response.PostErrorCodeEnum;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.service.IPostService;
@@ -60,10 +61,11 @@ public class PostManageController {
     @RequestMapping(value = "/approvalPost", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String approvalPost(@RequestParam(value="appCode",required=true) String appCode,Integer pageNum) throws Exception {
-            String postString = postService.queryApprovalPost(appCode, pageNum);
-            ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.GET_APPROVAL_POST_SUCCESS);
-            response.setResult(postString);
-            return gson.toJson(response);
+        StringBuilder response = new StringBuilder();
+        String result = postService.queryApprovalPost(appCode, pageNum);
+        createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
@@ -162,6 +164,12 @@ public class PostManageController {
             response.put(type.name(),type.getName());
         }
         return gson.toJson(response);
+    }
+
+    private void createResponseHeader(StringBuilder response, BaseCodeEnum baseCodeEnum){
+        response.append("{\"code\":" + baseCodeEnum.getCode()+",");
+        response.append("\"msg\":\"" + baseCodeEnum.getMsg()+"\",");
+        response.append("\"detail\":\"" + baseCodeEnum.getDetail()+"\",");
     }
 
 }

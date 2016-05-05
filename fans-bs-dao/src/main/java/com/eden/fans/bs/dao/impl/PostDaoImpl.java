@@ -707,10 +707,10 @@ public class PostDaoImpl implements IPostDao {
                 stringBuilder.append("\"postId\":\"" + object.get("_id") + "\",");
                 stringBuilder.append("\"userCode\":\"" + object.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + object.get("title") + "\",");
-                stringBuilder.append("\"imgs\":\"" + object.get("imgs") + "\",");
-                stringBuilder.append("\"videos\":\"" + object.get("videos") + "\",");
-                stringBuilder.append("\"musics\":\"" + object.get("musics") + "\",");
-                stringBuilder.append("\"others\":\"" + object.get("others") + "\",");
+                stringBuilder.append("\"imgs\":" + ((null == dbObject.get("imgs"))?"[]":dbObject.get("imgs")) + ",");
+                stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) +  ",");
+                stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) +  ",");
+                stringBuilder.append("\"others\":" + ((null == dbObject.get("others"))?"[]":dbObject.get("others")) +  ",");
                 stringBuilder.append("\"createDate\":\"" + formatter.format((Date)object.get("createDate")) + "\"");
                 stringBuilder.append("},");
             }
