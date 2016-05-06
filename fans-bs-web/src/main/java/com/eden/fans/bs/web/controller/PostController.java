@@ -83,10 +83,10 @@ public class PostController {
     public String obtainPostByPage(@RequestParam(value="appCode",required=true) String appCode,
                                    @RequestParam(value="postType",required=true) PostType postType,Integer pageNum) throws Exception {
         StringBuilder response = new StringBuilder();
-        String result = postService.obtainPostByPage(appCode,postType.getValue(),pageNum);
+        String result = postService.obtainPostByPage(appCode, postType.getValue(), pageNum);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
-        response.append("\"result\":" + result +"}");
-        return gson.toJson(response);
+        response.append("\"result\":" + result + "}");
+        return response.toString();
     }
 
     /**
@@ -102,7 +102,7 @@ public class PostController {
     public String obtainPostByUser(@RequestParam(value="appCode",required=true) String appCode,
                                    @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
         StringBuilder response = new StringBuilder();
-        String result = postService.obtainPostByUserCode(appCode,userCode,pageNum);
+        String result = postService.obtainPostByUserCode(appCode, userCode, pageNum);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
         response.append("\"result\":" + result +"}");
         return response.toString();
@@ -119,7 +119,7 @@ public class PostController {
     @ResponseBody
     public String obtainPostById(@RequestParam(value="appCode",required=true) String appCode,String postId) throws Exception {
         StringBuilder response = new StringBuilder();
-        String result = postService.obtainPostById(appCode,postId);
+        String result = postService.obtainPostById(appCode, postId);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
         response.append("\"result\":" + result +"}");
         return response.toString();
@@ -185,7 +185,7 @@ public class PostController {
     @ResponseBody
     public String replyPost(@RequestParam(value="appCode",required=true) String appCode,
                             @RequestParam(value="postId",required=true) String postId, ReplyPostInfo replyPostInfo) throws Exception {
-        logger.info("回帖信息，appCode:{},postId:{},replyPostInfo:{}",new Object[]{appCode,postId,gson.toJson(replyPostInfo)});
+        logger.info("回帖信息，appCode:{},postId:{},replyPostInfo:{}", new Object[]{appCode, postId, gson.toJson(replyPostInfo)});
         boolean result = postService.updateReplyInfos(appCode,postId,replyPostInfo);
         ServiceResponse<Boolean> response = null;
         if(result){
@@ -212,7 +212,7 @@ public class PostController {
         StringBuilder response = new StringBuilder();
         String result = postService.queryAllConcernUsers(appCode,postId);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
-        response.append("\"result\":" + result +"}");
+        response.append("\"result\":" + result + "}");
         return response.toString();
     }
 
@@ -229,7 +229,7 @@ public class PostController {
                                 @RequestParam(value="postId",required=true) String postId) throws Exception {
         logger.info("获取所有点赞的用户，appCode:{},postId:{}",appCode,postId);
         StringBuilder response = new StringBuilder();
-        String result = postService.queryAllPraiseUsers(appCode,postId);
+        String result = postService.queryAllPraiseUsers(appCode, postId);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
         response.append("\"result\":" + result +"}");
         return response.toString();
@@ -248,7 +248,7 @@ public class PostController {
                                    @RequestParam(value="postId",required=true) String postId) throws Exception {
         logger.info("获取所有回帖信息，appCode:{},postId:{}",appCode,postId);
         StringBuilder response = new StringBuilder();
-        String result = postService.queryAllReplyPostInfos(appCode,postId);
+        String result = postService.queryAllReplyPostInfos(appCode, postId);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
         response.append("\"result\":" + result +"}");
         return response.toString();
@@ -323,7 +323,7 @@ public class PostController {
     public String myPost(@RequestParam(value="appCode",required=true) String appCode,
                          @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
         StringBuilder response = new StringBuilder();
-        String result = postService.myPost(appCode,userCode,pageNum);
+        String result = postService.myPost(appCode, userCode, pageNum);
         createResponseHeader(response,PostErrorCodeEnum.SUCCESS);
         response.append("\"result\":" + result +"}");
         return response.toString();
