@@ -438,7 +438,7 @@ public class PostServiceImpl implements IPostService {
     private void postHead2String(StringBuilder stringBuilder,List<DBObject> dbObjectList,Long postCount,boolean myPost,Map<String,Map<String,String>> postHeadMap){
         if(null != dbObjectList && dbObjectList.size()>0){
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            stringBuilder.append("{ \"data\":[");
+            stringBuilder.append("{\"data\":[");
             for(DBObject dbObject:dbObjectList){
                 String postId = dbObject.get("_id") + "";
                 Map<String,String> map = postHeadMap.get(postId);
@@ -450,7 +450,7 @@ public class PostServiceImpl implements IPostService {
                 stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) +  ",");
                 stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) +  ",");
                 stringBuilder.append("\"others\":" + ((null == dbObject.get("others"))?"[]":dbObject.get("others")) +  ",");
-                stringBuilder.append("\"headImgUrl\":" + map.get("headImgUrl") + ",");
+                stringBuilder.append("\"headImgUrl\":\"" + map.get("headImgUrl") + "\",");
                 stringBuilder.append("\"userName\":\"" + map.get("userName") + "\",");
                 stringBuilder.append("\"replyCount\":" + map.get("replyCount") + ",");
                 stringBuilder.append("\"praiseCount\":" + map.get("praiseCount") + ",");
