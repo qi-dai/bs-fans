@@ -58,7 +58,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String obtainPostByPage(String appCode,Integer postType,Integer pageNum) {
         StringBuilder stringBuilder = new StringBuilder();
-        Long postCount = postDao.countPost(appCode);
+        Long postCount = postDao.countPost(appCode,postType);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;
@@ -446,6 +446,7 @@ public class PostServiceImpl implements IPostService {
                 stringBuilder.append("\"postId\":\"" + postId + "\",");
                 stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+                stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
                 stringBuilder.append("\"imgs\":" + ((null == dbObject.get("imgs"))?"[]":dbObject.get("imgs")) + ",");
                 stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) +  ",");
                 stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) +  ",");

@@ -43,8 +43,9 @@ public class PostDaoImpl implements IPostDao {
      * @return
      */
     @Override
-    public Long countPost(String appCode) {
+    public Long countPost(String appCode,Integer postType) {
         DBObject query = new BasicDBObject("status",PostStatus.NORMAL.getValue());
+        query.put("type",postType);
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).count(query);
     }
 
@@ -110,7 +111,7 @@ public class PostDaoImpl implements IPostDao {
 
         DBObject object = new BasicDBObject();
         object.put("status", PostStatus.NORMAL.getValue());
-        object.put("type",postType.intValue());
+        object.put("type",postType);
 
         DBObject sort = new BasicDBObject();
         sort.put("onTop",-1);
@@ -119,6 +120,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("title", 1);
         keys.put("userCode", 1);
+        keys.put("content", 1);
         keys.put("imgs", 1);
         keys.put("videos", 1);
         keys.put("musics", 1);
@@ -126,7 +128,7 @@ public class PostDaoImpl implements IPostDao {
         keys.put("createDate", 1);
         DBCursor cursor = null;
         try{
-            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(new BasicDBObject(),keys).sort(sort).skip(pageNum * 10).limit(10);
+            cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(object, keys).sort(sort).skip(pageNum * 10).limit(10);
             while (cursor.hasNext()){
                 DBObject dbObject =  cursor.next();
                 dbObjectList.add(dbObject);
@@ -160,6 +162,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("content", 1);
         keys.put("userCode", 1);
         keys.put("imgs", 1);
         keys.put("videos", 1);
