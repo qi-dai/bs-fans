@@ -4,16 +4,14 @@ import com.eden.fans.bs.common.util.GsonUtil;
 import com.eden.fans.bs.common.util.MongoConstant;
 import com.eden.fans.bs.dao.IPostDao;
 import com.eden.fans.bs.domain.enu.*;
-import com.eden.fans.bs.domain.mvo.PostInfo;
 import com.eden.fans.bs.domain.svo.ConcernUser;
 import com.eden.fans.bs.domain.svo.PraiseUser;
 import com.eden.fans.bs.domain.svo.ReplyPostInfo;
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +22,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -367,6 +364,9 @@ public class PostDaoImpl implements IPostDao {
         this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findAndModify(id,newReplyCount);
 
         Map<String,Object> replyPostMap = new LinkedHashMap<String, Object>(4);
+        replyPostMap.put("userCode",replyPostInfo.getUserCode());
+        replyPostMap.put("userName",replyPostInfo.getUserName());
+        replyPostMap.put("headImgUrl", replyPostInfo.getHeadImgUrl());
         replyPostMap.put("title",replyPostInfo.getTitle());
         replyPostMap.put("medias",replyPostInfo.getMedias());
         replyPostMap.put("content", replyPostInfo.getContent());
@@ -839,8 +839,11 @@ public class PostDaoImpl implements IPostDao {
             } else {
                 stringBuilder.append("\"medias\":[],");
             }
-            stringBuilder.append("\"replyTime\":\"" + formatter.format((Date) dbObject.get("replyTime")) + "\",");
-            stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\"");
+            stringBuilder.append("\"userCode\":" + dbObject.get("content") + ",");
+            stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
+            stringBuilder.append("\"headImgUrl\":\"" + dbObject.get("headImgUrl") + "\",");
+            stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
+            stringBuilder.append("\"replyTime\":\"" + formatter.format((Date) dbObject.get("replyTime")) + "\"");
             stringBuilder.append("},");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
