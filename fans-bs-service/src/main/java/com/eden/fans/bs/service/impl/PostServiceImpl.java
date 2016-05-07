@@ -58,7 +58,7 @@ public class PostServiceImpl implements IPostService {
     @Override
     public String obtainPostByPage(String appCode,Integer postType,Integer pageNum) {
         StringBuilder stringBuilder = new StringBuilder();
-        Long postCount = postDao.countPost(appCode);
+        Long postCount = postDao.countPost(appCode,postType);
 
         if(null == pageNum || pageNum < 0)
             pageNum = 0;

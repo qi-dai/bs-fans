@@ -27,7 +27,7 @@ public interface IPostDao {
      * @param appCode
      * @return
      */
-    public Long countPost(String appCode);
+    public Long countPost(String appCode,Integer postType);
 
     /**
      * 根据用户标识统计帖子的数目
