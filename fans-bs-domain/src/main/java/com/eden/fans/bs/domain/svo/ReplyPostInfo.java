@@ -11,6 +11,21 @@ import java.util.List;
 public class ReplyPostInfo implements Serializable{
 
     /**
+     * userCode
+     */
+    private Long userCode;
+
+    /**
+     * 用户名
+     */
+    private String userName;
+
+    /**
+     * 用户头像
+     */
+    private String headImgUrl;
+
+    /**
      * 回帖的标题（类似XX回复XX）
      */
     private String title;
@@ -29,6 +44,30 @@ public class ReplyPostInfo implements Serializable{
      * 回帖时间
      */
     private Date replyTime;
+
+    public Long getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(Long userCode) {
+        this.userCode = userCode;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
 
     public String getTitle() {
         return title;
