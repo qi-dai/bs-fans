@@ -123,6 +123,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("title", 1);
         keys.put("userCode", 1);
+        keys.put("content", 1);
         keys.put("imgs", 1);
         keys.put("videos", 1);
         keys.put("musics", 1);
@@ -164,6 +165,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject keys = new BasicDBObject();
         keys.put("_id", 1);
         keys.put("title", 1);
+        keys.put("content", 1);
         keys.put("userCode", 1);
         keys.put("imgs", 1);
         keys.put("videos", 1);
