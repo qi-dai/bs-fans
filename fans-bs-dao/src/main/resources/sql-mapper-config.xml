@@ -21,5 +21,6 @@
         <mapper resource="sqlmap/mysql/UserPraiseMapper.xml" />
         <mapper resource="sqlmap/mysql/UserMediaMapper.xml" />
         <mapper resource="sqlmap/mysql/DictoryMapper.xml" />
+        <mapper resource="sqlmap/mysql/UserScoreMapper.xml" />
     </mappers>
  </configuration>
