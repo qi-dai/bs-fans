@@ -69,6 +69,8 @@
             <mvc:exclude-mapping path="/post/obtainPostByPage"/>
             <mvc:exclude-mapping path="/post/replyPostInfo"/>
             <mvc:exclude-mapping path="/post/allReplyPostInfo"/>
+            <mvc:exclude-mapping path="/post/obtainPostById"/>
+            <mvc:exclude-mapping path="/post/replyPostInfo"/>
             <mvc:exclude-mapping path="/user/resetPwd"/>
             <bean id="securityInterceptor" class="com.eden.fans.bs.web.interceptor.SecurityInterceptor"></bean>
         </mvc:interceptor>

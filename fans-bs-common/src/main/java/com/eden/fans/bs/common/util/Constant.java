@@ -10,7 +10,7 @@ public class Constant {
         public static final String VALID_TIME = "VALID_TIME_";
         public static final int VALID_CODE_TIMES=300;//验证码超时
         public static final String TOKEN = "TOKEN_";//登录认证token
-        public static final String PWD_ERROR_NUM = "PWD_ERROR_NUM_";//密码错误次数
+        public static final String PWD_ERROR_NUM = "PWD_ERROR_NUM";//密码错误次数
         // 用户、帖子维度操作相关 开始（主要是缓存分页相关的total）
 
         /**
