@@ -326,7 +326,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryConcernUsersByPage(String appCode, String postId, Integer pageNum) {
-        Long postCount = postDao.countConcernUsers(appCode, postId);
+        Long postCount = postDao.countConcernUsers(postId,appCode);
         if(null == pageNum || pageNum<0)
             pageNum = 0;
         return postDao.queryConcernUsersByPage(appCode, postId, pageNum,postCount);
@@ -341,7 +341,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryPraiseUsersByPage(String appCode, String postId, Integer pageNum) {
-        Long postCount = postDao.countPraiseUsers(appCode, postId);
+        Long postCount = postDao.countPraiseUsers(postId,appCode);
 
         if(null == pageNum || pageNum<0)
             pageNum = 0;
@@ -357,7 +357,7 @@ public class PostServiceImpl implements IPostService {
      */
     @Override
     public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum) {
-        Long postCount = postDao.countReplyPostInfos(appCode,postId);
+        Long postCount = postDao.countReplyPostInfos(postId, appCode);
         if(null == pageNum || pageNum<0)
             pageNum = 0;
         return postDao.queryReplyPostInfosByPage(appCode, postId, pageNum,postCount);
