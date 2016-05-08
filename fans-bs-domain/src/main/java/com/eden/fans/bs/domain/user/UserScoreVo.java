@@ -11,6 +11,14 @@ public class UserScoreVo implements Serializable {
     private String scoreType;
     private int score;
 
+    public UserScoreVo(){}
+
+    public UserScoreVo(Long userCode,String scoreType,int score){
+        this.score = score;
+        this.userCode = userCode;
+        this.scoreType = scoreType;
+    }
+
     public Long getId() {
         return id;
     }
