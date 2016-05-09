@@ -10,10 +10,12 @@ public class Constant {
         public static final String VALID_TIME = "VALID_TIME_";
         public static final int VALID_CODE_TIMES=300;//验证码超时
         public static final String TOKEN = "TOKEN_";//登录认证token
+        public static final String USER_INFO = "USER_";//redis缓存用户资料
         public static final String PWD_ERROR_NUM = "PWD_ERROR_NUM";//密码错误次数
         public static final String SCORE_NUM_PRAISE = "SCORE_NUM_1_";//点赞累计次数
         public static final String SCORE_NUM_UNPRAISE = "SCORE_NUM_-1_";//取消点赞累计次数
         public static final String SCORE_NUM_REPLY = "SCORE_NUM_2_";//回复
+        public static final String LOGIN_PERDAY_NUM = "PERDAY_NUM_";//每日登录次数
 
 
 

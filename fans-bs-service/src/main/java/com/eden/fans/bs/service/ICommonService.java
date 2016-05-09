@@ -33,4 +33,9 @@ public interface ICommonService {
      * 根据用户userCode集合批量查询用户基础信息
      * */
     public List<UserVo> qryUserVosBatch(Long... userCode );
+
+    /**
+     * 根据用户userCode查询用户基础信息
+     * */
+    public UserVo qryUserVo(String phone);
 }

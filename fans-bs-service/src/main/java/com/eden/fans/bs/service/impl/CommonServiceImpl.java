@@ -96,9 +96,9 @@ public class CommonServiceImpl implements ICommonService{
 
             /**3.用户存在，拿到密码再次加密MD5，验证*/
             if(!userVo.getPassword().equals(MD5Util.md5(loginRequest.getPassword(), Constant.MD5_KEY))){
-                //2.1 密码验证不匹配，记录错误次数+1到redis，两天后登录限制失效。
+                //2.1 密码验证不匹配，记录错误次数+1到redis，24小时候清零重新计算，登录限制失效。
                 errorCount++;
-                redisCache.set(loginRequest.getPhone()+Constant.REDIS.PWD_ERROR_NUM,String.valueOf(errorCount));
+                redisCache.set(loginRequest.getPhone()+Constant.REDIS.PWD_ERROR_NUM,String.valueOf(errorCount),86400);
                 loginResponse.setErrorNum(errorCount);
                 loginResponse.setIsSuccess(false);
                 serviceResponse = new ServiceResponse<LoginResponse>(UserErrorCodeEnum.LOGIN_CHECK_FAILED);
@@ -156,6 +156,15 @@ public class CommonServiceImpl implements ICommonService{
     public List<UserVo> qryUserVosBatch(Long... userCodes ){
         List<UserVo> rtnUserVos = userDao.qryUserVosBatch(userCodes);
         return rtnUserVos;
+    }
+
+    @Override
+    public UserVo qryUserVo(String phone) {
+        UserVo userVo = redisCache.get(phone, UserVo.class);
+        if(userVo==null){
+            userVo = userDao.qryUserVoByPhone(phone);
+        }
+        return userVo;
     }
 
 }

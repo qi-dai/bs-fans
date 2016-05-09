@@ -3,12 +3,19 @@ package com.eden.fans.bs.service.impl;
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.dao.IUserScoreDao;
 import com.eden.fans.bs.dao.util.RedisCache;
+import com.eden.fans.bs.domain.request.ScoreRecordRequest;
+import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.domain.response.SystemErrorEnum;
 import com.eden.fans.bs.domain.user.UserScoreVo;
+import com.eden.fans.bs.domain.user.UserVo;
+import com.eden.fans.bs.service.ICommonService;
 import com.eden.fans.bs.service.IUserScoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
 
 /**
  * Created by Administrator on 2016/5/7.
@@ -21,6 +28,10 @@ public class UserScoreServiceImpl implements IUserScoreService {
     private RedisCache redisCache;
     @Autowired
     private IUserScoreDao userScoreDao;
+
+    @Autowired
+    private ICommonService commonService;
+
 
     /**
      * 积分种类及计算规则
@@ -44,6 +55,7 @@ public class UserScoreServiceImpl implements IUserScoreService {
     public void addUserScore(Long userCode, int scoreType) {
         try{
             UserScoreVo userScoreVo = new UserScoreVo(userCode,String.valueOf(scoreType),0);
+            boolean flag = false;
             switch(scoreType) {
                 case 1:
                     buildScoreVoByPraise(userScoreVo);
@@ -53,47 +65,76 @@ public class UserScoreServiceImpl implements IUserScoreService {
                     break;
                 case 2:
                     userScoreVo.setScore(2);
+                    flag= true;
                     break;
                 case -2:
                     userScoreVo.setScore(-2);
+                    flag= true;
                     break;
                 case 3:
                     userScoreVo.setScore(5);
+                    flag= true;
                     break;
                 case -3:
                     userScoreVo.setScore(-5);
+                    flag= true;
                     break;
                 case 4:
                     userScoreVo.setScore(3);
+                    flag= true;
                     break;
                 case -4:
                     userScoreVo.setScore(-3);
+                    flag= true;
                     break;
                 case 5:
                     userScoreVo.setScore(2);
+                    flag= true;
                     break;
                 case 6:
                     buildScoreVoByReply(userScoreVo);
                     break;
                 case 7:
                     userScoreVo.setScore(2);
+                    flag= true;
                     break;
                 case -7:
                     userScoreVo.setScore(-2);
+                    flag= true;
                     break;
                 case 8:
                     userScoreVo.setScore(2);
+                    flag= true;
                     break;
                 case -8:
                     userScoreVo.setScore(-2);
+                    flag= true;
+                    break;
+                case 9:
+                    buildScoreVoByLogin(userScoreVo);
                     break;
             }
-            if(userScoreVo.getScore()!=0){
-                userScoreDao.addUserScore(userScoreVo);
-            }
+            if(flag) userScoreDao.addUserScore(userScoreVo);
         }catch (Exception e){
             logger.error("增加用户人气积分出错",e);
         }
+    }
+
+    @Override
+    public ServiceResponse<Boolean> addScoreRecord(ScoreRecordRequest scoreRecordRequest) {
+        ServiceResponse<Boolean> response = null;
+        try{
+            if(scoreRecordRequest.getScoreType()==9){
+                UserVo userVo = commonService.qryUserVo(scoreRecordRequest.getPhone());
+                scoreRecordRequest.getPhone();
+                addUserScore(userVo.getUserCode(),9);
+            }
+            response = new ServiceResponse<Boolean>(true);
+        }catch (Exception e){
+            logger.error("计算人气积分出错，",e);
+            response = new ServiceResponse<Boolean>(SystemErrorEnum.FAILED);
+        }
+        return response;
     }
 
     private void buildScoreVoByPraise(UserScoreVo userScoreVo){
@@ -149,6 +190,25 @@ public class UserScoreServiceImpl implements IUserScoreService {
             }
         }catch(Exception e){
             logger.error("计算取消点赞积分出错，",e);
+        }
+    }
+
+    private void buildScoreVoByLogin(UserScoreVo userScoreVo){
+        try{
+            //获取用户当天登录次数
+            String num = redisCache.get(Constant.REDIS.LOGIN_PERDAY_NUM+userScoreVo.getUserCode());
+            if (num==null){
+                userScoreVo.setScore(2);
+                userScoreDao.addUserScore(userScoreVo);
+                //设置缓存
+                Calendar calendar = Calendar.getInstance();
+                int hours = calendar.get(Calendar.HOUR_OF_DAY)*60*60; // 时
+                int minutes = calendar.get(Calendar.MINUTE)*60;    // 分
+                int seconds = calendar.get(Calendar.SECOND);    // 秒
+                redisCache.set(Constant.REDIS.LOGIN_PERDAY_NUM+userScoreVo.getUserCode(), String.valueOf(1),86400-hours-minutes-seconds);
+            }
+        }catch(Exception e){
+            logger.error("计算点赞积分出错，",e);
         }
     }
 

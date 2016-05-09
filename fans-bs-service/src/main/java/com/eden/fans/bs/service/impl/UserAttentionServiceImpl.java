@@ -2,6 +2,7 @@ package com.eden.fans.bs.service.impl;
 
 import com.eden.fans.bs.dao.IAttentionDao;
 import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.dao.IUserScoreDao;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.AttentionRequest;
@@ -11,8 +12,10 @@ import com.eden.fans.bs.domain.response.AttentionErrorCodeEnum;
 import com.eden.fans.bs.domain.response.AttentionResponse;
 import com.eden.fans.bs.domain.response.ServiceResponse;
 import com.eden.fans.bs.domain.user.AttentionVo;
+import com.eden.fans.bs.domain.user.UserScoreVo;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.IUserAttentionService;
+import com.eden.fans.bs.service.IUserScoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,8 @@ public class UserAttentionServiceImpl implements IUserAttentionService{
     private RedisCache redisCache;
     @Autowired
     private IUserDao userDao;//用户信息
+    @Autowired
+    private IUserScoreService userScoreService;//积分服务类
     /**
      * 设置/取消关注
      * */
@@ -65,6 +70,12 @@ public class UserAttentionServiceImpl implements IUserAttentionService{
                 if(!updateFlag){
                     setAttentionResponse = new ServiceResponse<Boolean>(AttentionErrorCodeEnum.UPDATE_ATTENTION_FAILED);
                     return setAttentionResponse;
+                }
+                try {
+                    //4.计算积分，插入积分记录
+                    userScoreService.addUserScore(userInfo.getUserCode(), attentionRequest.getAttentionFlag() ? 1 : -1);
+                }catch (Exception e){
+                    logger.error("取消关注或关注用户，计算积分，插入记录失败！");
                 }
                 setAttentionResponse = new ServiceResponse<Boolean>(true);
                 setAttentionResponse.setDetail("关注/取消关注成功!");
