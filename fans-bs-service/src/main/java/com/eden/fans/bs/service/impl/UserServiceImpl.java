@@ -155,12 +155,6 @@ public class UserServiceImpl implements IUserService {
     public ServiceResponse<Boolean> updateUserInfo(UserVo userVo) {
         ServiceResponse<Boolean> updateUserResponse = null;
         try{
-            if(userVo.getUserName()!=null){
-                userVo.setUserName(new String((userVo.getUserName()).getBytes("iso-8859-1"),"utf-8"));
-            }
-            if(userVo.getSignature()!=null){
-                userVo.setSignature(new String((userVo.getSignature()).getBytes("iso-8859-1"),"utf-8"));
-            }
             boolean updateFlag = userDao.updateUserRecord(userVo,"UserMapper.updateUserInfo");
             if(!updateFlag){
                 updateUserResponse = new ServiceResponse<Boolean>(UserErrorCodeEnum.USER_NOTEXIST_ERROR);
