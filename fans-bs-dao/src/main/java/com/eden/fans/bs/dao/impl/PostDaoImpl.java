@@ -652,7 +652,6 @@ public class PostDaoImpl implements IPostDao {
     @Override
     public String queryReplyPostInfosByPage(String appCode, String postId, Integer pageNum,Long total) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("[");
         DBObject queryObject = new BasicDBObject("_id",new ObjectId(postId));
         DBObject keys = new BasicDBObject();
         keys.put("replyPostInfos", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));//new Integer[]{0,3}
@@ -821,32 +820,34 @@ public class PostDaoImpl implements IPostDao {
         stringBuilder.append("{\"data\":[");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         BasicDBList dbList = (BasicDBList)replyDBObject.get("replyPostInfos");
-        for(Object obj:dbList){
-            BasicDBObject dbObject = (BasicDBObject)obj;
-            stringBuilder.append("{");
-            stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
+        if(null != dbList && dbList.size()>0){
+            for(Object obj:dbList){
+                BasicDBObject dbObject = (BasicDBObject)obj;
+                stringBuilder.append("{");
+                stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
 
-            BasicDBList mediaList = (BasicDBList)dbObject.get("medias");
-            if(null != mediaList && mediaList.size()>0){
-                StringBuilder mediaBuilder = new StringBuilder();
-                mediaBuilder.append("[");
-                for (Object meidaObj:mediaList){
-                    mediaBuilder.append((String)meidaObj + ",");
+                BasicDBList mediaList = (BasicDBList)dbObject.get("medias");
+                if(null != mediaList && mediaList.size()>0){
+                    StringBuilder mediaBuilder = new StringBuilder();
+                    mediaBuilder.append("[");
+                    for (Object meidaObj:mediaList){
+                        mediaBuilder.append((String)meidaObj + ",");
+                    }
+                    mediaBuilder.deleteCharAt(mediaBuilder.length());
+                    mediaBuilder.append("]");
+                    stringBuilder.append("\"medias\":\"" + mediaBuilder + "\",");
+                } else {
+                    stringBuilder.append("\"medias\":[],");
                 }
-                mediaBuilder.deleteCharAt(mediaBuilder.length());
-                mediaBuilder.append("]");
-                stringBuilder.append("\"medias\":\"" + mediaBuilder + "\",");
-            } else {
-                stringBuilder.append("\"medias\":[],");
+                stringBuilder.append("\"userCode\":" + dbObject.get("content") + ",");
+                stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
+                stringBuilder.append("\"headImgUrl\":\"" + dbObject.get("headImgUrl") + "\",");
+                stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
+                stringBuilder.append("\"replyTime\":\"" + formatter.format((Date) dbObject.get("replyTime")) + "\"");
+                stringBuilder.append("},");
             }
-            stringBuilder.append("\"userCode\":" + dbObject.get("content") + ",");
-            stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
-            stringBuilder.append("\"headImgUrl\":\"" + dbObject.get("headImgUrl") + "\",");
-            stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
-            stringBuilder.append("\"replyTime\":\"" + formatter.format((Date) dbObject.get("replyTime")) + "\"");
-            stringBuilder.append("},");
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         stringBuilder.append("],\"total\":"+ (null == total?dbList.size():total) +"}");
     }
 
