@@ -13,7 +13,7 @@ public class UserDetailResponse {
     private int postNum;
     private int imgNum;
     private int videoNum;
-    private boolean isAtt;
+    private boolean attFlag;
 
     public UserVo getUserVo() {
         return userVo;
@@ -71,11 +71,11 @@ public class UserDetailResponse {
         this.videoNum = videoNum;
     }
 
-    public boolean isAtt() {
-        return isAtt;
+    public boolean getAttFlag() {
+        return attFlag;
     }
 
-    public void setIsAtt(boolean isAtt) {
-        this.isAtt = isAtt;
+    public void setAttFlag(boolean attFlag) {
+        this.attFlag = attFlag;
     }
 }

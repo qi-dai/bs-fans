@@ -51,7 +51,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServiceResponse<RegisterReponse> addUserInfo(RegisterRequest registerRequest) {
-        ServiceResponse<RegisterReponse> serviceResponse = null;
+        ServiceResponse<RegisterReponse> serviceResponse;
         try{
             //0.校验验证码
             /**输入密码错误次数达到3次，需校验验证码*/
@@ -81,7 +81,7 @@ public class UserServiceImpl implements IUserService {
             if(flag){
                 UserVo addedUser = userDao.qryUserVoByPhone(userVo.getPhone());
                 RegisterReponse registerReponse = new RegisterReponse();
-                registerReponse.setIsSuccess(flag);
+                registerReponse.setIsSuccess(true);
                 registerReponse.setUserCode(addedUser.getUserCode());
                 serviceResponse.setResult(registerReponse);
                 serviceResponse.setDetail("注册成功！");
@@ -97,7 +97,7 @@ public class UserServiceImpl implements IUserService {
      * */
     @Override
     public ServiceResponse<Boolean> addUserInfoDetail(UserVo userVo){
-        ServiceResponse<Boolean> serviceResponse = null;
+        ServiceResponse<Boolean> serviceResponse;
         try{
             //1.查询用户是否已存在
             UserVo userVo1 = userDao.qryUserVo(userVo);
@@ -159,7 +159,7 @@ public class UserServiceImpl implements IUserService {
                         }
                         attentionVo.setFromUserCode(qryUserInfoRequest.getUserCode());
                         int isAtt = attentionDao.jadgeUserRelation(attentionVo);
-                        detailResponse.setIsAtt(isAtt > 0 ? true : false);
+                        detailResponse.setAttFlag(isAtt > 0 ? true : false);
                     }
                 }catch (Exception e){
                     logger.error("查询用户之间是否已关注出错，",e);
@@ -194,7 +194,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServiceResponse<Boolean> updateUserInfo(UserVo userVo) {
-        ServiceResponse<Boolean> updateUserResponse = null;
+        ServiceResponse<Boolean> updateUserResponse;
         try{
             boolean updateFlag = userDao.updateUserRecord(userVo,"UserMapper.updateUserInfo");
             if(!updateFlag){
@@ -215,7 +215,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public ServiceResponse<Boolean> setAdminRole(SetAdminRequest setAdminRequest) {
-        ServiceResponse<Boolean> updateUserResponse = null;
+        ServiceResponse<Boolean> updateUserResponse;
         Long targetUserCode = setAdminRequest.getUserCode();
         try{
             //1.获取管理员信息
