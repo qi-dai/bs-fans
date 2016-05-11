@@ -839,7 +839,7 @@ public class PostDaoImpl implements IPostDao {
                 } else {
                     stringBuilder.append("\"medias\":[],");
                 }
-                stringBuilder.append("\"userCode\":" + dbObject.get("content") + ",");
+                stringBuilder.append("\"userCode\":" + dbObject.get("userCode") + ",");
                 stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
                 stringBuilder.append("\"headImgUrl\":\"" + dbObject.get("headImgUrl") + "\",");
                 stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
