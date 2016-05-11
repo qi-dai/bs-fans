@@ -27,7 +27,10 @@
         )
     </insert>
 
-    <!-- 根据用户编积分计算用户等级 -->
-
+    <!-- 实时统计用户贡献人气 -->
+    <select id="sumUserScore"  parameterType="java.lang.Long" resultType="int">
+        select sum(score) from user_score
+        where user_code = #{userCode,jdbcType=BIGINT}
+    </select>
 
 </mapper>

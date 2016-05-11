@@ -1,15 +1,15 @@
 package com.eden.fans.bs.service.impl;
 
+import cn.jpush.api.report.UsersResult;
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.common.util.UserUtils;
-import com.eden.fans.bs.dao.IOperUserDao;
-import com.eden.fans.bs.dao.IUserCountDao;
-import com.eden.fans.bs.dao.IUserDao;
+import com.eden.fans.bs.dao.*;
 import com.eden.fans.bs.dao.util.RedisCache;
 import com.eden.fans.bs.domain.Page;
 import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.response.*;
+import com.eden.fans.bs.domain.user.AttentionVo;
 import com.eden.fans.bs.domain.user.UserCountVo;
 import com.eden.fans.bs.domain.user.UserOperVo;
 import com.eden.fans.bs.domain.user.UserVo;
@@ -41,6 +41,12 @@ public class UserServiceImpl implements IUserService {
     private ICommonService commonService;
     @Autowired
     private IUserCountDao userCountDao;
+    @Autowired
+    private IUserScoreDao userScoreDao;
+    @Autowired
+    private IAttentionDao attentionDao;
+    @Autowired
+    private IPostDao postDao;
 
 
     @Override
@@ -115,24 +121,59 @@ public class UserServiceImpl implements IUserService {
 
 
     @Override
-    public ServiceResponse<UserDetailResponse> qryUserInfo(Long userCode) {
+    public ServiceResponse<UserDetailResponse> qryUserInfo(QryUserInfoRequest qryUserInfoRequest) {
         ServiceResponse<UserDetailResponse> qryUserResponse = null;
         try{
             //1.查询用户基本信息
             UserVo userVoQry = new UserVo();
-            userVoQry.setUserCode(Long.valueOf(userCode));
+            userVoQry.setUserCode(qryUserInfoRequest.getUserCode());
             UserVo userVoResult = userDao.qryUserVo(userVoQry);
             UserDetailResponse detailResponse = new UserDetailResponse();
             detailResponse.setUserVo(userVoResult);
             if(userVoResult!=null){
                 //查询其他详细,1.查询关注用户，2.查询被关注用户,3.贡献人气，4.帖子数量，5.相册照片数量，6.视频数量，7.是否已关注
-                UserCountVo userCountVo = userCountDao.qryUserCountVo(userVoQry);
-                if(userCountVo!=null){
-                    detailResponse.setAttentionNum(userCountVo.getAttentionNum());//Todo
-                    detailResponse.setFansNum(userCountVo.getFansNum());//Todo
-                    detailResponse.setImgNum(userCountVo.getImgNum());
-                    detailResponse.setVideoNum(userCountVo.getVideoNum());
+                try{
+                    UserCountVo userCountVo = userCountDao.qryUserCountVo(userVoQry);
+                    if(userCountVo!=null){
+                        detailResponse.setAttentionNum(userCountVo.getAttentionNum());
+                        detailResponse.setFansNum(userCountVo.getFansNum());
+                        detailResponse.setImgNum(userCountVo.getImgNum());
+                        detailResponse.setVideoNum(userCountVo.getVideoNum());
+                    }
+                }catch(Exception e){
+                    logger.error("查询用户关注数量、多媒体数量出错",e);
                 }
+                try {
+                    //查询贡献人气
+                    detailResponse.setContributeScore(userScoreDao.sumUserScore(qryUserInfoRequest.getUserCode()));
+                }catch (Exception e){
+                    logger.error("查询用户贡献人气出错",e);
+                }
+                try {
+                    //查询用户之间是否已关注,先判断是否是登录用户，是就查，不是直接默认没关注。
+                    if (qryUserInfoRequest.getPhone() != null) {
+                        AttentionVo attentionVo = new AttentionVo();
+                        UserVo userInfo = getUserVo(qryUserInfoRequest.getPhone());
+                        if (userInfo != null) {
+                            attentionVo.setToUserCode(userInfo.getUserCode());
+                        }
+                        attentionVo.setFromUserCode(qryUserInfoRequest.getUserCode());
+                        int isAtt = attentionDao.jadgeUserRelation(attentionVo);
+                        detailResponse.setIsAtt(isAtt > 0 ? true : false);
+                    }
+                }catch (Exception e){
+                    logger.error("查询用户之间是否已关注出错，",e);
+                }
+
+                try{
+                    Long postCount = postDao.countPostByUserCode(qryUserInfoRequest.getAppCode(), qryUserInfoRequest.getUserCode());
+                    if(postCount!=null){
+                        detailResponse.setPostNum(postCount.intValue());
+                    }
+                }catch(Exception e){
+                    logger.error("用户帖子总数查询出错",e);
+                }
+
             }else{
                 qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_ERROR);
                 return qryUserResponse;
@@ -141,10 +182,10 @@ public class UserServiceImpl implements IUserService {
             qryUserResponse.setResult(detailResponse);
             qryUserResponse.setDetail("查询用户详细信息成功");
         }catch (NumberFormatException e){
-            logger.error("userCode:{}转换Integer出错！{}",userCode,e);
+            logger.error("userCode:{}转换Integer出错！{}",qryUserInfoRequest.getUserCode(),e);
             qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.USER_CODE_ERROR);
         }catch (Exception e){
-            logger.error("查询{}用户信息出错！{}",userCode,e);
+            logger.error("查询{}用户信息出错！{}",qryUserInfoRequest.getUserCode(),e);
             qryUserResponse = new ServiceResponse<UserDetailResponse>(UserErrorCodeEnum.QRY_USER_INFO_FAILED);
         }
 
@@ -364,4 +405,13 @@ public class UserServiceImpl implements IUserService {
         }
         return response;
     }
+
+    @Override
+    public UserVo getUserVo(String phone) {
+        UserVo  userInfo = redisCache.get(phone, UserVo.class);
+        if (userInfo==null) userInfo =userDao.qryUserVoByPhone(phone);
+        return userInfo;
+    }
+
+
 }

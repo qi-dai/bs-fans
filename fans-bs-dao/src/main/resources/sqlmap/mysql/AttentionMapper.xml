@@ -37,7 +37,7 @@
     <select id="countFromAtt"  parameterType="java.lang.Long" resultType="int">
         select count(0) from user_attention
         where att_type = '0'
-        and from_user_code = #{fromUserCode,jdbcType=VARCHAR}
+        and from_user_code = #{userCode,jdbcType=VARCHAR}
     </select>
     <!-- 分页查询用户关注列表 -->
     <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="java.util.Map">
@@ -53,7 +53,7 @@
     <select id="countToAtt"  parameterType="java.lang.Long" resultType="int">
         select count(0) from user_attention
         where att_type = '0'
-        and to_user_code = #{toUserCode,jdbcType=BIGINT}
+        and to_user_code = #{userCode,jdbcType=BIGINT}
     </select>
     <!-- 分页查询用户粉丝列表 -->
     <select id="qryToAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
@@ -81,6 +81,10 @@
             and to_user_code = #{toUserCode,jdbcType=BIGINT}
     </update>
 
-
+    <!-- 查询是否已关注目标用户 -->
+    <select id="jadgeUserRelation"  parameterType="com.eden.fans.bs.domain.user.AttentionVo" resultType="int">
+        SELECT COUNT(0) FROM user_attention where from_user_code = #{fromUserCode,jdbcType=BIGINT}
+            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+    </select>
 
 </mapper>

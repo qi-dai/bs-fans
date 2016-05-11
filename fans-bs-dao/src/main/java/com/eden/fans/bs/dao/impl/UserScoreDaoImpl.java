@@ -14,4 +14,9 @@ public class UserScoreDaoImpl extends BaseDao<UserScoreVo> implements IUserScore
     public boolean addUserScore(UserScoreVo userScoreVo) {
         return super.insert("UserScoreMapper.addUserScoreVo",userScoreVo);
     }
+
+    @Override
+    public int sumUserScore(Long userCode) {
+        return super.queryCountForObject("UserScoreMapper.sumUserScore",userCode);
+    }
 }

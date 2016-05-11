@@ -66,7 +66,7 @@ public class ManagerInterceptor implements HandlerInterceptor {
                         redisCache.set(phone,userVo);
                     }
                 }
-                if(userVo!=null&&"02".equals(userVo.getUserRole())){
+                if(userVo!=null&&("02".equals(userVo.getUserRole())||"03".equals(userVo.getUserRole()))){
                     return true;
                 }
             }

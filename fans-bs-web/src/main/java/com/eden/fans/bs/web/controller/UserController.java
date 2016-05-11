@@ -2,10 +2,7 @@ package com.eden.fans.bs.web.controller;
 
 import com.eden.fans.bs.common.util.UserGsonUtil;
 import com.eden.fans.bs.domain.annotation.ReqCheckParam;
-import com.eden.fans.bs.domain.request.AttentionRequest;
-import com.eden.fans.bs.domain.request.QryFromAttRequest;
-import com.eden.fans.bs.domain.request.QryToAttRequest;
-import com.eden.fans.bs.domain.request.ResetPwdRequest;
+import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.user.UserVo;
 import com.eden.fans.bs.service.IUserAttentionService;
 import com.eden.fans.bs.service.IUserService;
@@ -31,8 +28,8 @@ public class UserController {
 
     @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
-    public String qryUserInfo(UserVo userVo) throws Exception {
-        return UserGsonUtil.getGson().toJson(userService.qryUserInfo(userVo.getUserCode()));
+    public String qryUserInfo(QryUserInfoRequest qryUserInfoRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(userService.qryUserInfo(qryUserInfoRequest));
     }
 
     @RequestMapping(value = "/updateUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")

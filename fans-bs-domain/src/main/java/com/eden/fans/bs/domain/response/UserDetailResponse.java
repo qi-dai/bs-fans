@@ -13,6 +13,7 @@ public class UserDetailResponse {
     private int postNum;
     private int imgNum;
     private int videoNum;
+    private boolean isAtt;
 
     public UserVo getUserVo() {
         return userVo;
@@ -68,5 +69,13 @@ public class UserDetailResponse {
 
     public void setVideoNum(int videoNum) {
         this.videoNum = videoNum;
+    }
+
+    public boolean isAtt() {
+        return isAtt;
+    }
+
+    public void setIsAtt(boolean isAtt) {
+        this.isAtt = isAtt;
     }
 }

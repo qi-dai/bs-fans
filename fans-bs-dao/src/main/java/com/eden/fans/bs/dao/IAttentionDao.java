@@ -14,4 +14,5 @@ public interface IAttentionDao {
     public List<AttentionVo> qryAttentions(String sqlId,Map<String,Object> params);
     public boolean updateAttention(AttentionVo attentionVo);
     public int countAttentions(String sqlId,Long qryUserCode);
+    public int jadgeUserRelation(AttentionVo attentionVo);
 }

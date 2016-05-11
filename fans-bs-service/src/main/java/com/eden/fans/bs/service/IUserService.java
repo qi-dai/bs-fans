@@ -26,7 +26,7 @@ public interface IUserService {
     /**
      * 根据用户编号查询详细资料
      * */
-    public ServiceResponse<UserDetailResponse> qryUserInfo(Long userCode);
+    public ServiceResponse<UserDetailResponse> qryUserInfo(QryUserInfoRequest qryUserInfoRequest);
 
     /**
      * 根据用户编号更新详细资料
@@ -58,5 +58,10 @@ public interface IUserService {
      * 分页查询用户列表
      * */
     public ServiceResponse<UserListResponse> qryUserVos(QryUserListRequest qryUserListRequest);
+
+    /**
+     * 获取用户基本信息-内部公共服务
+     * */
+    public UserVo getUserVo(String phone);
 
 }

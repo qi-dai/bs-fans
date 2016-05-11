@@ -7,4 +7,5 @@ import com.eden.fans.bs.domain.user.UserScoreVo;
  */
 public interface IUserScoreDao {
     public boolean addUserScore(UserScoreVo userScoreVo);
+    public int sumUserScore(Long userCode);
 }

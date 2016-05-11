@@ -30,8 +30,13 @@ public class AttentionDaoImpl extends BaseDao<AttentionVo> implements IAttention
         return super.queryForList(sqlId,params);
     }
 
-    public int countAttentions(String sqlId,Long qryUserCode){
-        return super.queryCountForObject(sqlId,qryUserCode);
+    public int countAttentions(String sqlId,Long userCode){
+        return super.queryCountForObject(sqlId,userCode);
+    }
+
+    @Override
+    public int jadgeUserRelation(AttentionVo attentionVo) {
+        return super.queryCountForObject("AttentionMapper.jadgeUserRelation",attentionVo);
     }
 
     @Override
