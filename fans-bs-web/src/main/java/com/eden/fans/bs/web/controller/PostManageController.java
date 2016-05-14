@@ -45,10 +45,11 @@ public class PostManageController {
     @ResponseBody
     public String approvedPost(@RequestParam(value="appCode",required=true) String appCode,
                                @RequestParam(value="userCode",required=true) Long userCode,Integer pageNum) throws Exception {
-        String postString = postService.queryApprovedPost(appCode,userCode,pageNum);
-        ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.GET_APPROVED_POST_SUCCESS);
-        response.setResult(postString);
-        return gson.toJson(response);
+        StringBuilder response = new StringBuilder();
+        String result = postService.queryApprovedPost(appCode,userCode,pageNum);
+        createResponseHeader(response,PostErrorCodeEnum.GET_APPROVED_POST_SUCCESS);
+        response.append("\"result\":" + result +"}");
+        return response.toString();
     }
 
     /**
