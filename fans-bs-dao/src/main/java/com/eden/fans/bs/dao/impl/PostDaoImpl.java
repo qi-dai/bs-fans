@@ -745,6 +745,11 @@ public class PostDaoImpl implements IPostDao {
         keys.put("_id", 1);
         keys.put("title", 1);
         keys.put("userCode", 1);
+        keys.put("content", 1);
+        keys.put("imgs",1);
+        keys.put("videos",1);
+        keys.put("musics",1);
+        keys.put("others",1);
         keys.put("createDate", 1);
         dbObjectList = userPostObject(appCode,pageNum,query,keys,sort);
 
