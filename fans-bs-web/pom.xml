@@ -187,19 +187,19 @@
 			<properties>
 				<list.bs.environment>production</list.bs.environment>
 				<fans.bs.log.path>/export/Logs/fans.bs.com/</fans.bs.log.path>
-				<fans.bs.mysql.jdbc.url>jdbc:mysql://192.168.146.77:3306/plist_admin?useUnicode=true&amp;amp;characterEncoding=UTF-8</fans.bs.mysql.jdbc.url>
+				<fans.bs.mysql.jdbc.url>jdbc:mysql://127.0.0.1:3306/bs_fans?useUnicode=true&amp;amp;characterEncoding=UTF-8</fans.bs.mysql.jdbc.url>
 				<fans.bs.datasource.username>root</fans.bs.datasource.username>
-				<fans.bs.datasource.password></fans.bs.datasource.password>
+				<fans.bs.datasource.password>bs0520</fans.bs.datasource.password>
 				<fans.bs.datasource.minEvictableIdleTimeMillis>120000</fans.bs.datasource.minEvictableIdleTimeMillis>
 				<fans.bs.datasource.timeBetweenEvictionRunsMillis>60000</fans.bs.datasource.timeBetweenEvictionRunsMillis>
 				<fans.bs.datasource.maxIdle>10</fans.bs.datasource.maxIdle>
 				<fans.bs.datasource.minIdle>5</fans.bs.datasource.minIdle>
 				<!-- Mongo -->
 				<fans.bs.mongo.host>127.0.0.1</fans.bs.mongo.host>
-				<fans.bs.mongo.port>8090</fans.bs.mongo.port>
-				<fans.bs.mongo.username>salesanalysis_rw</fans.bs.mongo.username>
-				<fans.bs.mongo.password>salesanalysis_pwd</fans.bs.mongo.password>
-				<fans.bs.mongo.db>salesanalysis</fans.bs.mongo.db>
+				<fans.bs.mongo.port>27017</fans.bs.mongo.port>
+				<fans.bs.mongo.username>bsfans</fans.bs.mongo.username>
+				<fans.bs.mongo.password>bs@0520</fans.bs.mongo.password>
+				<fans.bs.mongo.db>bsfans</fans.bs.mongo.db>
 				<fans.bs.mongo.connectionsPerHost>8</fans.bs.mongo.connectionsPerHost>
 				<fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>5</fans.bs.mongo.threadsAllowedToBlockForConnectionMultiplier>
 				<fans.bs.mongo.maxWaitTime>1500</fans.bs.mongo.maxWaitTime>
@@ -215,7 +215,7 @@
 				<fans.bs.redis.testOnBorrow>true</fans.bs.redis.testOnBorrow>
 				<fans.bs.redis.host>127.0.0.1</fans.bs.redis.host>
 				<fans.bs.redis.port>6379</fans.bs.redis.port>
-				<fans.bs.redis.password></fans.bs.redis.password>
+				<fans.bs.redis.password>bsfansredis</fans.bs.redis.password>
 			</properties>
 		</profile>
 	</profiles>
