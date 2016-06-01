@@ -478,13 +478,15 @@ public class PostServiceImpl implements IPostService {
         stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
         stringBuilder.append("\"content\":\"" + dbObject.get("content") + "\",");
         stringBuilder.append("\"userCode\":\"" + dbObject.get("userCode") + "\",");
-        stringBuilder.append("\"userName\":\"" + dbObject.get("userName") + "\",");
+        stringBuilder.append("\"userName\":\"" + userDao.qryUserVoByUserCode(Long.valueOf(dbObject.get("userCode")+"")).getUserName() + "\",");
 
         stringBuilder.append("\"imgs\":" + ((null == dbObject.get("imgs"))?"[]":dbObject.get("imgs")) + ",");
         stringBuilder.append("\"videos\":" + ((null == dbObject.get("videos"))?"[]":dbObject.get("videos")) + ",");
         stringBuilder.append("\"musics\":" + ((null == dbObject.get("musics"))?"[]":dbObject.get("musics")) + ",");
         stringBuilder.append("\"others\":" + ((null == dbObject.get("others"))?"[]":dbObject.get("others")) + ",");
 
+        stringBuilder.append("\"praiseCount\":" + dbObject.get("praiseCount") + ",");
+        stringBuilder.append("\"replyCount\":" + dbObject.get("replyCount") + ",");
         stringBuilder.append("\"createDate\":\"" + format.format((Date)dbObject.get("createDate")) + "\",");
         stringBuilder.append("\"publishDate\":\"" + format.format((Date)dbObject.get("publishDate")) + "\",");
         stringBuilder.append("\"status\":\"" + PostStatus.getName((Integer)dbObject.get("status")) + "\",");

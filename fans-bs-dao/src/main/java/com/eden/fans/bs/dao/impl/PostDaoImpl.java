@@ -211,6 +211,9 @@ public class PostDaoImpl implements IPostDao {
         keys.put("publishDate",1);
         keys.put("status",1);
         keys.put("level",1);
+        keys.put("praiseCount",1);
+        keys.put("concernCount",1);
+        keys.put("replyCount",1);
 
         return this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findOne(new BasicDBObject("_id",new ObjectId(postId)),keys);
     }
