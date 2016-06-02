@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.2.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FootBallScoreMapper">
+    <resultMap id="userScoreVoMap" type="com.eden.fans.bs.domain.user.FootBallScoreVo">
+        <result column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="score" property="score" jdbcType="BIGINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="allColumn">
+        select id,name,score,create_time
+        from football_record
+    </sql>
+
+
+
+    <!-- 插入用户关注记录-->
+    <insert id="addFootBallScoreVo"
+            parameterType="com.eden.fans.bs.domain.user.FootBallScoreVo">
+        INSERT INTO football_record(
+        name,phone,score
+        ) VALUES
+        (
+        #{name,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},#{score,jdbcType=TINYINT}
+        )
+    </insert>
+
+    <!-- 实时统计用户贡献人气 -->
+    <select id="qryFootBallScores"  parameterType="java.lang.Long" resultType="com.eden.fans.bs.domain.user.FootBallScoreVo">
+        select id,name,phone,score,create_time from football_record order by score desc
+    </select>
+
+</mapper>

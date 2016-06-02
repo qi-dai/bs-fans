@@ -22,5 +22,6 @@
         <mapper resource="sqlmap/mysql/UserMediaMapper.xml" />
         <mapper resource="sqlmap/mysql/DictoryMapper.xml" />
         <mapper resource="sqlmap/mysql/UserScoreMapper.xml" />
+        <mapper resource="sqlmap/mysql/FootBallScoreMapper.xml" />
     </mappers>
  </configuration>

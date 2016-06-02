@@ -1,6 +1,9 @@
 package com.eden.fans.bs.web.controller;
 
+import com.eden.fans.bs.dao.IFootBallScoreDao;
+import com.eden.fans.bs.domain.request.FootBallScoreAddReq;
 import com.eden.fans.bs.domain.response.ServiceResponse;
+import com.eden.fans.bs.domain.user.FootBallScoreVo;
 import com.eden.fans.bs.service.ICommonService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
@@ -29,6 +32,8 @@ public class CommonController {
 
 	@Autowired
 	private ICommonService commonService;
+	@Autowired
+	private IFootBallScoreDao footBallScoreDao;
 
 	private static Gson gson = new Gson();
 
@@ -177,5 +182,28 @@ public class CommonController {
 		arr[4]=100024l;
 		return gson.toJson(commonService.qryUserVosBatch(arr));
 	}
+
+	/**批量获取用户信息*/
+	@RequestMapping(value = "/addFootBallScore", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String addFootBallScore(FootBallScoreAddReq footBallScoreAddReq){
+		FootBallScoreVo footBallScoreVo = new FootBallScoreVo();
+		footBallScoreVo.setName(footBallScoreAddReq.getName());
+		footBallScoreVo.setPhone(footBallScoreAddReq.getPhone());
+		footBallScoreVo.setScore(footBallScoreAddReq.getScore());
+		boolean flag =footBallScoreDao.addFootBallScore(footBallScoreVo);
+		ServiceResponse<Boolean> response = new ServiceResponse<Boolean>(flag);
+		return gson.toJson(response);
+	}
+
+	/**批量获取用户信息*/
+	@RequestMapping(value = "/qryFootBallScores", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String qryFootBallScores(){
+		java.util.List<FootBallScoreVo> list =footBallScoreDao.qryFootBallScores();
+		ServiceResponse<java.util.List<FootBallScoreVo>> response = new ServiceResponse<java.util.List<FootBallScoreVo>>(list);
+		return gson.toJson(response);
+	}
+
 
 }

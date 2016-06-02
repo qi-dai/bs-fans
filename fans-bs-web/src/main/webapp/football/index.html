@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<meta property="fb:app_id" content="112406602201164" />
+	<meta property="og:image" content="" />
+	<meta property="og:title" content="我就是我" />
+	<meta property="og:type" content="website" />
+	<title>够胆你就来，魔兽大战足球，挑战成功即可免费获得电影票！</title>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="js/sound.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/lufylegend-1.9.7.min.js"></script>
+	<script type="text/javascript" src="js/lufylegend.ui-0.10.0.min.js"></script>
+	<script src="js/Main.js" type="text/javascript"></script>
+	<style>
+		#frdlist{display:none;background-color: rgba(255, 255, 255, 0.8);
+			width: 50%;
+			height: 250px;
+			box-shadow: 0px 4px 5px #CCC;
+			border-radius: 6px;margin-left: 5px;
+			margin-top: 15px;}
+		#myimg{width:12%;float: left;margin:10px;box-shadow: 0px 4px 5px #CCC;}
+		.r45{transform: rotate(45deg);-webkit-transform: rotate(45deg);}
+		.hidden{display:none;}
+		.aliForPc {display:none;position:fixed;top:5px;right:5px;width:200px;height:230px;overflow:hidden;z-index:99999;}
+		.submit {top: 40%; display: block; font-size:100px;position: absolute;z-index:999; width: 50%; height: 7%; left: 24%;background-color:transparent;border-style:none;}
+	</style>
+</head>
+<body style="width:640px;margin:0px auto;padding:0px 0px 0px 0px;background-color:#000000;">
+<div class='aliForPc'><img src='forpc.png'/></div>
+<div id="legend"> 「我就是我」加载中....</div>
+<link href="css/sprite.css" rel="stylesheet" type="text/css"/>
+<div style="position: absolute;right:0px;top:0px;max-width: 640px;margin: 0 auto;left: 0;height:1px;">
+	<img id="myimg" src="images/174232_1708.png" onclick="toggleFrdlist();"/>
+	<div style="margin:10px 0 0 0;">
+		我就是我<br/>人品值：999	</div>
+	<div id="frdlist">
+		<ul>
+			<li style="float:left;" class="page1 ">
+				<a href="./" target="_blank">
+					<img src="images/174232_1708.png" style="width:22%;margin:10px;float:left;"/>
+				</a>
+				<div style="margin:10px 0 0 0;">
+					xxx<br/>人品：			</div>
+			</li>		</ul>
+		<div style="display:block;text-align: center;position: absolute;top: 275px;left: 15%;">
+			<span class="icon icon-arrow-left" onclick="prev();"></span>
+			<font>1/1</font>
+			<span class="icon icon-arrow-right" onclick="next();"></span>
+		</div>
+	</div>
+</div>
+<script>
+	var curPage = 1,totalPage = 1;
+	function toggleFrdlist(){
+		$('#frdlist').slideToggle();
+		$('#myimg').toggleClass('r45');
+	}
+	function prev(){
+		if(curPage<=1)return;
+		$('.page'+curPage).hide();
+		curPage--;
+		$('font').text(curPage+"/"+totalPage);
+		$('.page'+curPage).show();
+	}
+	function next(){
+		if(curPage>=totalPage)return;
+		$('.page'+curPage).hide();
+		curPage++;
+		$('font').text(curPage+"/"+totalPage);
+		$('.page'+curPage).show();
+	}
+</script>
+<script src="js/dcagent.min.js"></script>
+<script type="text/javascript">
+</script>
+<script>
+	var scores=0;
+	var getHostUrl = function(){
+		var __url__ = window.location.protocol + "//" ;
+		__url__ += window.location.hostname ;
+		__url__ += !!window.location.port ? ":"+ window.location.port : "";
+		__url__ += "";
+		return __url__;
+	};
+	var url = getHostUrl();
+	function showshare(){
+		document.getElementById("share").style.display = "";
+	};
+	function clickMore(){
+		// Play68.goHome();
+	};
+
+	function dp_share(a,b){
+		if(a>0){
+		}
+	};
+	function showRules(){
+		document.getElementById("gameRulesDiv").style.display = "";
+	}
+	function hideButton(){
+		document.getElementById("rulesBtnDiv").style.display = "none";
+		document.getElementById("seePaiMingBtnDiv").style.display = "none";
+	}
+	function showPaiming(){
+		$.ajax({
+			async : false,
+			type: "post",
+			url: url+"/fans-bs-web/common/qryFootBallScores",
+			data : {
+			},
+			dataType : "json",
+			success: function($json){
+				if($json.code==0){
+					var html="<table>";
+					for(var i=0;i<$json.result.length;i++){
+						var scoreRecord= $json.result[i];
+						html+= "<tr><td>玩家："+scoreRecord.name+" </td><td>电话："+scoreRecord.phone+" </td><td>得分:"+scoreRecord.score+"</td></tr>";
+					}
+
+					html +="</table>";
+					document.getElementById("scores").innerHTML  = html;
+					document.getElementById("paimingDiv").style.display = "";
+				}
+			},
+			error: function($json){
+				//请求出错处理
+				alert("查询得分排行榜失败！"+$json.msg);
+			}
+		});
+	}
+
+	function hideGameReules(){
+		document.getElementById("gameRulesDiv").style.display = "none";
+	}
+	function hidePaiming(){
+		document.getElementById("paimingDiv").style.display = "none";
+	}
+	function showUserInput(userScore){
+		document.getElementById("writeUserDiv").style.display = "";
+		scores=userScore;
+	}
+
+	function saveScore(){
+		var userName = document.getElementById("userName").value;
+		var userPhone = document.getElementById("phone").value;
+		if(userName==""){
+			alert("请填写正确姓名！");
+			return;
+		}
+		if(userPhone==""){
+			alert("请填写正确电话！");
+			return;
+		}
+		if(userScore<10000){
+			alert("您的得分不够，请继续努力！");
+			document.getElementById("writeUserDiv").style.display = "none";
+			document.getElementById("userName").value = "";
+			document.getElementById("phone").value = "";
+			return;
+		}
+		$.ajax({
+			async : false,
+			type: "post",
+			url: url+"/fans-bs-web/common/addFootBallScore",
+			data : {
+				name : userName,
+				phone :userPhone,
+				score : scores
+			},
+			dataType : "json",
+			success: function($json){
+				if($json.code==0){
+					alert("保存玩家得分成功！");
+				}
+				document.getElementById("writeUserDiv").style.display = "none";
+				document.getElementById("userName").value = "";
+				document.getElementById("phone").value = "";
+				scores = -1;
+			},
+			error: function($json){
+				//请求出错处理
+				alert("保存玩家得分失败！"+$json.msg);
+			}
+		});
+	}
+
+</script>
+<div id=share style="display: none">
+
+</div>
+<div id="rulesBtnDiv" style="position:absolute;display: block;top: 20%;left: 2%;" onclick="showRules();">
+	<img id="myimg" src="images/game_rules.png" onclick="showRules();" style="width: 20%; height: 20%;"/>
+</div>
+<div id="seePaiMingBtnDiv" style="position:absolute;display: block;top: 50%;left: 2%;" onclick="showPaiming();">
+	<img id="myimg" src="images/see_paiming.png" onclick="showPaiming();" style="width: 20%; height: 20%;"/>
+</div>
+<div id="gameRulesDiv" style="position:absolute;display: none;top: 0px;width:100%;height:100%;">
+	<img id="gameRulesImg" src="gamerules.jpg" style="width: 100%; height: 100%;" onclick="hideGameReules();"/>
+</div>
+
+<div id="paimingDiv" style="position:absolute;display: none;background:url(beijing.jpg); top: 0px;left:0%;width:100%;height:100%;" onclick="hidePaiming();">
+		<span id="scores" style="color:red;vertical-align:middle;">
+		</span>
+</div>
+
+<div id="writeUserDiv" style="position:absolute;z-index:99;display: none;background-size: 100% auto; top: 0px;width:100%;height:100%;">
+	<img id="gameRulesImg" src="write_user_info.jpg" style="width: 100%; height: 100%;"/>
+	<input id="userName" type="text" value="" style="top: 18%; display: block; position: absolute; left: 29%; width: 50%; height: 5%;"/>
+	<input id="phone" type="text" value="" style="top: 25%; display: block; position: absolute; width: 50%; height: 5%; left: 28%;"/>
+
+	<div>
+		<input id="saveScore" type="button" value=" &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp" class="submit" onclick="saveScore();"/>
+	</div>
+	<input id="userScore" type="hidden" value=""/>
+</div>
+
+</body>
+</html>
