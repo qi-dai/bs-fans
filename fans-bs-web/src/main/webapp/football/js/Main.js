@@ -907,7 +907,7 @@ function 游戏结束(){
 	俺.overLayer.addChild(more);
 	scores = 苦运行角色.distanceObj.value;
 	more.addEventListener(LMouseEvent.MOUSE_UP, function(){
-		if(scores>10000){
+		if(scores>10){
 			//弹出填写姓名电话号码框
 			showUserInput(苦运行角色.distanceObj.value);
 		}else{
