@@ -366,7 +366,7 @@ public class PostDaoImpl implements IPostDao {
         DBObject id = new BasicDBObject("_id",new ObjectId(postId));
         this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).findAndModify(id,newReplyCount);
 
-        Map<String,Object> replyPostMap = new LinkedHashMap<String, Object>(4);
+        Map<String,Object> replyPostMap = new LinkedHashMap<String, Object>(7);
         replyPostMap.put("userCode",replyPostInfo.getUserCode());
         replyPostMap.put("userName",replyPostInfo.getUserName());
         replyPostMap.put("headImgUrl", replyPostInfo.getHeadImgUrl());
@@ -657,7 +657,7 @@ public class PostDaoImpl implements IPostDao {
         StringBuilder stringBuilder = new StringBuilder();
         DBObject queryObject = new BasicDBObject("_id",new ObjectId(postId));
         DBObject keys = new BasicDBObject();
-        keys.put("replyPostInfos", new BasicDBObject("$slice", new Integer[]{pageNum*10, 10}));//new Integer[]{0,3}
+        keys.put("replyPostInfos", new BasicDBObject("$slice", new Integer[]{pageNum*(-10), 10}));//new Integer[]{0,3}
         DBCursor cursor = null;
         try{
             cursor = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).find(queryObject, keys);
@@ -829,8 +829,8 @@ public class PostDaoImpl implements IPostDao {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         BasicDBList dbList = (BasicDBList)replyDBObject.get("replyPostInfos");
         if(null != dbList && dbList.size()>0){
-            for(Object obj:dbList){
-                BasicDBObject dbObject = (BasicDBObject)obj;
+            for(int i=dbList.size()-1;i>=0;i--){
+                BasicDBObject dbObject = (BasicDBObject)dbList.get(i);
                 stringBuilder.append("{");
                 stringBuilder.append("\"title\":\"" + dbObject.get("title") + "\",");
 
