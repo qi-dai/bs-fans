@@ -12,8 +12,6 @@ public class BottleTest {
         while(turnBeerInfo.bottleNum>=2||turnBeerInfo.coverNum>=4){
             compute(turnBeerInfo,++i);
         }
-        System.out.println("总共喝过"+turnBeerInfo.drinkSumNum+"瓶啤酒，还剩下"+turnBeerInfo.bottleNum+"个瓶子，"
-                +turnBeerInfo.getCoverNum()+"个瓶盖");
     }
 
     public static void buyBeer(TurnBeerInfo turnBeerInfo,int money){
@@ -24,8 +22,6 @@ public class BottleTest {
     }
 
     public static void compute(TurnBeerInfo turnBeerInfo,int i){
-        System.out.println("第"+i+"次兑换，您目前总共喝过"+turnBeerInfo.drinkSumNum+"瓶啤酒，还剩下"+turnBeerInfo.bottleNum+"个瓶子，"
-                +turnBeerInfo.getCoverNum()+"个瓶盖");
         if(turnBeerInfo.bottleNum/2>0){
             int bottleTurnNum =turnBeerInfo.bottleNum/2;//用瓶子兑换了bottleTurnNum瓶酒，又产生了bottleTurnNum个瓶子，bottleTurnNum个盖子
             turnBeerInfo.drinkSumNum += bottleTurnNum;//1：累加喝过啤酒总数
