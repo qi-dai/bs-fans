@@ -359,6 +359,7 @@ public class PostDaoImpl implements IPostDao {
      * @param replyPostInfo
      * @return
      */
+
     @Override
     public boolean updateReplyInfos(String appCode, String postId, ReplyPostInfo replyPostInfo) {
         // 更新回帖数
