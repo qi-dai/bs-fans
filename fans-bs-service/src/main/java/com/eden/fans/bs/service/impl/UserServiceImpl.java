@@ -224,6 +224,7 @@ public class UserServiceImpl implements IUserService {
             //2.更新用户角色
             UserVo adminUser = new UserVo();
             adminUser.setUserCode(setAdminRequest.getUserCode());
+            adminUser.setPhone(setAdminRequest.getPhone());
             if(setAdminRequest.getType()){
                 adminUser.setUserRole("02");//管理员编码02
             }else{

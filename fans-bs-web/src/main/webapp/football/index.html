@@ -32,12 +32,12 @@
 </head>
 <body style="width:640px;margin:0px auto;padding:0px 0px 0px 0px;background-color:#000000;">
 <div class='aliForPc'><img src='forpc.png'/></div>
-<div id="legend"> 「我就是我」加载中....</div>
+<div id="legend"> 「魔兽VS足球」加载中....</div>
 <link href="css/sprite.css" rel="stylesheet" type="text/css"/>
 <div style="position: absolute;right:0px;top:0px;max-width: 640px;margin: 0 auto;left: 0;height:1px;">
 	<img id="myimg" src="images/174232_1708.png" onclick="toggleFrdlist();"/>
 	<div style="margin:10px 0 0 0;color:#ff0000;">
-		我就是我<br/>人品值：999	</div>
+		魔兽VS足球<br/>人品值：999	</div>
 	<div id="frdlist">
 		<ul>
 			<li style="float:left;" class="page1 ">
@@ -102,11 +102,16 @@
 
 	function hideButton(){
 		$("#gameRulesDiv").hide();
-		$("#paimingDiv").hide();
+		$("#scoreRecords").hide();
 		$("#indexBtn").hide();
 		$("#writeUserDiv").hide();
 	}
+	var count =0;
 	function showPaiming(){
+		if(count%2==1){
+			count++;
+			return;
+		}
 		$.ajax({
 			async : false,
 			type: "post",
@@ -117,6 +122,7 @@
 			success: function($json){
 				if($json.code==0){
 					var html="<table>";
+					html+= "<tr><td>得分>2000分排行榜</td><td></td></tr>";
 					for(var i=0;i<$json.result.length;i++){
 						var scoreRecord= $json.result[i];
 						html+= "<tr><td>玩家："+scoreRecord.name+" </td><td>得分:"+scoreRecord.score+"</td></tr>";
@@ -124,7 +130,7 @@
 
 					html +="</table>";
 					document.getElementById("scores").innerHTML  = html;
-					document.getElementById("paimingDiv").style.display = "";
+					document.getElementById("scoreRecords").style.display = "";
 				}
 			},
 			error: function($json){
@@ -137,9 +143,7 @@
 	function hideGameReules(){
 		document.getElementById("gameRulesDiv").style.display = "none";
 	}
-	function hidePaiming(){
-		document.getElementById("paimingDiv").style.display = "none";
-	}
+
 	function showUserInput(userScore){
 		document.getElementById("writeUserDiv").style.display = "";
 		scores=userScore;
@@ -152,11 +156,19 @@
 			alert("请填写正确姓名！");
 			return;
 		}
+		if(userName.length>30){
+			alert("输入名字太长，请重新输入！");
+			return;
+		}
 		if(userPhone==""||userName=="undifined"){
 			alert("请填写正确电话！");
 			return;
 		}
-		if(scores<300){
+		if(userPhone.length>20){
+			alert("输入电话太长，请重新输入！");
+			return;
+		}
+		if(scores<10){
 			alert("您的得分不够，请继续努力！");
 			document.getElementById("writeUserDiv").style.display = "none";
 			$("#userName").val("");
@@ -198,12 +210,14 @@
 			$("#gameRulesDiv").hide();
 			$("#indexBtn").hide();
 			游戏开始();
+			bgmusic.replay();
 		});
 
 		$("#beginBtn2").on("tap",function(){
 			$("#gameRulesDiv").hide();
 			$("#indexBtn").hide();
 			游戏开始();
+			bgmusic.replay();
 		});
 		$("#rulesBtn").on("click",function(){
 			$("#gameRulesDiv").show();
@@ -215,7 +229,8 @@
 
 		$("#userNameSpan").html("<input id='userName' type='text' value='' style='width: 70%;'/>");
 		$("#phoneSpan").html("<input id='phone' type='text' value=''  style='width: 70%;'/>");
-		$("#saveScoreSpan").html("<input id='saveScore' type='button' value='提   交' onclick='saveScore();' style='background:#43CD80'/>");
+		$("#saveScoreSpan").html("<input id='saveScore' type='button' value='' style='background-image:url(images/submit.png);background-size:cover;width:55%; border:none;' onclick='saveScore();'/>");
+		$("#goBackSpan").html("<input id='goback' type='button' value='' style='background-image:url(images/goback.jpg);background-size:cover;width:55%; border:none;'/>");
 
 		$("#saveScore").on("tap",function(){
 			saveScore();
@@ -226,9 +241,11 @@
 		$("#phone").on("tap",function(){
 			$("#phone").focus();
 		});
-		$("#paimingDiv").on("tap",function(){
-			$("#paimingDiv").hide();
-		})
+		$("#goback").on("tap",function(){
+			document.getElementById("scoreRecords").style.display = "none";
+			$("#scoreRecords").hide();
+			count++;
+		});
 	});
 </script>
 <div id=share style="display: none">
@@ -238,14 +255,19 @@
 	<div id="beginGame1" style="position:absolute;top: 85%;left: 33%;display:block;width:100px;height:40px;background:url(begin_btn.png);background-size:cover;"></div>
 </div>
 
-<div id="paimingDiv" style="position:absolute;display: block;background:url(beijing.jpg);background-size:cover; top: 0px;left:0%;width:100%;height:100%;" onclick="hidePaiming();">
-		<span id="scores" style="color:red;vertical-align:middle;">
-		</span>
+<div id="scoreRecords" style="position:absolute;display: none;background:url(beijing.jpg);background-size:cover;width:100%;height:100%;">
+	<span id="scores" style="color:red;vertical-align:middle;">
+	</span>
+	<div style="position: absolute;top: 80%;left: 10%;width: 80%;">
+		<ul style="list-style:none;">
+			<li style="margin-top:10%;margin-left:25%;"><span></span><span id="goBackSpan"></span></li>
+		</ul>
+	</div>
 </div>
 
 <div id="writeUserDiv" style="position:absolute;z-index:9999;display: none;background-size: 100% auto; top: 0px;width:100%;height:100%;">
 	<img id="gameRulesImg" src="write_user_info.jpg" style="width: 100%; height: 100%;"/>
-	<div style="position: absolute;top: 18%;left: 10%;width: 80%;filter:alpha(Opacity=90);-moz-opacity:0.9;opacity: 0.9;background: -ms-linear-gradient(top, #FFAF60, #030303);background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#030303), to(#FFAF60));">
+	<div style="position: absolute;top: 18%;left: 10%;width: 80%;">
 		<ul style="list-style:none;">
 			<li style="margin-top:10%;"><span>姓名：</span><span id="userNameSpan"></span></li>
 			<li style="margin-top:10%;"><span>电话：</span><span id="phoneSpan"></span></li>
@@ -254,7 +276,7 @@
 	</div>
 </div>
 
-<div id="indexBtn" style="position:absolute;z-index:999;display: block;top: 72%;left: 0%;width:98.5%;height:35%;filter:alpha(Opacity=90);-moz-opacity:0.9;opacity: 0.9;background: -ms-linear-gradient(top, #FFAF60, #030303);background:-webkit-gradient(linear, 0% 0%, 0% 100%,from(#030303), to(#030303));">
+<div id="indexBtn" style="position:absolute;z-index:999;display: block;top: 80%;left: 0%;width:98.5%;height:35%;">
 	<div id="beginBtn2" style="top: 5%;left: 35%;position:absolute;display:block;width:35%;height:22%;background:url(begin_btn.png);background-size:cover;"></div>
 	<div id="rulesBtn" style="top: 30%;left: 35%;position:absolute;display:block;width:35%;height:22%;background:url(game_rules.png);background-size:cover;"></div>
 </div>
