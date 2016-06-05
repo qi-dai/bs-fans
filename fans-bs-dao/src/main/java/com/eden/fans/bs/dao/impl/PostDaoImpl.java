@@ -344,7 +344,14 @@ public class PostDaoImpl implements IPostDao {
             Update.AddToSetBuilder builder = insert.addToSet("praiseUsers");
             builder.each(praiseUserMap);
             Query  insertQuery = Query.query(Criteria.where("_id").is(postId));
-            result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            try{
+                result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            } catch (Exception e){
+                logger.error("#updatePraiseUsers# error",e);
+                DBObject opt = new BasicDBObject().append("$unset",new BasicDBObject("praiseUsers",null));
+                int delResult = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).update(id,opt).getN();
+                result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            }
         }
         if(0 == result)
             return false;
@@ -421,7 +428,15 @@ public class PostDaoImpl implements IPostDao {
             Update.AddToSetBuilder builder = insert.addToSet("concernUsers");
             builder.each(concernUserMap);
             Query  insertQuery = Query.query(Criteria.where("_id").is(postId));
-            result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            try{
+                result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            } catch (Exception e){
+                logger.error("#updateConcernUsers# error",e);
+                DBObject opt = new BasicDBObject().append("$unset",new BasicDBObject("concernUsers",null));
+                int delResult = this.mongoTemplate.getCollection(MongoConstant.POST_COLLECTION_PREFIX + appCode).update(id,opt).getN();
+                result = this.mongoTemplate.upsert(insertQuery,insert,MongoConstant.POST_COLLECTION_PREFIX + appCode).getN();
+            }
+
         }
         if(0 == result)
             return false;
