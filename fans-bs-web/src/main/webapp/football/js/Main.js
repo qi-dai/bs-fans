@@ -34,7 +34,8 @@ var 苦加载数据 = [
 {name : "chara",path : "images/chara.png"}, 
 {name : "bird",path : "images/bird.png"}, 
 {name : "gui",path : "images/gui.png"}, 
-{name : "window",path : "shibai.jpg"}, 
+{name : "window",path : "shibai.jpg"},
+{name : "window_success",path : "success.jpg"},
 {name : "HP_bg",path : "images/hp_bg.png"},  
 {name : "HP_value",path : "images/hp_value.png"},
 ];
@@ -874,7 +875,12 @@ function 游戏结束(){
 	var 俺 = this;
 	俺.overLayer = new LSprite();
 	俺.addChild(俺.overLayer);
-	var windowBitmap = new LBitmap(new LBitmapData(苦数据列表["window"]));
+	var windowBitmap =null;
+	if(苦运行角色.distanceObj.value>=2000){
+		windowBitmap = new LBitmap(new LBitmapData(苦数据列表["window_success"]));
+	}else{
+		windowBitmap = new LBitmap(new LBitmapData(苦数据列表["window"]));
+	}
 	俺.overLayer.addChild(windowBitmap);
 	俺.overLayer.x = (LGlobal.width - 俺.overLayer.getWidth())*0.5;
 	俺.overLayer.y = (LGlobal.height - 俺.overLayer.getHeight())*0.5;
@@ -907,16 +913,20 @@ function 游戏结束(){
 	俺.overLayer.addChild(more);
 	scores = 苦运行角色.distanceObj.value;
 	more.addEventListener(LMouseEvent.MOUSE_UP, function(){
-		if(scores>10){
 			//弹出填写姓名电话号码框
-			showUserInput(苦运行角色.distanceObj.value);
-		}else{
-			if(scores<0){
-				alert("您的分数已经保存！");
-				return;
-			}
-			alert("您的分数不够，继续努力！");
+		if(scores<0){
+			alert("您的分数已经保存！");
+			return;
 		}
-		
+		showUserInput(苦运行角色.distanceObj.value);
+	});
+	var seePaiMing = new LButtonSample1("查看排名");
+	seePaiMing.x = 265;
+	seePaiMing.y = 720;
+	seePaiMing.width = 150;
+	seePaiMing.height = 60;
+	俺.overLayer.addChild(seePaiMing);
+	seePaiMing.addEventListener(LMouseEvent.MOUSE_UP, function(){
+		showPaiming();
 	});
 };
