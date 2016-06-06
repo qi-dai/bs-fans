@@ -29,7 +29,7 @@
 
     <!-- 实时统计用户贡献人气 -->
     <select id="qryFootBallScores"  parameterType="java.lang.Long" resultType="com.eden.fans.bs.domain.user.FootBallScoreVo">
-        select id,name,phone,score,create_time from football_record order by score desc
+        select id,name,phone,score,create_time from football_record where score>=2000 order by score desc
     </select>
 
 </mapper>

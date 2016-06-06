@@ -75,7 +75,7 @@ public class ManagerInterceptor implements HandlerInterceptor {
             pwriter.print(gson.toJson(interCeptorResponse));
             pwriter.flush();
         }catch (Exception e){
-            logger.error("安全校验拦截器出错，默认通过！",e);
+            logger.error("安全校验拦截器出错，默认通过~",e);
             return true;
         }finally {
             if(pwriter!=null)

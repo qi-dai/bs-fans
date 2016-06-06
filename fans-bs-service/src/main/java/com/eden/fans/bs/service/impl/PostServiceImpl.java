@@ -409,17 +409,17 @@ public class PostServiceImpl implements IPostService {
         map.put("type",postInfo.getType().getValue());
         map.put("content",postInfo.getContent());
         map.put("userCode",postInfo.getUserCode());
-        map.put("imgs",postInfo.getImgs());
-        map.put("videos",postInfo.getVideos());
-        map.put("musics",postInfo.getMusics());
-        map.put("others",postInfo.getOthers());
+        map.put("imgs",null == postInfo.getImgs()? new Object[]{}:postInfo.getImgs());
+        map.put("videos",null == postInfo.getVideos()?new Object[]{}:postInfo.getVideos());
+        map.put("musics",null == postInfo.getMusics()?new Object[]{}:postInfo.getMusics());
+        map.put("others",null == postInfo.getOthers()?new Object[]{}:postInfo.getOthers());
         map.put("createDate",new Date());
         map.put("publishDate",new Date());
         map.put("status",postInfo.getStatus().getValue());
         map.put("level",postInfo.getLevel().getValue());
-        map.put("operatorList",postInfo.getOperatorList());
-        map.put("concernUsers",postInfo.getConcernUsers());
-        map.put("praiseUsers",postInfo.getPraiseUsers());
+        map.put("operatorList",null == postInfo.getOperatorList()?new Object[]{}:postInfo.getOperatorList());
+        map.put("concernUsers",null == postInfo.getConcernUsers()?new Object[]{}:postInfo.getConcernUsers());
+        map.put("praiseUsers",null == postInfo.getPraiseUsers()?new Object[]{}:postInfo.getPraiseUsers());
         // 优化点赞数，关注数和回帖数
         map.put("praiseCount",0);
         map.put("concernCount",0);
