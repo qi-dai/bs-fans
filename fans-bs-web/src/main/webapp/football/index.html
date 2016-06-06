@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="http://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
 	<script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="http://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script type="text/javascript" src="js/jquery.jsonp.js"></script>
 	<script src="js/sound.js" type="text/javascript"></script>
 	<script type="text/javascript" src="js/lufylegend-1.9.7.min.js"></script>
 	<script type="text/javascript" src="js/lufylegend.ui-0.10.0.min.js"></script>
@@ -29,6 +30,9 @@
 		.submit {top: 40%; display: block; font-size:100px;position: absolute;z-index:999; width: 50%; height: 7%; left: 24%;background-color:transparent;border-style:none;}
 		.submitnew {top: 40%; display: block; font-size:100px;position: absolute;z-index:999; width: 100%; height: 100%; left: 24%;}
 	</style>
+	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<?php require_once $_SERVER['DOCUMENT_ROOT']."/test/jssdk3/share.php"; ?>
+	<script type="text/javascript" src="js/share.js" ></script>
 </head>
 <body style="width:640px;margin:0px auto;padding:0px 0px 0px 0px;background-color:#000000;">
 <div class='aliForPc'><img src='forpc.png'/></div>
@@ -115,29 +119,33 @@
 		$.ajax({
 			async : false,
 			type: "post",
-			url: "http://101.200.219.135/fans-bs-web/common/qryFootBallScores",
+			url: "http://localhost:8080/common/qryFootBallScores",
 			data : {
 			},
-			dataType : "json",
-			success: function($json){
-				if($json.code==0){
-					var html="<table>";
-					html+= "<tr><td>得分>2000分排行榜</td><td></td></tr>";
-					for(var i=0;i<$json.result.length;i++){
-						var scoreRecord= $json.result[i];
-						html+= "<tr><td>玩家："+scoreRecord.name+" </td><td>得分:"+scoreRecord.score+"</td></tr>";
-					}
-
-					html +="</table>";
-					document.getElementById("scores").innerHTML  = html;
-					document.getElementById("scoreRecords").style.display = "";
-				}
-			},
+			dataType: "jsonp",
+			jsonp: "callback",
+			jsonpCallback: "receive",
+			success: function($json){},
 			error: function($json){
 				//请求出错处理
 				alert("查询得分排行榜失败！"+$json.msg);
 			}
 		});
+	}
+
+	function receive(data) {
+		if(data.code==0){
+			var html="<table>";
+			html+= "<tr><td>得分>2000分排行榜</td><td></td></tr>";
+			for(var i=0;i<data.result.length;i++){
+				var scoreRecord= data.result[i];
+				html+= "<tr><td>玩家："+scoreRecord.name+" </td><td>得分:"+scoreRecord.score+"</td></tr>";
+			}
+
+			html +="</table>";
+			document.getElementById("scores").innerHTML  = html;
+			document.getElementById("scoreRecords").style.display = "";
+		}
 	}
 
 	function hideGameReules(){
@@ -184,7 +192,9 @@
 				phone :userPhone,
 				score : scores
 			},
-			dataType : "json",
+			dataType: "jsonp",
+			jsonp: "callback",
+			jsonpCallback: "receiveAdd",
 			success: function($json){
 				if($json.code==0){
 					alert("保存玩家得分成功！");
@@ -199,6 +209,17 @@
 				alert("保存玩家得分失败！"+$json.msg);
 			}
 		});
+	}
+	function receiveAdd(data){
+		if(data.code==0){
+			alert("保存玩家得分成功！");
+			document.getElementById("writeUserDiv").style.display = "none";
+			document.getElementById("userName").value = "";
+			document.getElementById("phone").value = "";
+			scores = -1;
+		}else{
+			alert(data.msg);
+		}
 	}
 	$(document).ready(function(){
 		$("#gameRulesDiv").bind("click",function(){
@@ -276,9 +297,9 @@
 	</div>
 </div>
 
-<div id="indexBtn" style="position:absolute;z-index:999;display: block;top: 80%;left: 0%;width:98.5%;height:35%;">
-	<div id="beginBtn2" style="top: 5%;left: 35%;position:absolute;display:block;width:35%;height:22%;background:url(begin_btn.png);background-size:cover;"></div>
-	<div id="rulesBtn" style="top: 30%;left: 35%;position:absolute;display:block;width:35%;height:22%;background:url(game_rules.png);background-size:cover;"></div>
+<div id="indexBtn" style="position:absolute;z-index:999;display: block;top: 85%;left: 0%;width:100%;height:35%;">
+	<div id="beginBtn2" style="top: 5%;left: 10%;position:absolute;display:block;width:25%;height:18%;background:url(begin_btn.png);background-size:cover;"></div>
+	<div id="rulesBtn" style="top: 5%;right:10%;position:absolute;display:block;width:25%;height:18%;background:url(game_rules.png);background-size:cover;"></div>
 </div>
 
 </body>

@@ -1,5 +1,6 @@
 package com.eden.fans.bs.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.eden.fans.bs.dao.IFootBallScoreDao;
 import com.eden.fans.bs.domain.request.FootBallScoreAddReq;
 import com.eden.fans.bs.domain.response.ServiceResponse;
@@ -22,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -186,23 +189,57 @@ public class CommonController {
 	/**批量获取用户信息*/
 	@RequestMapping(value = "/addFootBallScore", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String addFootBallScore(FootBallScoreAddReq footBallScoreAddReq){
+	public void addFootBallScore(HttpServletRequest req, HttpServletResponse resp,FootBallScoreAddReq footBallScoreAddReq){
 		FootBallScoreVo footBallScoreVo = new FootBallScoreVo();
 		footBallScoreVo.setName(footBallScoreAddReq.getName());
 		footBallScoreVo.setPhone(footBallScoreAddReq.getPhone());
 		footBallScoreVo.setScore(footBallScoreAddReq.getScore());
-		boolean flag =footBallScoreDao.addFootBallScore(footBallScoreVo);
-		ServiceResponse<Boolean> response = new ServiceResponse<Boolean>(flag);
-		return gson.toJson(response);
+		try{
+			boolean flag =footBallScoreDao.addFootBallScore(footBallScoreVo);
+			ServiceResponse<Boolean> response = new ServiceResponse<Boolean>(flag);
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code","0");
+			jsonObject.put("msg","成功");
+			jsonObject.put("result",flag);
+			resp.getWriter().print("receiveAdd("+jsonObject.toString()+")");
+		}catch(Exception e){
+			e.printStackTrace();
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code","-1");
+			jsonObject.put("msg","保存得分排行失败");
+			try {
+				resp.getWriter().print("receiveAdd("+jsonObject.toString()+")") ;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 	/**批量获取用户信息*/
 	@RequestMapping(value = "/qryFootBallScores", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String qryFootBallScores(){
-		java.util.List<FootBallScoreVo> list =footBallScoreDao.qryFootBallScores();
-		ServiceResponse<java.util.List<FootBallScoreVo>> response = new ServiceResponse<java.util.List<FootBallScoreVo>>(list);
-		return gson.toJson(response);
+	public void qryFootBallScores(HttpServletRequest req, HttpServletResponse resp){
+		try {
+			java.util.List<FootBallScoreVo> list = footBallScoreDao.qryFootBallScores();
+			ServiceResponse<java.util.List<FootBallScoreVo>> response = new ServiceResponse<java.util.List<FootBallScoreVo>>(list);
+			resp.setCharacterEncoding("UTF-8");
+			resp.setHeader("Content-Type", "text/html;charset=UTF-8");
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code","0");
+			jsonObject.put("msg","成功");
+			jsonObject.put("result",list);
+			resp.getWriter().print("receive("+jsonObject.toString()+")") ;
+		} catch (Exception e) {
+			e.printStackTrace();
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("code","-1");
+			jsonObject.put("msg","查询得分排行失败");
+			try {
+				resp.getWriter().print("receive("+jsonObject.toString()+")") ;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 
 
