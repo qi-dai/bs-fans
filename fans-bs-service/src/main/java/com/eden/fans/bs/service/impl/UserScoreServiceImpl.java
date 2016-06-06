@@ -137,6 +137,11 @@ public class UserScoreServiceImpl implements IUserScoreService {
         return response;
     }
 
+    @Override
+    public ServiceResponse<UserScoreVo> qryScoreBoard(int pageNumber, int currentPage) {
+        return null;
+    }
+
     private void buildScoreVoByPraise(UserScoreVo userScoreVo){
         try{
             String num = redisCache.get(Constant.REDIS.SCORE_NUM_PRAISE+userScoreVo.getUserCode());

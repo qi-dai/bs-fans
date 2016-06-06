@@ -46,6 +46,8 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IAttentionDao attentionDao;
     @Autowired
+    private IUserPraiseDao userPraiseDao;
+    @Autowired
     private IPostDao postDao;
 
 
@@ -127,6 +129,7 @@ public class UserServiceImpl implements IUserService {
             //1.查询用户基本信息
             UserVo userVoQry = new UserVo();
             userVoQry.setUserCode(qryUserInfoRequest.getUserCode());
+            userVoQry.setPhone(qryUserInfoRequest.getGoalPhone());
             UserVo userVoResult = userDao.qryUserVo(userVoQry);
             UserDetailResponse detailResponse = new UserDetailResponse();
             detailResponse.setUserVo(userVoResult);
@@ -148,6 +151,13 @@ public class UserServiceImpl implements IUserService {
                     detailResponse.setContributeScore(userScoreDao.sumUserScore(qryUserInfoRequest.getUserCode()));
                 }catch (Exception e){
                     logger.error("查询用户贡献人气出错",e);
+                }
+
+                try{
+                    //查询用户收到的赞
+                    detailResponse.setPraiseNum(userPraiseDao.sumUserReceivePriase(qryUserInfoRequest.getUserCode()));
+                }catch(Exception e){
+                    logger.error("查询用户收到赞数量失败",e);
                 }
                 try {
                     //查询用户之间是否已关注,先判断是否是登录用户，是就查，不是直接默认没关注。
@@ -224,7 +234,7 @@ public class UserServiceImpl implements IUserService {
             //2.更新用户角色
             UserVo adminUser = new UserVo();
             adminUser.setUserCode(setAdminRequest.getUserCode());
-            adminUser.setPhone(setAdminRequest.getPhone());
+            adminUser.setPhone(setAdminRequest.getGoalPhone());
             if(setAdminRequest.getType()){
                 adminUser.setUserRole("02");//管理员编码02
             }else{
@@ -250,7 +260,11 @@ public class UserServiceImpl implements IUserService {
                 logger.error("管理员：{},设置{}成管理员，添加操作记录失败,操作数据库异常，",adminUserCode,targetUserCode,e);
             }
             //4.刷新redis缓存用户信息
-            refreshRedisUserInfo(targetUserCode);
+            if(targetUserCode!=null){
+                refreshRedisUserInfo(targetUserCode);
+            }else if(setAdminRequest.getGoalPhone()!=null){
+                refreshRedisUserInfo(setAdminRequest.getGoalPhone());
+            }
             //5.构建返回报文
             updateUserResponse = new ServiceResponse<Boolean>();
             updateUserResponse.setResult(true);
@@ -364,6 +378,14 @@ public class UserServiceImpl implements IUserService {
      * */
     private void refreshRedisUserInfo(Long userCode){
         UserVo userInfo =userDao.qryUserVoByUserCode(userCode);
+        redisCache.set(userInfo.getPhone(),userInfo);
+    }
+
+    /**
+     * 刷新用户redis缓存
+     * */
+    private void refreshRedisUserInfo(String phone){
+        UserVo userInfo =userDao.qryUserVoByPhone(phone);
         redisCache.set(userInfo.getPhone(),userInfo);
     }
 

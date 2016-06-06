@@ -152,17 +152,19 @@
     </select>
 
     <select id="queryUserCountVo" resultMap="userCountVo" parameterType="com.eden.fans.bs.domain.user.UserVo">
-    SELECT TT1.fromNum,TT1.toNum,TT1.user_code,TT2.imgNum,TT2.videoNum
-          FROM (SELECT #{userCode,jdbcType=VARCHAR} AS user_code) tt3
+    SELECT tt1.fromNum,tt1.toNum,tt1.user_code,tt2.imgNum,tt2.videoNum
+    FROM (SELECT #{userCode,jdbcType=VARCHAR} AS user_code)) tt3
     LEFT JOIN
           (SELECT SUM(CASE WHEN from_user_code=#{userCode,jdbcType=VARCHAR} THEN 1 ELSE 0 END) AS fromNum,
                   SUM(CASE WHEN to_user_code=#{userCode,jdbcType=VARCHAR} THEN 1 ELSE 0 END) AS toNum,#{userCode,jdbcType=VARCHAR} AS user_code
-           FROM user_attention WHERE from_user_code = #{userCode,jdbcType=VARCHAR} OR to_user_code=#{userCode,jdbcType=VARCHAR}) TT1
-    ON TT3.user_code = TT1.User_code
+            FROM user_attention
+            WHERE from_user_code = #{userCode,jdbcType=VARCHAR} OR to_user_code=#{userCode,jdbcType=VARCHAR}) tt1
+    ON tt3.user_code = tt1.User_code
     LEFT JOIN
           (SELECT SUM(CASE WHEN um_type='1' THEN 1 ELSE 0 END) AS imgNum,
                   SUM(CASE WHEN um_type='2' THEN 1 ELSE 0 END) AS videoNum,user_code
-           FROM user_media WHERE is_valid=0 AND user_code = #{userCode,jdbcType=VARCHAR}) TT2
+          FROM user_media
+      WHERE is_valid=0 AND user_code = #{userCode,jdbcType=VARCHAR}) tt2
     ON tt3.user_code = tt2.user_code
     </select>
 </mapper>

@@ -13,6 +13,7 @@ public class UserDetailResponse {
     private int postNum;
     private int imgNum;
     private int videoNum;
+    private int praiseNum;
     private boolean attFlag;
 
     public UserVo getUserVo() {
@@ -69,6 +70,14 @@ public class UserDetailResponse {
 
     public void setVideoNum(int videoNum) {
         this.videoNum = videoNum;
+    }
+
+    public int getPraiseNum() {
+        return praiseNum;
+    }
+
+    public void setPraiseNum(int praiseNum) {
+        this.praiseNum = praiseNum;
     }
 
     public boolean getAttFlag() {

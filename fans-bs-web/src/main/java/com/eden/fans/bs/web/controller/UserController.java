@@ -4,6 +4,7 @@ import com.eden.fans.bs.common.util.UserGsonUtil;
 import com.eden.fans.bs.domain.annotation.ReqCheckParam;
 import com.eden.fans.bs.domain.request.*;
 import com.eden.fans.bs.domain.user.UserVo;
+import com.eden.fans.bs.service.IPraiseService;
 import com.eden.fans.bs.service.IUserAttentionService;
 import com.eden.fans.bs.service.IUserService;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private IUserAttentionService userAttentionService;
+    @Autowired
+    private IPraiseService praiseService;
 
 
     @RequestMapping(value = "/qryUserInfo", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
@@ -64,6 +67,15 @@ public class UserController {
     @ResponseBody
     public String getToAttentions(@ReqCheckParam QryToAttRequest qryToAttRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userAttentionService.getToAttentions(qryToAttRequest));
+    }
+
+    /**
+     * 关注/取消关注用户
+     * */
+    @RequestMapping(value = "/setPraise", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String setPraise(@ReqCheckParam PraiseRequest praiseRequest) throws Exception {
+        return UserGsonUtil.getGson().toJson(praiseService.setUserPraise(praiseRequest));
     }
 
 }

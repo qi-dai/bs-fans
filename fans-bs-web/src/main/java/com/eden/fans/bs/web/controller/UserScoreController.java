@@ -22,4 +22,13 @@ public class UserScoreController {
     public String addScoreRecord(ScoreRecordRequest scoreRecordRequest) throws Exception {
         return UserGsonUtil.getGson().toJson(userScoreService.addScoreRecord(scoreRecordRequest));
     }
+
+    /**
+     * 查询积分排行榜
+     * */
+    @RequestMapping(value = "/scoreBoard", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @ResponseBody
+    public String scoreBoard(int pageNumber, int currentPage) throws Exception {
+        return UserGsonUtil.getGson().toJson(userScoreService.qryScoreBoard(pageNumber,currentPage));
+    }
 }

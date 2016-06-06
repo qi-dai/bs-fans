@@ -11,6 +11,7 @@ public class QryUserInfoRequest implements Serializable {
     private String token;
     private String phone;
     private Long userCode;
+    private String goalPhone;
     private String appCode;
 
     public String getToken() {
@@ -29,7 +30,14 @@ public class QryUserInfoRequest implements Serializable {
         this.phone = phone;
     }
 
-    @ActionInput(notNull = true)
+    public String getGoalPhone() {
+        return goalPhone;
+    }
+
+    public void setGoalPhone(String goalPhone) {
+        this.goalPhone = goalPhone;
+    }
+
     public Long getUserCode() {
         return userCode;
     }

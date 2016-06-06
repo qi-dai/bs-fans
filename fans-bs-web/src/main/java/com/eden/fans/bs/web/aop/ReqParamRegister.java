@@ -23,5 +23,6 @@ public class ReqParamRegister {
         BaseEntity.init(UpdateMediaRequest.class);
         BaseEntity.init(QryUserListRequest.class);
         BaseEntity.init(FootBallScoreAddReq.class);
+        BaseEntity.init(PraiseRequest.class);
     }
 }

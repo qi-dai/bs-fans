@@ -12,27 +12,28 @@
         select id,from_user_code,to_user_code,create_time
         from user_praise
     </sql>
-    <!-- 根据用户关注其他用户刘表 -->
-    <select id="qryFromAttentionVos" resultMap="attentionVoMap" parameterType="com.eden.fans.bs.domain.user.AttentionVo">
-        <include refid="allColumn"/>
-        where 1=1
-        <if test="attType != null">
-            and att_type = #{attType,jdbcType=VARCHAR}
-        </if>
-        <if test="fromUserCode != null">
-            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
-        </if>
-    </select>
-    <!-- 根据用户赞或者被赞数量统计 -->
-    <select id="qryPraiseCount" parameterType="java.lang.Long" resultType="int">
-        <include refid="allColumn"/>
-        where 1=1
-        <if test="attType != null">
-            and from_user_code = #{fromUserCode,jdbcType=BIGINT}
-        </if>
-        <if test="toUserCode != null">
+
+    <!-- 被赞数量统计 -->
+    <select id="qryReceivePraiseCount" parameterType="java.lang.Long" resultType="int">
+        SELECT SUM(1) FROM user_praise
+        where
             and to_user_code = #{toUserCode,jdbcType=BIGINT}
-        </if>
+    </select>
+
+    <!-- 根据用户主动赞数量统计 -->
+    <select id="qrySendPraiseCount" parameterType="java.lang.Long" resultType="int">
+        SELECT SUM(1) FROM user_praise
+        where
+        from_user_code = #{fromUserCode,jdbcType=BIGINT}
+    </select>
+
+    <!-- 根据用户主动赞数量统计 -->
+    <select id="qryPraisedFlag" parameterType="java.lang.Long" resultType="int">
+        SELECT SUM(1) FROM user_praise
+        where
+        from_user_code = #{fromUserCode,jdbcType=BIGINT}
+        AND to_user_code = #{toUserCode,jdbcType=BIGINT}
+        AND create_time > CURDATE()
     </select>
 
     <!-- 插入赞或者被赞记录-->
