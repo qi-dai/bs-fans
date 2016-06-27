@@ -16,8 +16,7 @@
     <!-- 被赞数量统计 -->
     <select id="qryReceivePraiseCount" parameterType="java.lang.Long" resultType="int">
         SELECT SUM(1) FROM user_praise
-        where
-            and to_user_code = #{toUserCode,jdbcType=BIGINT}
+        where to_user_code = #{toUserCode,jdbcType=BIGINT}
     </select>
 
     <!-- 根据用户主动赞数量统计 -->

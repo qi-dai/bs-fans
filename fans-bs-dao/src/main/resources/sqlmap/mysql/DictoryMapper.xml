@@ -59,7 +59,7 @@
         <if test="isValid !=null">
             is_valid = #{isValid,jdbcType=VARCHAR}
         </if>
-        order by d_value
+        order by seq_no
     </select>
 
     <!-- 分页查询用户关注列表 -->

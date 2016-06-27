@@ -153,7 +153,7 @@
 
     <select id="queryUserCountVo" resultMap="userCountVo" parameterType="com.eden.fans.bs.domain.user.UserVo">
     SELECT tt1.fromNum,tt1.toNum,tt1.user_code,tt2.imgNum,tt2.videoNum
-    FROM (SELECT #{userCode,jdbcType=VARCHAR} AS user_code)) tt3
+    FROM (SELECT #{userCode,jdbcType=VARCHAR} AS user_code) tt3
     LEFT JOIN
           (SELECT SUM(CASE WHEN from_user_code=#{userCode,jdbcType=VARCHAR} THEN 1 ELSE 0 END) AS fromNum,
                   SUM(CASE WHEN to_user_code=#{userCode,jdbcType=VARCHAR} THEN 1 ELSE 0 END) AS toNum,#{userCode,jdbcType=VARCHAR} AS user_code
