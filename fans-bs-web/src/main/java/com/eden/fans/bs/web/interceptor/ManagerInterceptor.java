@@ -40,6 +40,14 @@ public class ManagerInterceptor implements HandlerInterceptor {
             String token = httpServletRequest.getParameter("token");
             String phone = httpServletRequest.getParameter("phone");
             logger.error("权限认证开始-sid:{},phone:{}",token,phone);
+            if(token!=null&&token.length()<30){
+                //token长度小于30，直接退出
+                pwriter = httpServletResponse.getWriter();
+                ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(SystemErrorEnum.ILLEGAL_REQUEST);
+                pwriter.print(gson.toJson(interCeptorResponse));
+                pwriter.flush();
+                return false;
+            }
             /**
              * 1.校验是否登录
              * 获取该手机号已登录tokens集合
@@ -48,11 +56,9 @@ public class ManagerInterceptor implements HandlerInterceptor {
              * */
             String tokenSrc = redisCache.get(Constant.REDIS.TOKEN+phone);
             boolean isLogin = false;
-            if(tokenSrc!=null){
-                String[] tokenArr = tokenSrc.split("_");
-                for (String tStr : tokenArr){
-                    if(tStr.equals(token)) isLogin = true;
-                }
+            if(tokenSrc!=null&&tokenSrc.indexOf(token)>-1){
+                //token在缓存中能找到，合法请求
+                return true;
             }
             /**
              * 2.登录态，校验是否管理员

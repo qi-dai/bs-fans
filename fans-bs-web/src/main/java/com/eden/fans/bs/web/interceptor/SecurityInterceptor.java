@@ -42,17 +42,23 @@ public class SecurityInterceptor implements HandlerInterceptor {
             logger.error("权限认证开始-sid:{},phone:{}",token,phone);
             String requestUri = httpServletRequest.getRequestURI();
             logger.error("请求路径：{}",requestUri);
+            if(token!=null&&token.length()<30){
+                //token长度小于30，直接退出
+                pwriter = httpServletResponse.getWriter();
+                ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(SystemErrorEnum.ILLEGAL_REQUEST);
+                pwriter.print(gson.toJson(interCeptorResponse));
+                pwriter.flush();
+                return false;
+            }
             /**
              * 获取该手机号已登录tokens集合
              * 格式：ja7e82sdqw212d_ssdki2279kklas_7iosl1aFCMQ1as
              * 如果传入token在登录tokens中，则合法用户，否则非法请求，拒绝服务
              * */
             String tokenSrc = redisCache.get(Constant.REDIS.TOKEN+phone);
-            if(tokenSrc!=null){
-                String[] tokenArr = tokenSrc.split("_");
-                for (String tStr : tokenArr){
-                    if(tStr.equals(token)) return true;
-                }
+            if(tokenSrc!=null&&tokenSrc.indexOf(token)>-1){
+                //token在缓存中能找到，合法请求
+                 return true;
             }
             pwriter = httpServletResponse.getWriter();
             ServiceResponse<String> interCeptorResponse = new ServiceResponse<String>(SystemErrorEnum.ILLEGAL_REQUEST);

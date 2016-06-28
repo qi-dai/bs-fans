@@ -126,7 +126,6 @@ public class UserScoreServiceImpl implements IUserScoreService {
         try{
             if(scoreRecordRequest.getScoreType()==9){
                 UserVo userVo = commonService.qryUserVo(scoreRecordRequest.getPhone());
-                scoreRecordRequest.getPhone();
                 addUserScore(userVo.getUserCode(),9);
             }
             response = new ServiceResponse<Boolean>(true);

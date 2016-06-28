@@ -165,11 +165,13 @@ public class UserServiceImpl implements IUserService {
                         AttentionVo attentionVo = new AttentionVo();
                         UserVo userInfo = getUserVo(qryUserInfoRequest.getPhone());
                         if (userInfo != null) {
-                            attentionVo.setToUserCode(userInfo.getUserCode());
+                            attentionVo.setToUserCode(qryUserInfoRequest.getUserCode());
+                            attentionVo.setFromUserCode(userInfo.getUserCode());
+                            int isAtt = attentionDao.jadgeUserRelation(attentionVo);
+                            detailResponse.setAttFlag(isAtt > 0 ? true : false);
+                        }else{
+                            detailResponse.setAttFlag(false);
                         }
-                        attentionVo.setFromUserCode(qryUserInfoRequest.getUserCode());
-                        int isAtt = attentionDao.jadgeUserRelation(attentionVo);
-                        detailResponse.setAttFlag(isAtt > 0 ? true : false);
                     }
                 }catch (Exception e){
                     logger.error("查询用户之间是否已关注出错，",e);
