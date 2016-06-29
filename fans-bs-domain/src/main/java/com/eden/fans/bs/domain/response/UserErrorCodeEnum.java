@@ -9,6 +9,7 @@ public enum UserErrorCodeEnum implements BaseCodeEnum {
     ADD_USER_FAILED("1002", "用户注册失败", "存储数据库发生异常"),
     USER_EXIST_FAILED("1003", "用户注册失败", "该用户已经注册！"),
     USER_CODE_ERROR("1004", "用户账号不存在或已注销", "用户编码格式不正确，不是纯数字！"),
+    PHONE_ERROR_FAILED("1005", "手机号格式不正确", "手机号格式不正确！"),
     QRY_USER_INFO_FAILED("1009", "查询用户信息出错", "数据库查询发生异常！"),
     QRY_USER_INFO_ERROR("1010", "查询用户信息出错", "用户信息不存在或已注销！"),
     USER_NOTEXIST_ERROR("1011", "修改用户资料出错", "用户不存在或已注销！"),

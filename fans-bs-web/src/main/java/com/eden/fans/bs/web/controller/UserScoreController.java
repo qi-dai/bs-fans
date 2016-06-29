@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserScoreController {
     @Autowired
     private IUserScoreService userScoreService;//积分服务类
-    @RequestMapping(value = "/addScoreRecord", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/loginAddScore", method = {RequestMethod.GET, RequestMethod.POST}, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String addScoreRecord(ScoreRecordRequest scoreRecordRequest) throws Exception {
-        return UserGsonUtil.getGson().toJson(userScoreService.addScoreRecord(scoreRecordRequest));
+        return UserGsonUtil.getGson().toJson(userScoreService.loginAddScore(scoreRecordRequest));
     }
 
     /**

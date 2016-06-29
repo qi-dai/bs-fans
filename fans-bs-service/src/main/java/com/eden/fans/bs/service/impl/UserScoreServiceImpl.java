@@ -121,7 +121,7 @@ public class UserScoreServiceImpl implements IUserScoreService {
     }
 
     @Override
-    public ServiceResponse<Boolean> addScoreRecord(ScoreRecordRequest scoreRecordRequest) {
+    public ServiceResponse<Boolean> loginAddScore(ScoreRecordRequest scoreRecordRequest) {
         ServiceResponse<Boolean> response = null;
         try{
             if(scoreRecordRequest.getScoreType()==9){

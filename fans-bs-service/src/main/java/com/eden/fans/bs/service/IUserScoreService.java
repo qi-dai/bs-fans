@@ -9,6 +9,6 @@ import com.eden.fans.bs.domain.user.UserScoreVo;
  */
 public interface IUserScoreService {
     public void addUserScore(Long userCode,int scoreType);
-    public ServiceResponse<Boolean> addScoreRecord(ScoreRecordRequest scoreRecordRequest);
+    public ServiceResponse<Boolean> loginAddScore(ScoreRecordRequest scoreRecordRequest);
     public ServiceResponse<UserScoreVo> qryScoreBoard(int pageNumber, int currentPage);
 }

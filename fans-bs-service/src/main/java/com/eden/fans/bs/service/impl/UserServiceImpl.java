@@ -1,6 +1,7 @@
 package com.eden.fans.bs.service.impl;
 
 import cn.jpush.api.report.UsersResult;
+import com.eden.fans.bs.common.util.CommonUtils;
 import com.eden.fans.bs.common.util.Constant;
 import com.eden.fans.bs.common.util.MD5Util;
 import com.eden.fans.bs.common.util.UserUtils;
@@ -63,7 +64,13 @@ public class UserServiceImpl implements IUserService {
                 serviceResponse = new ServiceResponse<RegisterReponse>(UserErrorCodeEnum.VALIDCODE_CHECK_FAILED);
                 return serviceResponse;
             }
-            //1.查询用户是否已存在
+            //1校验手机号
+            if(!CommonUtils.isMobile(registerRequest.getPhone())){
+                /**手机号格式不正确*/
+                serviceResponse = new ServiceResponse<RegisterReponse>(UserErrorCodeEnum.PHONE_ERROR_FAILED);
+                return serviceResponse;
+            }
+            //2.查询用户是否已存在
             UserVo userVo = new UserVo();//加密用户密码
             userVo.setPhone(registerRequest.getPhone());
             UserVo userVo1 = userDao.qryUserVo(userVo);
