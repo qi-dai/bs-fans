@@ -10,7 +10,6 @@ import java.io.Serializable;
 public class ScoreRecordRequest implements Serializable {
     private String token;
     private String phone;
-    private Integer scoreType;
     @ActionInput(notNull = true)
     public String getToken() {
         return token;
@@ -28,12 +27,4 @@ public class ScoreRecordRequest implements Serializable {
         this.phone = phone;
     }
 
-    @ActionInput(notNull = true)
-    public Integer getScoreType() {
-        return scoreType;
-    }
-
-    public void setScoreType(Integer scoreType) {
-        this.scoreType = scoreType;
-    }
 }

@@ -124,10 +124,8 @@ public class UserScoreServiceImpl implements IUserScoreService {
     public ServiceResponse<Boolean> loginAddScore(ScoreRecordRequest scoreRecordRequest) {
         ServiceResponse<Boolean> response = null;
         try{
-            if(scoreRecordRequest.getScoreType()==9){
-                UserVo userVo = commonService.qryUserVo(scoreRecordRequest.getPhone());
-                addUserScore(userVo.getUserCode(),9);
-            }
+            UserVo userVo = commonService.qryUserVo(scoreRecordRequest.getPhone());
+            addUserScore(userVo.getUserCode(),9);
             response = new ServiceResponse<Boolean>(true);
         }catch (Exception e){
             logger.error("计算人气积分出错，",e);
