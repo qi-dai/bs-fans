@@ -348,7 +348,7 @@ public class PostController {
             response.setResult(false+"");
             return gson.toJson(response);
         }
-        if(userCode == ((Long)dbObject.get("userCode")).longValue()){
+        if(userCode.longValue() == ((Long)dbObject.get("userCode")).longValue()){
             boolean result = postService.updateStatus(appCode,postId,postStatus,null);
             ServiceResponse<String> response = new ServiceResponse<String>(PostErrorCodeEnum.UPDATE_POST_SUCCESS);
             response.setResult(result+"");
