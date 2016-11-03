@@ -7,9 +7,9 @@ var policyText = {
 function getRomdomName(imgName){
 	return "xxxoiiq9"+imgName;
 }
-accessid= 'dIEkjjlWPESrc0P3';
-accesskey= 'RBgSwRhMW8P6oRBKWqkdrmYF6o6U17';
-host = 'http://bsfans01.oss-cn-beijing.aliyuncs.com';
+accessid= '';
+accesskey= '';
+host = '';
 
 var policyBase64 = Base64.encode(JSON.stringify(policyText))
 message = policyBase64
